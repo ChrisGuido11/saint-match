@@ -42,3 +42,22 @@ export async function linkEmailToAccount(email: string, password: string) {
 export async function signOut() {
   return supabase.auth.signOut();
 }
+
+export async function deleteUserAccount() {
+  // First, delete all user data from public tables (RLS will ensure only own data is deleted)
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (user) {
+    // Delete user data from all tables (cascade will handle related data)
+    // The profiles table has ON DELETE CASCADE, so deleting the auth user will clean up
+    await supabase.from('active_challenges').delete().eq('user_id', user.id);
+    await supabase.from('completions').delete().eq('user_id', user.id);
+    await supabase.from('patience_scores').delete().eq('user_id', user.id);
+    await supabase.from('usage').delete().eq('user_id', user.id);
+    await supabase.from('streaks').delete().eq('user_id', user.id);
+    await supabase.from('profiles').delete().eq('id', user.id);
+  }
+  
+  // Sign out the user (the auth.users record requires admin/service role to delete)
+  await supabase.auth.signOut();
+}

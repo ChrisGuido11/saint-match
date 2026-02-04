@@ -19,7 +19,7 @@ import { useApp } from '../../../context/AppContext';
 import { clearAllData, exportAllData } from '../../../lib/storage';
 import { resetAllData } from '../../../lib/streak';
 import { resetProStatus, checkProStatus } from '../../../lib/purchases';
-import { signOut, isSupabaseConfigured } from '../../../lib/supabase';
+import { signOut, isSupabaseConfigured, deleteUserAccount } from '../../../lib/supabase';
 import { LinkAccountModal } from '../../../components/LinkAccountModal';
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
@@ -101,13 +101,20 @@ export default function SettingsScreen() {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            await clearAllData();
-            await resetAllData();
-            await resetProStatus();
-            if (isSupabaseConfigured()) {
-              await signOut().catch(() => {});
+            try {
+              // Delete from Supabase first (if configured)
+              if (isSupabaseConfigured()) {
+                await deleteUserAccount();
+              }
+              // Then clear local data
+              await clearAllData();
+              await resetAllData();
+              await resetProStatus();
+              router.replace('/(public)/welcome');
+            } catch (error) {
+              console.error('Error deleting account:', error);
+              showToast('Error deleting account. Please try again.');
             }
-            router.replace('/(public)/welcome');
           },
         },
       ]
@@ -242,7 +249,7 @@ export default function SettingsScreen() {
         onClose={() => setShowLinkModal(false)}
         onSuccess={(email) => {
           setShowLinkModal(false);
-          setLinkedEmail(email);
+          refreshAll();
           showToast('Account linked successfully!');
         }}
       />
