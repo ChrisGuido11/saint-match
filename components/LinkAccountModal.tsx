@@ -42,19 +42,36 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
     setError(null);
 
     try {
-      // First ensure we have an anonymous session to upgrade
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        // Try to create an anonymous session first
-        await ensureAnonymousSession();
+      
+      if (session) {
+        // User has an existing session - upgrade/link it
+        await linkEmailToAccount(email.trim(), password);
+      } else {
+        // No session - sign up as a new user directly
+        const { data, error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+        });
+        console.log('SignUp response:', { data, error });
+        if (error) throw error;
+        
+        // If no session after signup, try signing in
+        if (data?.user && !data.session) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          });
+          if (signInError) throw signInError;
+        }
       }
       
-      await linkEmailToAccount(email.trim(), password);
       onSuccess(email.trim());
       setEmail('');
       setPassword('');
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Could not link account.';
+    } catch (err: any) {
+      console.error('Link account error:', err);
+      const message = err?.message || err?.error_description || 'Could not link account.';
       setError(message);
     } finally {
       setIsLoading(false);

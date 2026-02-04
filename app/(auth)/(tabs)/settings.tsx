@@ -242,7 +242,8 @@ export default function SettingsScreen() {
         onClose={() => setShowLinkModal(false)}
         onSuccess={(email) => {
           setShowLinkModal(false);
-          showToast('Check your email to confirm: ' + email);
+          setLinkedEmail(email);
+          showToast('Account linked successfully!');
         }}
       />
     </ScrollView>
