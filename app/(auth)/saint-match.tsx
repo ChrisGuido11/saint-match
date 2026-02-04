@@ -8,11 +8,14 @@ import { Typography, FontFamily } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { SaintCard } from '../../components/SaintCard';
 import { useApp } from '../../context/AppContext';
-import { SaintMatch as SaintMatchType } from '../../types';
+import { SaintMatch as SaintMatchType, Mood } from '../../types';
+import { getMoodById } from '../../constants/saints';
 
 export default function SaintMatchScreen() {
-  const { matchData } = useLocalSearchParams<{ matchData: string }>();
+  const { matchData, selectedMood } = useLocalSearchParams<{ matchData: string; selectedMood: Mood }>();
   const { acceptChallenge } = useApp();
+  
+  const selectedMoodData = selectedMood ? getMoodById(selectedMood) : null;
 
   const match: SaintMatchType = matchData ? JSON.parse(matchData) : null;
 
@@ -51,6 +54,12 @@ export default function SaintMatchScreen() {
           <Animated.Text entering={FadeInDown.delay(200).duration(400)} style={styles.matchLabel}>
             YOUR SAINT MATCH
           </Animated.Text>
+          {selectedMoodData && (
+            <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.moodBadge}>
+              <Text style={styles.moodEmoji}>{selectedMoodData.emoji}</Text>
+              <Text style={styles.moodLabel}>{selectedMoodData.label}</Text>
+            </Animated.View>
+          )}
         </Animated.View>
 
         {/* Saint Card */}
@@ -61,7 +70,7 @@ export default function SaintMatchScreen() {
           entering={FadeInDown.delay(600).duration(400)}
           style={styles.encouragement}
         >
-          This saint walked your path before you.{'\n'}Their wisdom is your strength today.
+          {getEncouragementText(selectedMoodData?.category)}
         </Animated.Text>
       </ScrollView>
 
@@ -77,6 +86,13 @@ export default function SaintMatchScreen() {
       </Animated.View>
     </View>
   );
+}
+
+function getEncouragementText(category?: 'support' | 'growth'): string {
+  if (category === 'growth') {
+    return "Your heart is open to grace today.\nThis saint will help you share your light with the world.";
+  }
+  return "This saint walked your path before you.\nTheir wisdom is your strength today.";
 }
 
 const styles = StyleSheet.create({
@@ -115,6 +131,24 @@ const styles = StyleSheet.create({
     color: Colors.terracotta,
     letterSpacing: 2,
     marginTop: Spacing.xs,
+  },
+  moodBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.sageMuted,
+    borderRadius: BorderRadius.round,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    marginTop: Spacing.sm,
+    gap: Spacing.xs,
+  },
+  moodEmoji: {
+    fontSize: 16,
+  },
+  moodLabel: {
+    ...Typography.caption,
+    color: Colors.sageDark,
+    fontFamily: FontFamily.sansMedium,
   },
   encouragement: {
     ...Typography.body,

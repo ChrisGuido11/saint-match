@@ -1,16 +1,22 @@
-export type Emotion =
-  | 'anxious'
-  | 'overwhelmed'
-  | 'scattered'
-  | 'impatient'
-  | 'frustrated'
-  | 'peaceful';
+export type Mood =
+  | 'seeking-peace'
+  | 'need-focus'
+  | 'want-to-grow'
+  | 'feeling-grateful'
+  | 'full-of-joy'
+  | 'ready-to-serve';
 
-export interface EmotionOption {
-  id: Emotion;
+// Legacy type for backward compatibility with data
+export type Emotion = 'anxious' | 'overwhelmed' | 'scattered' | 'grateful' | 'joyful' | 'peaceful';
+
+export interface MoodOption {
+  id: Mood;
   label: string;
+  subtitle: string;
   emoji: string;
   color: string;
+  category: 'support' | 'growth';
+  legacyEmotion: Emotion; // Maps to existing emotion for saint matching
 }
 
 export interface Saint {
@@ -82,4 +88,25 @@ export interface ActiveChallenge {
   match: SaintMatch;
   acceptedAt: string;
   completed: boolean;
+}
+
+// Achievement/Milestone types for enhanced gamification
+export type MilestoneType = 
+  | 'first-challenge'
+  | 'streak-3'
+  | 'streak-7'
+  | 'streak-14'
+  | 'streak-30'
+  | 'streak-50'
+  | 'streak-100'
+  | 'virtue-seeker'
+  | 'saint-friend'
+  | 'consistent-soul';
+
+export interface Milestone {
+  id: MilestoneType;
+  title: string;
+  description: string;
+  emoji: string;
+  color: string;
 }

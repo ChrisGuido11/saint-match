@@ -6,12 +6,14 @@ import { Colors } from '../../../constants/colors';
 import { Typography, FontFamily } from '../../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
-import { EmotionSelector } from '../../../components/EmotionSelector';
-import { StreakCounter } from '../../../components/StreakCounter';
+import { getGreetingMessage } from '../../../constants/saints';
+import { MoodSelector } from '../../../components/MoodSelector';
+import { StreakCounter, StreakDisplay } from '../../../components/StreakCounter';
 import { ChallengeCard } from '../../../components/ChallengeCard';
 import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
-import { Emotion } from '../../../types';
+import { Mood } from '../../../types';
 import { getSaintMatch } from '../../../lib/claude';
+import { getEmotionFromMood } from '../../../constants/saints';
 
 export default function HomeScreen() {
   const {
@@ -36,7 +38,10 @@ export default function HomeScreen() {
     setRefreshing(false);
   }, [refreshAll]);
 
-  const handleEmotionSelect = async (emotion: Emotion) => {
+  const handleMoodSelect = async (mood: Mood) => {
+    // Convert mood to legacy emotion for saint matching
+    const emotion = getEmotionFromMood(mood);
+    
     // Client-side pre-check (server is authoritative via Edge Function)
     const canMatch = await consumeMatch();
     if (!canMatch) {
@@ -51,6 +56,7 @@ export default function HomeScreen() {
         pathname: '/(auth)/saint-match',
         params: {
           matchData: JSON.stringify(match),
+          selectedMood: mood,
         },
       });
     } catch (error) {
@@ -90,15 +96,18 @@ export default function HomeScreen() {
             {getGreeting()}
           </Text>
           <Text style={styles.date}>
-            {new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric',
-            })}
+            {getGreetingMessage(streak.currentStreak)}
           </Text>
         </View>
         <StreakCounter count={streak.currentStreak} />
       </Animated.View>
+
+      {/* Streak Display */}
+      {streak.currentStreak > 0 && (
+        <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.streakSection}>
+          <StreakDisplay count={streak.currentStreak} />
+        </Animated.View>
+      )}
 
       {/* Active challenge or emotion selector */}
       {activeChallenge && !activeChallenge.completed ? (
@@ -109,10 +118,10 @@ export default function HomeScreen() {
       ) : activeChallenge?.completed ? (
         <Animated.View entering={FadeInDown.delay(200).duration(500)} style={styles.completedSection}>
           <View style={styles.completedCard}>
-            <Text style={styles.completedEmoji}>{'\u{2705}'}</Text>
-            <Text style={styles.completedTitle}>Challenge completed!</Text>
+            <Text style={styles.completedEmoji}>{'\u{1F38A}'}</Text>
+            <Text style={styles.completedTitle}>All done for today!</Text>
             <Text style={styles.completedSubtitle}>
-              Amazing work. Come back tomorrow for your next saint match.
+              You showed up for yourself today. Rest well and return tomorrow! 🌙
             </Text>
           </View>
         </Animated.View>
@@ -124,7 +133,7 @@ export default function HomeScreen() {
               <Text style={styles.matchingText}>Finding your saint...</Text>
             </View>
           ) : (
-            <EmotionSelector onSelect={handleEmotionSelect} />
+            <MoodSelector onSelect={handleMoodSelect} />
           )}
         </Animated.View>
       )}
@@ -193,7 +202,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.md,
+  },
+  streakSection: {
+    marginBottom: Spacing.lg,
   },
   greeting: {
     ...Typography.h1,
