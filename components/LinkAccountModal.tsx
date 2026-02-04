@@ -13,7 +13,7 @@ import {
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
-import { linkEmailToAccount } from '../lib/supabase';
+import { linkEmailToAccount, ensureAnonymousSession, supabase } from '../lib/supabase';
 
 interface LinkAccountModalProps {
   visible: boolean;
@@ -42,6 +42,13 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
     setError(null);
 
     try {
+      // First ensure we have an anonymous session to upgrade
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        // Try to create an anonymous session first
+        await ensureAnonymousSession();
+      }
+      
       await linkEmailToAccount(email.trim(), password);
       onSuccess(email.trim());
       setEmail('');
