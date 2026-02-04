@@ -14,6 +14,34 @@ import { format, startOfWeek, addDays } from 'date-fns';
 
 const MIGRATION_KEY = '@saint_match_supabase_migrated';
 
+// ── Helper: Ensure profile exists ──────────────────────────────────────
+
+async function ensureProfileExists(userId: string, email: string | undefined): Promise<void> {
+  try {
+    // Try to fetch the profile first
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .single();
+
+    if (!existingProfile) {
+      // Profile doesn't exist, create it
+      await supabase.from('profiles').insert({
+        id: userId,
+        email: email || null,
+      });
+
+      // Also create the streak record
+      await supabase.from('streaks').insert({
+        user_id: userId,
+      });
+    }
+  } catch (err) {
+    console.error('ensureProfileExists error:', err);
+  }
+}
+
 // ── Sync result type ───────────────────────────────────────────────────
 
 export interface SyncedData {
@@ -51,36 +79,68 @@ export async function syncCompletionToServer(completion: Completion): Promise<vo
   if (!isSupabaseConfigured()) return;
 
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return;
+  if (!session) {
+    console.warn('syncCompletionToServer: No session available');
+    return;
+  }
 
-  await supabase.from('completions').upsert(
-    {
-      user_id: session.user.id,
-      saint_id: completion.saintId,
-      micro_action_id: completion.microActionId,
-      emotion_selected: completion.emotionSelected,
-      saint_name: completion.saintName,
-      action_text: completion.actionText,
-      date_completed: completion.dateCompleted,
-      completed_at: completion.completedAt,
-    },
-    { onConflict: 'user_id,date_completed' }
-  );
+  try {
+    // Ensure profile exists first
+    await ensureProfileExists(session.user.id, session.user.email);
+    
+    const result = await supabase.from('completions').upsert(
+      {
+        user_id: session.user.id,
+        saint_id: completion.saintId,
+        micro_action_id: completion.microActionId,
+        emotion_selected: completion.emotionSelected,
+        saint_name: completion.saintName,
+        action_text: completion.actionText,
+        date_completed: completion.dateCompleted,
+        completed_at: completion.completedAt,
+      },
+      { onConflict: 'user_id,date_completed' }
+    );
+    
+    if (result.error) {
+      console.error('syncCompletionToServer error:', result.error);
+    } else {
+      console.log('syncCompletionToServer success');
+    }
+  } catch (err) {
+    console.error('syncCompletionToServer exception:', err);
+  }
 }
 
 export async function syncStreakToServer(streak: StreakData): Promise<void> {
   if (!isSupabaseConfigured()) return;
 
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return;
+  if (!session) {
+    console.warn('syncStreakToServer: No session available');
+    return;
+  }
 
-  await supabase.from('streaks').upsert({
-    user_id: session.user.id,
-    current_streak: streak.currentStreak,
-    longest_streak: streak.longestStreak,
-    last_completion_date: streak.lastCompletionDate,
-    streak_freezes_used_this_week: streak.streakFreezesUsedThisWeek,
-  });
+  try {
+    // Ensure profile exists first
+    await ensureProfileExists(session.user.id, session.user.email);
+    
+    const result = await supabase.from('streaks').upsert({
+      user_id: session.user.id,
+      current_streak: streak.currentStreak,
+      longest_streak: streak.longestStreak,
+      last_completion_date: streak.lastCompletionDate,
+      streak_freezes_used_this_week: streak.streakFreezesUsedThisWeek,
+    });
+
+    if (result.error) {
+      console.error('syncStreakToServer error:', result.error);
+    } else {
+      console.log('syncStreakToServer success');
+    }
+  } catch (err) {
+    console.error('syncStreakToServer exception:', err);
+  }
 }
 
 export async function syncActiveChallengeToServer(
