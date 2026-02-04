@@ -21,3 +21,24 @@ export const isSupabaseConfigured = (): boolean => {
     supabaseAnonKey !== 'placeholder-key'
   );
 };
+
+// Auth helpers
+
+export async function ensureAnonymousSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) return session;
+
+  const { data, error } = await supabase.auth.signInAnonymously();
+  if (error) throw error;
+  return data.session;
+}
+
+export async function linkEmailToAccount(email: string, password: string) {
+  const { data, error } = await supabase.auth.updateUser({ email, password });
+  if (error) throw error;
+  return data;
+}
+
+export async function signOut() {
+  return supabase.auth.signOut();
+}

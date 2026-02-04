@@ -1,48 +1,47 @@
 import { Emotion, SaintMatch } from '../types';
 import { SAINTS, getMicroActionsForEmotion } from '../constants/saints';
+import { supabase, isSupabaseConfigured } from './supabase';
 
-const ANTHROPIC_API_KEY = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY;
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
-interface ClaudeResponse {
-  saintName: string;
-  feastDay: string;
+interface EdgeFunctionResponse {
+  saint_name: string;
+  feast_day: string;
   bio: string;
-  microAction: string;
-  estimatedMinutes: number;
+  micro_action: string;
+  estimated_minutes: number;
+  source: 'claude' | 'cache' | 'local';
 }
 
-// Use Claude API for saint matching when configured
-async function fetchFromClaude(emotion: Emotion): Promise<ClaudeResponse | null> {
-  if (!ANTHROPIC_API_KEY) return null;
+// Call the Supabase Edge Function (handles cache, Claude API, and usage server-side)
+async function fetchFromEdgeFunction(emotion: Emotion): Promise<EdgeFunctionResponse | null> {
+  if (!isSupabaseConfigured() || !SUPABASE_URL) return null;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return null;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/saint-match`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!,
       },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        messages: [
-          {
-            role: 'user',
-            content: `You are a Catholic spiritual director. The user is feeling ${emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "microAction": "", "estimatedMinutes": 10}`,
-          },
-        ],
-      }),
+      body: JSON.stringify({ emotion }),
     });
+
+    if (response.status === 429) {
+      throw new Error('USAGE_LIMIT_REACHED');
+    }
 
     if (!response.ok) return null;
 
-    const data = await response.json();
-    const text = data.content?.[0]?.text;
-    if (!text) return null;
-
-    return JSON.parse(text);
-  } catch {
+    return await response.json();
+  } catch (error) {
+    if (error instanceof Error && error.message === 'USAGE_LIMIT_REACHED') {
+      throw error; // Re-throw so UI can show paywall
+    }
     return null;
   }
 }
@@ -62,30 +61,30 @@ function matchLocally(emotion: Emotion): SaintMatch {
 }
 
 export async function getSaintMatch(emotion: Emotion): Promise<SaintMatch> {
-  // Try Claude API first
-  const claudeResult = await fetchFromClaude(emotion);
+  // Try Edge Function first (handles cache + Claude + usage)
+  const result = await fetchFromEdgeFunction(emotion);
 
-  if (claudeResult) {
-    // Map Claude response to our types
+  if (result) {
+    // Map response to our types using local SAINTS array
     const saint = SAINTS.find(
-      (s) => s.name.toLowerCase() === claudeResult.saintName.toLowerCase()
+      (s) => s.name.toLowerCase() === result.saint_name.toLowerCase()
     );
 
     if (saint) {
       return {
         saint,
         microAction: {
-          id: `claude-${Date.now()}`,
+          id: `match-${Date.now()}`,
           saintId: saint.id,
           emotion,
-          actionText: claudeResult.microAction,
-          estimatedMinutes: claudeResult.estimatedMinutes,
+          actionText: result.micro_action,
+          estimatedMinutes: result.estimated_minutes,
         },
         matchedAt: new Date().toISOString(),
       };
     }
   }
 
-  // Fallback to local matching
+  // Fallback to local matching (offline or unknown saint name)
   return matchLocally(emotion);
 }

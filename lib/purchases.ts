@@ -54,8 +54,33 @@ export async function restorePurchases(): Promise<boolean> {
 }
 
 export async function checkProStatus(): Promise<boolean> {
+  // Check local first (offline support)
   const status = await AsyncStorage.getItem(PRO_STATUS_KEY);
-  return status === 'true';
+  if (status === 'true') return true;
+
+  // Check server if online
+  try {
+    const { supabase, isSupabaseConfigured } = require('./supabase');
+    if (!isSupabaseConfigured()) return false;
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return false;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_pro')
+      .eq('id', session.user.id)
+      .single();
+
+    if (profile?.is_pro) {
+      await AsyncStorage.setItem(PRO_STATUS_KEY, 'true');
+      return true;
+    }
+  } catch {
+    // Offline — use local status
+  }
+
+  return false;
 }
 
 export async function resetProStatus(): Promise<void> {

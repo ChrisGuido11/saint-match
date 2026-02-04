@@ -19,6 +19,8 @@ import { useApp } from '../../../context/AppContext';
 import { clearAllData, exportAllData } from '../../../lib/storage';
 import { resetAllData } from '../../../lib/streak';
 import { resetProStatus, checkProStatus } from '../../../lib/purchases';
+import { signOut, isSupabaseConfigured } from '../../../lib/supabase';
+import { LinkAccountModal } from '../../../components/LinkAccountModal';
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 
@@ -57,8 +59,10 @@ function SettingRow({ label, subtitle, onPress, destructive, rightText }: Settin
 }
 
 export default function SettingsScreen() {
-  const { isPro, setIsPro, refreshAll } = useApp();
+  const { isPro, setIsPro, refreshAll, session } = useApp();
   const [isExporting, setIsExporting] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const userEmail = session?.user?.email;
 
   const handlePrivacyPolicy = () => {
     showToast('Link not configured');
@@ -100,6 +104,9 @@ export default function SettingsScreen() {
             await clearAllData();
             await resetAllData();
             await resetProStatus();
+            if (isSupabaseConfigured()) {
+              await signOut().catch(() => {});
+            }
             router.replace('/(public)/welcome');
           },
         },
@@ -159,6 +166,23 @@ export default function SettingsScreen() {
             subtitle="Daily reminder at 8:30 AM"
             onPress={handleNotifications}
           />
+          {isSupabaseConfigured() && (
+            <>
+              <View style={styles.divider} />
+              <SettingRow
+                label="Link Account"
+                subtitle={userEmail ? userEmail : 'Add email for cross-device sync'}
+                onPress={() => {
+                  if (userEmail) {
+                    showToast('Account linked to ' + userEmail);
+                  } else {
+                    setShowLinkModal(true);
+                  }
+                }}
+                rightText={userEmail ? 'Linked' : 'Add Email'}
+              />
+            </>
+          )}
         </View>
       </Animated.View>
 
@@ -212,6 +236,15 @@ export default function SettingsScreen() {
         <Text style={styles.appVersion}>Version 1.0.0</Text>
         <Text style={styles.appTagline}>Daily virtue challenges from the saints</Text>
       </Animated.View>
+
+      <LinkAccountModal
+        visible={showLinkModal}
+        onClose={() => setShowLinkModal(false)}
+        onSuccess={(email) => {
+          setShowLinkModal(false);
+          showToast('Check your email to confirm: ' + email);
+        }}
+      />
     </ScrollView>
   );
 }

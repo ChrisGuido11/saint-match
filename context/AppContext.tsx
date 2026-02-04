@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { StreakData, UsageData, ActiveChallenge, Completion } from '../types';
 import { getStreakData, incrementStreak as incrementStreakData } from '../lib/streak';
 import {
@@ -15,6 +15,15 @@ import {
 import { checkProStatus } from '../lib/purchases';
 import { addCompletionDate } from '../lib/streak';
 import { format } from 'date-fns';
+import { supabase, isSupabaseConfigured, ensureAnonymousSession } from '../lib/supabase';
+import {
+  syncAllData,
+  syncCompletionToServer,
+  syncStreakToServer,
+  syncActiveChallengeToServer,
+  syncOnboardingToServer,
+} from '../lib/sync';
+import type { Session } from '@supabase/supabase-js';
 
 interface AppContextType {
   // State
@@ -25,6 +34,7 @@ interface AppContextType {
   isPro: boolean;
   isOnboarded: boolean;
   isLoading: boolean;
+  session: Session | null;
 
   // Actions
   refreshStreak: () => Promise<void>;
@@ -56,6 +66,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isPro, setIsPro] = useState(false);
   const [isOnboarded, setIsOnboarded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(null);
+  const authListenerRef = useRef<{ subscription: { unsubscribe: () => void } } | null>(null);
 
   const refreshStreak = useCallback(async () => {
     const data = await getStreakData();
@@ -68,6 +80,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refreshAll = useCallback(async () => {
+    // Fast path: load from AsyncStorage
     const [streakData, usageData, challenge, comps, proStatus, onboarded] = await Promise.all([
       getStreakData(),
       getUsageData(),
@@ -82,15 +95,61 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCompletions(comps);
     setIsPro(proStatus);
     setIsOnboarded(onboarded);
+
+    // Slow path: background sync with Supabase
+    if (isSupabaseConfigured()) {
+      syncAllData()
+        .then((serverData) => {
+          if (serverData) {
+            if (serverData.usage) setUsage(serverData.usage);
+            if (serverData.streak) setStreak(serverData.streak);
+            if (serverData.completions && serverData.completions.length > 0) {
+              setCompletions(serverData.completions);
+            }
+          }
+        })
+        .catch(() => {
+          // Offline or sync error — local data is already loaded
+        });
+    }
   }, []);
 
   useEffect(() => {
-    refreshAll().finally(() => setIsLoading(false));
+    async function init() {
+      // Initialize anonymous auth if Supabase is configured
+      if (isSupabaseConfigured()) {
+        try {
+          const sess = await ensureAnonymousSession();
+          setSession(sess);
+        } catch {
+          // Auth failed — app still works offline with AsyncStorage
+        }
+      }
+
+      await refreshAll();
+      setIsLoading(false);
+    }
+    init();
+
+    // Listen for auth state changes (token refresh, sign-out, email link)
+    if (isSupabaseConfigured()) {
+      const { data } = supabase.auth.onAuthStateChange((_event, sess) => {
+        setSession(sess);
+      });
+      authListenerRef.current = data;
+    }
+
+    return () => {
+      authListenerRef.current?.subscription.unsubscribe();
+    };
   }, [refreshAll]);
 
   const acceptChallenge = useCallback(async (challenge: ActiveChallenge) => {
     await storeChallenge(challenge);
     setActiveChallenge(challenge);
+
+    // Background sync to Supabase
+    syncActiveChallengeToServer(challenge).catch(() => {});
   }, []);
 
   const completeChallenge = useCallback(async () => {
@@ -115,13 +174,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const updated: ActiveChallenge = { ...activeChallenge, completed: true };
       await storeChallenge(updated);
       setActiveChallenge(updated);
+
+      // Background sync to Supabase
+      syncCompletionToServer(completion).catch(() => {});
+      syncActiveChallengeToServer(updated).catch(() => {});
     }
 
     setStreak(updatedStreak);
+
+    // Background sync streak to Supabase
+    syncStreakToServer(updatedStreak).catch(() => {});
+
     return updatedStreak;
   }, [activeChallenge]);
 
   const consumeMatch = useCallback(async () => {
+    // Client-side pre-check (server is authoritative via Edge Function)
     if (isPro) return true;
     const data = await getUsageData();
     if (data.matchesUsedThisWeek >= data.weeklyLimit) return false;
@@ -133,6 +201,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const handleSetOnboardingComplete = useCallback(async () => {
     await storeOnboardingComplete();
     setIsOnboarded(true);
+
+    // Background sync to Supabase
+    syncOnboardingToServer().catch(() => {});
   }, []);
 
   return (
@@ -145,6 +216,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isPro,
         isOnboarded,
         isLoading,
+        session,
         refreshStreak,
         refreshUsage,
         acceptChallenge,

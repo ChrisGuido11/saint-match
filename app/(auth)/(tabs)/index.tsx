@@ -37,7 +37,7 @@ export default function HomeScreen() {
   }, [refreshAll]);
 
   const handleEmotionSelect = async (emotion: Emotion) => {
-    // Check usage
+    // Client-side pre-check (server is authoritative via Edge Function)
     const canMatch = await consumeMatch();
     if (!canMatch) {
       setShowPaywall(true);
@@ -47,13 +47,18 @@ export default function HomeScreen() {
     setIsMatching(true);
     try {
       const match = await getSaintMatch(emotion);
-      // Navigate to saint match screen with data
       router.push({
         pathname: '/(auth)/saint-match',
         params: {
           matchData: JSON.stringify(match),
         },
       });
+    } catch (error) {
+      if (error instanceof Error && error.message === 'USAGE_LIMIT_REACHED') {
+        setShowPaywall(true);
+        refreshAll();
+      }
+      // Other errors: getSaintMatch already falls back to local
     } finally {
       setIsMatching(false);
     }

@@ -13,11 +13,25 @@ npm run web        # Run in web browser
 
 Production builds use EAS CLI: `eas build --platform android|ios`
 
+Edge Function deployment: `supabase functions deploy saint-match`
+
 No test suite is configured yet.
 
 ## Architecture
 
 Saint Match is a React Native app built with **Expo 54 + Expo Router + TypeScript**. It helps Catholics practice daily virtue through personalized challenges inspired by Catholic saints — "Duolingo for becoming a better person."
+
+### System Architecture
+
+```
+Client → Supabase Auth (anonymous-first)
+Client → Supabase Edge Function (saint-match) → Claude API (key server-side)
+Client → AsyncStorage (offline cache) ↔ Supabase DB (cloud source of truth)
+```
+
+- **Auth:** Anonymous sign-in on first open via Supabase Auth. Users can optionally link an email in Settings for cross-device sync.
+- **AI:** Claude API (Sonnet 4) calls go through a Supabase Edge Function that handles caching, usage limits, and local fallback — the API key never touches the client.
+- **Offline-first:** AsyncStorage is read first for instant UI, then Supabase syncs in the background. App works fully offline.
 
 ### Routing (File-based via Expo Router)
 
@@ -36,31 +50,63 @@ app/
         ├── index.tsx        # Home (main UX: emotion select → match)
         ├── calendar.tsx     # Streak calendar view
         ├── portfolio.tsx    # Virtue portfolio + completions log
-        └── settings.tsx     # Settings & account
+        └── settings.tsx     # Settings, account linking
 ```
 
-Auth routing is onboarding-based (no user accounts) — `isOnboarded` in AppContext controls public vs auth flow.
+Auth routing is onboarding-based — `isOnboarded` in AppContext controls public vs auth flow. Anonymous Supabase auth happens transparently during init.
 
 ### State Management
 
-Single React Context (`context/AppContext.tsx`) exposed via `useApp()` hook. All state persists to AsyncStorage (offline-first, no backend). Key state: streak data, active challenge, completions log, usage limits, pro status.
+Single React Context (`context/AppContext.tsx`) exposed via `useApp()` hook. Key state: streak data, active challenge, completions log, usage limits, pro status, Supabase session.
+
+Initialization flow in `AppProvider`:
+1. `ensureAnonymousSession()` — creates or restores Supabase auth
+2. `refreshAll()` — loads all data from AsyncStorage (fast)
+3. `syncAllData()` — background sync with Supabase (slow, non-blocking)
 
 ### Core User Flow
 
 1. User selects one of 6 emotions on Home screen
-2. `lib/claude.ts` calls Claude API (Sonnet 4) for a personalized saint match, falls back to local saint database (`constants/saints.ts`) if API key missing or request fails
-3. Saint match screen shows saint + 5-15 minute micro-action
-4. User accepts challenge → stored as `activeChallenge`
-5. Home screen shows ChallengeCard until completed
-6. Completion updates streak, logs to completions, shows celebration
+2. `lib/claude.ts` calls Edge Function → checks cache → calls Claude API → falls back to local saints data
+3. Edge Function enforces usage limits server-side (3/week free, unlimited pro)
+4. Saint match screen shows saint + 5-15 minute micro-action
+5. User accepts challenge → stored locally + synced to Supabase
+6. Completion updates streak, logs to completions, shows celebration, syncs to server
 
 ### Key Modules
 
-- **`lib/storage.ts`** — AsyncStorage CRUD for all persisted data. Keys prefixed `@saint_match_*`. Usage data auto-resets weekly on Monday. Active challenges auto-clear if from a previous day.
-- **`lib/streak.ts`** — Streak calculation with auto-reset if >1 day gap. Supports 1 free streak freeze per week.
-- **`lib/claude.ts`** — Anthropic API integration. Requires `EXPO_PUBLIC_ANTHROPIC_API_KEY` env var. Falls back to local matching from curated saints data.
+- **`lib/supabase.ts`** — Supabase client (AsyncStorage session persistence) + auth helpers: `ensureAnonymousSession()`, `linkEmailToAccount()`, `signOut()`.
+- **`lib/claude.ts`** — Calls the `saint-match` Edge Function with JWT. Falls back to local matching if offline. Throws `USAGE_LIMIT_REACHED` on 429.
+- **`lib/sync.ts`** — Bridge between AsyncStorage and Supabase. Push functions for completions, streaks, challenges. Pull for server-authoritative usage data. One-time migration of existing local data.
+- **`lib/storage.ts`** — AsyncStorage CRUD (local offline layer). Keys prefixed `@saint_match_*`. Usage auto-resets weekly. Challenges auto-clear if from previous day.
+- **`lib/streak.ts`** — Streak calculation with auto-reset if >1 day gap. 1 free streak freeze per week.
 - **`lib/notifications.ts`** — Daily reminders (8:30 AM) and streak alerts (8:00 PM) via expo-notifications.
-- **`lib/purchases.ts`** — Mock RevenueCat implementation (not yet integrated). Free tier: 3 matches/week. Pro: unlimited + analytics + data export.
+- **`lib/purchases.ts`** — Mock RevenueCat. Checks `profiles.is_pro` from Supabase when online. Free tier: 3 matches/week.
+
+### Supabase Backend
+
+**Edge Function** (`supabase/functions/saint-match/`): Single endpoint that validates JWT, checks usage, queries match cache (6hr TTL), calls Claude API, stores cached responses, falls back to embedded local saints data.
+
+**Database tables** (schema in `supabase/migrations/001_initial_schema.sql`):
+- `profiles` — auto-created on signup, stores `is_pro`, `is_onboarded`, `email`
+- `usage` — weekly match count per user (server-side limit enforcement)
+- `match_cache` — cached Claude responses with TTL (writable only by service_role)
+- `completions` — challenge completion log (unique per user+date)
+- `streaks` — one row per user with current/longest streak
+- `active_challenges` — today's challenge as JSONB
+- `patience_scores` — weekly self-assessment ratings
+
+RLS enabled on all tables. `handle_new_user()` trigger auto-creates profile + streak rows.
+
+### Environment Variables
+
+Client-side (`.env`):
+- `EXPO_PUBLIC_SUPABASE_URL` — Supabase project URL
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY` — Supabase anon/public key
+
+Server-side (Edge Function secrets):
+- `ANTHROPIC_API_KEY` — Claude API key (set via `supabase secrets set`)
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` — auto-provided by Supabase runtime
 
 ### Design System
 
@@ -80,3 +126,4 @@ All domain types in `types/index.ts`: `Saint`, `Emotion` (6 values), `MicroActio
 - react-native-reanimated for entrance animations (`FadeIn`, `FadeInDown`) and spring-based press interactions
 - expo-haptics for tactile feedback on key actions
 - `@/` path alias maps to project root (configured in tsconfig.json)
+- Background sync: write to AsyncStorage first (instant UI), then fire-and-forget `.catch(() => {})` sync to Supabase
