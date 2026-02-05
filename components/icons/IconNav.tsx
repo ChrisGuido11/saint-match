@@ -19,7 +19,6 @@ export function IconNavHome({ size = 24, color = Colors.sage, filled = false }: 
         strokeLinecap="round"
         strokeLinejoin="round"
         fill={filled ? color : 'none'}
-        opacity={filled ? 0.2 : 1}
       />
       <Path
         d="M9 21V12H15V21"
@@ -27,6 +26,7 @@ export function IconNavHome({ size = 24, color = Colors.sage, filled = false }: 
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        fill={filled ? color : 'none'}
       />
     </Svg>
   );
@@ -45,7 +45,6 @@ export function IconNavCalendar({ size = 24, color = Colors.sage, filled = false
         stroke={color}
         strokeWidth="1.5"
         fill={filled ? color : 'none'}
-        opacity={filled ? 0.2 : 1}
       />
       <Path
         d="M16 3V7M8 3V7M3 11H21"
@@ -53,9 +52,9 @@ export function IconNavCalendar({ size = 24, color = Colors.sage, filled = false
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-      <Circle cx="8" cy="15" r="1" fill={color} />
-      <Circle cx="12" cy="15" r="1" fill={color} />
-      <Circle cx="16" cy="15" r="1" fill={color} />
+      <Circle cx="8" cy="15" r="1" fill={filled ? 'white' : color} />
+      <Circle cx="12" cy="15" r="1" fill={filled ? 'white' : color} />
+      <Circle cx="16" cy="15" r="1" fill={filled ? 'white' : color} />
     </Svg>
   );
 }
@@ -98,7 +97,6 @@ export function IconNavSettings({ size = 24, color = Colors.sage, filled = false
         stroke={color}
         strokeWidth="1.5"
         fill={filled ? color : 'none'}
-        opacity={filled ? 0.3 : 1}
       />
       <Path
         d="M12 3V5M12 19V21M3 12H5M19 12H21"
