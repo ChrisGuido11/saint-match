@@ -18,6 +18,13 @@ import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
 import { getCompletionDates } from '../../../lib/streak';
 import { TouchableOpacity } from 'react-native';
+import {
+  IconFire,
+  IconTrophy,
+  IconCheckCircle,
+  IconChevronLeft,
+  IconChevronRight,
+} from '../../../components/icons';
 
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -55,19 +62,19 @@ export default function CalendarScreen() {
       {/* Stats row */}
       <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.statsRow}>
         <View style={styles.statCard}>
-          <Text style={styles.statEmoji}>{'\u{1F525}'}</Text>
+          <IconFire size={28} color={Colors.terracotta} />
           <Text style={styles.statNumber}>{streak.currentStreak}</Text>
           <Text style={styles.statLabel}>Current</Text>
         </View>
         <View style={[styles.statCard, styles.statCardHighlight]}>
-          <Text style={styles.statEmoji}>{'\u{1F3C6}'}</Text>
+          <IconTrophy size={28} color={Colors.terracotta} />
           <Text style={[styles.statNumber, styles.statNumberHighlight]}>
             {streak.longestStreak}
           </Text>
           <Text style={styles.statLabel}>Longest</Text>
         </View>
         <View style={styles.statCard}>
-          <Text style={styles.statEmoji}>{'\u{2705}'}</Text>
+          <IconCheckCircle size={28} color={Colors.sage} />
           <Text style={styles.statNumber}>{completionDates.length}</Text>
           <Text style={styles.statLabel}>Total</Text>
         </View>
@@ -81,7 +88,7 @@ export default function CalendarScreen() {
             onPress={() => setCurrentMonth(subMonths(currentMonth, 1))}
             style={styles.monthNavButton}
           >
-            <Text style={styles.monthNavText}>{'\u{2039}'}</Text>
+            <IconChevronLeft size={20} color={Colors.charcoalLight} />
           </TouchableOpacity>
           <Text style={styles.monthTitle}>
             {format(currentMonth, 'MMMM yyyy')}
@@ -90,7 +97,7 @@ export default function CalendarScreen() {
             onPress={() => setCurrentMonth(addMonths(currentMonth, 1))}
             style={styles.monthNavButton}
           >
-            <Text style={styles.monthNavText}>{'\u{203A}'}</Text>
+            <IconChevronRight size={20} color={Colors.charcoalLight} />
           </TouchableOpacity>
         </View>
 
@@ -197,21 +204,15 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
     ...Shadows.subtle,
   },
   statCardHighlight: {
-    borderColor: Colors.terracotta,
     backgroundColor: Colors.terracottaMuted,
-  },
-  statEmoji: {
-    fontSize: 24,
-    marginBottom: Spacing.xxs,
   },
   statNumber: {
     ...Typography.statNumber,
     color: Colors.charcoal,
+    marginTop: Spacing.xs,
   },
   statNumberHighlight: {
     color: Colors.terracotta,
@@ -225,8 +226,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
     ...Shadows.card,
   },
   monthNav: {
@@ -243,11 +242,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.creamWarm,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  monthNavText: {
-    fontSize: 22,
-    color: Colors.charcoalLight,
-    fontWeight: '600',
   },
   monthTitle: {
     ...Typography.h3,

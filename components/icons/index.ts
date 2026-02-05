@@ -15,3 +15,17 @@ export { IconCompleted } from './IconCompleted';
 export { IconMatching } from './IconMatching';
 export { IconMilestone } from './IconMilestone';
 export { IconPatienceScore } from './IconPatienceScore';
+export { 
+  IconNavHome,
+  IconNavCalendar,
+  IconNavPortfolio,
+  IconNavSettings,
+  IconFire,
+  IconTrophy,
+  IconCheckCircle,
+  IconChart,
+  IconLock,
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevron,
+} from './IconNav';

@@ -1,22 +1,36 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Colors } from '../../../constants/colors';
 import { FontFamily } from '../../../constants/typography';
+import {
+  IconNavHome,
+  IconNavCalendar,
+  IconNavPortfolio,
+  IconNavSettings,
+} from '../../../components/icons';
 
-function TabIcon({ name, focused }: { name: string; focused: boolean }) {
-  const icons: Record<string, string> = {
-    Home: '\u{1F3E0}',
-    Calendar: '\u{1F4C5}',
-    Portfolio: '\u{1F4CA}',
-    Settings: '\u{2699}\u{FE0F}',
+type TabName = 'Home' | 'Calendar' | 'Portfolio' | 'Settings';
+
+function TabIcon({ name, focused }: { name: TabName; focused: boolean }) {
+  const color = focused ? Colors.terracotta : Colors.charcoalMuted;
+  
+  const renderIcon = () => {
+    switch (name) {
+      case 'Home':
+        return <IconNavHome size={22} color={color} filled={focused} />;
+      case 'Calendar':
+        return <IconNavCalendar size={22} color={color} filled={focused} />;
+      case 'Portfolio':
+        return <IconNavPortfolio size={22} color={color} filled={focused} />;
+      case 'Settings':
+        return <IconNavSettings size={22} color={color} filled={focused} />;
+    }
   };
 
   return (
     <View style={styles.tabIconContainer}>
-      <Text style={[styles.tabIcon, focused && styles.tabIconFocused]}>
-        {icons[name] ?? '\u{25CF}'}
-      </Text>
+      {renderIcon()}
       {focused && <View style={styles.tabDot} />}
     </View>
   );
@@ -29,7 +43,7 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: Colors.terracotta,
-        tabBarInactiveTintColor: Colors.charcoalSubtle,
+        tabBarInactiveTintColor: Colors.charcoalMuted,
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarItemStyle: styles.tabBarItem,
       }}
@@ -90,13 +104,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 36,
     height: 28,
-  },
-  tabIcon: {
-    fontSize: 22,
-    opacity: 0.5,
-  },
-  tabIconFocused: {
-    opacity: 1,
   },
   tabDot: {
     width: 4,

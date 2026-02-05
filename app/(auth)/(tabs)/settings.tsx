@@ -23,6 +23,7 @@ import { signOut, isSupabaseConfigured, deleteUserAccount } from '../../../lib/s
 import { LinkAccountModal } from '../../../components/LinkAccountModal';
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
+import { IconChevron } from '../../../components/icons';
 
 function showToast(message: string) {
   if (Platform.OS === 'android') {
@@ -52,7 +53,7 @@ function SettingRow({ label, subtitle, onPress, destructive, rightText }: Settin
       {rightText ? (
         <Text style={styles.settingRight}>{rightText}</Text>
       ) : (
-        <Text style={styles.settingChevron}>{'\u{203A}'}</Text>
+        <IconChevron size={20} color={Colors.charcoalSubtle} />
       )}
     </TouchableOpacity>
   );
@@ -286,9 +287,8 @@ const styles = StyleSheet.create({
   sectionCard: {
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
     overflow: 'hidden',
+    ...Shadows.card,
   },
   settingRow: {
     flexDirection: 'row',
@@ -315,11 +315,6 @@ const styles = StyleSheet.create({
   settingRight: {
     ...Typography.buttonSmall,
     color: Colors.terracotta,
-  },
-  settingChevron: {
-    fontSize: 22,
-    color: Colors.charcoalSubtle,
-    fontWeight: '600',
   },
   divider: {
     height: 1,

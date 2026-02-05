@@ -11,6 +11,7 @@ import { getPatienceScores, exportAllData } from '../../../lib/storage';
 import { PatienceScore, Completion } from '../../../types';
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
+import { IconChart, IconLock } from '../../../components/icons';
 
 export default function PortfolioScreen() {
   const { completions, isPro, streak } = useApp();
@@ -102,7 +103,7 @@ export default function PortfolioScreen() {
           </View>
         ) : (
           <View style={styles.emptyChart}>
-            <Text style={styles.emptyChartEmoji}>{'\u{1F4CA}'}</Text>
+            <IconChart size={64} color={Colors.sage} />
             <Text style={styles.emptyChartText}>
               Complete your first weekly check-in to see your patience trend!
             </Text>
@@ -157,9 +158,12 @@ export default function PortfolioScreen() {
           onPress={handleExport}
           activeOpacity={0.85}
         >
-          <Text style={styles.exportButtonText}>
-            {isPro ? 'Export Portfolio as PDF' : '\u{1F512} Export (Pro)'}
-          </Text>
+          <View style={styles.exportButtonContent}>
+            {!isPro && <IconLock size={16} color={Colors.white} />}
+            <Text style={styles.exportButtonText}>
+              {isPro ? 'Export Portfolio as PDF' : 'Export (Pro)'}
+            </Text>
+          </View>
         </TouchableOpacity>
       </Animated.View>
     </ScrollView>
@@ -207,8 +211,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
     marginBottom: Spacing.lg,
     ...Shadows.card,
   },
@@ -266,14 +268,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: Spacing.lg,
   },
-  emptyChartEmoji: {
-    fontSize: 40,
-    marginBottom: Spacing.sm,
-  },
   emptyChartText: {
     ...Typography.body,
     color: Colors.charcoalMuted,
     textAlign: 'center',
+    marginTop: Spacing.md,
     marginBottom: Spacing.md,
   },
   emptyChartCta: {
@@ -321,8 +320,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
   },
   logDate: {
     ...Typography.caption,
@@ -344,8 +341,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.md,
     padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
     alignItems: 'center',
   },
   emptyLogText: {
@@ -362,6 +357,11 @@ const styles = StyleSheet.create({
   },
   exportButtonLocked: {
     backgroundColor: Colors.charcoalSubtle,
+  },
+  exportButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
   },
   exportButtonText: {
     ...Typography.button,
