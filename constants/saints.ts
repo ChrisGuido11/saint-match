@@ -9,7 +9,7 @@ export const MOODS: MoodOption[] = [
     id: 'seeking-peace', 
     label: 'Seeking Peace', 
     subtitle: 'Find calm within', 
-    emoji: '\u{1F54A}\u{FE0F}', 
+    emoji: '', // Icons defined in components/icons
     color: '#8BA8A0',
     category: 'support',
     legacyEmotion: 'anxious'
@@ -18,7 +18,7 @@ export const MOODS: MoodOption[] = [
     id: 'need-focus', 
     label: 'Need Focus', 
     subtitle: 'Center your energy', 
-    emoji: '\u{1F9ED}', 
+    emoji: '',
     color: '#7B8FA3',
     category: 'support',
     legacyEmotion: 'scattered'
@@ -27,7 +27,7 @@ export const MOODS: MoodOption[] = [
     id: 'want-to-grow', 
     label: 'Want to Grow', 
     subtitle: 'Build inner strength', 
-    emoji: '\u{1F331}', 
+    emoji: '',
     color: '#9E8B83',
     category: 'support',
     legacyEmotion: 'overwhelmed'
@@ -37,7 +37,7 @@ export const MOODS: MoodOption[] = [
     id: 'feeling-grateful', 
     label: 'Feeling Grateful', 
     subtitle: 'Share your gratitude', 
-    emoji: '\u{1F64F}', 
+    emoji: '',
     color: '#C49A6C',
     category: 'growth',
     legacyEmotion: 'grateful'
@@ -46,7 +46,7 @@ export const MOODS: MoodOption[] = [
     id: 'full-of-joy', 
     label: 'Full of Joy', 
     subtitle: 'Spread the light', 
-    emoji: '\u{2600}\u{FE0F}', 
+    emoji: '',
     color: '#D4A85E',
     category: 'growth',
     legacyEmotion: 'joyful'
@@ -55,7 +55,7 @@ export const MOODS: MoodOption[] = [
     id: 'ready-to-serve', 
     label: 'Ready to Serve', 
     subtitle: 'Give to others', 
-    emoji: '\u{1F932}', 
+    emoji: '',
     color: '#8B9D83',
     category: 'growth',
     legacyEmotion: 'peaceful'

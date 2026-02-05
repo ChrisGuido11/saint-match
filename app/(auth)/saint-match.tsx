@@ -54,7 +54,7 @@ export default function SaintMatchScreen() {
           <Text style={styles.headerTitle}>Your Saint Match</Text>
           {selectedMoodData && (
             <Text style={styles.moodLabel}>
-              {selectedMoodData.emoji} {selectedMoodData.label}
+              {selectedMoodData.label}
             </Text>
           )}
         </Animated.View>

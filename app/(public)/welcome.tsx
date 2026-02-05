@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
+import { IconLogo } from '../../components/icons';
 
 export default function WelcomeScreen() {
   const handleBegin = () => {
@@ -27,12 +28,7 @@ export default function WelcomeScreen() {
         {/* Logo */}
         <Animated.View entering={FadeIn.delay(200).duration(800)} style={styles.logoSection}>
           <View style={styles.logoContainer}>
-            <LinearGradient
-              colors={[Colors.sage, Colors.sageDark]}
-              style={styles.logo}
-            >
-              <Text style={styles.logoIcon}>✦</Text>
-            </LinearGradient>
+            <IconLogo size={100} />
           </View>
         </Animated.View>
 
@@ -82,20 +78,9 @@ const styles = StyleSheet.create({
   logoContainer: {
     shadowColor: Colors.sage,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
     elevation: 8,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoIcon: {
-    fontSize: 40,
-    color: Colors.white,
   },
   title: {
     ...Typography.heroTitle,

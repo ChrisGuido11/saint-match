@@ -12,40 +12,43 @@ import {
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { useApp } from '../../context/AppContext';
 import { requestNotificationPermission, scheduleDailyReminder } from '../../lib/notifications';
+import { IconMeetSaint, IconChallenge, IconStreak } from '../../components/icons';
 
 const { width } = Dimensions.get('window');
 
 interface OnboardingSlide {
   id: string;
-  icon: string;
   title: string;
   description: string;
+  illustration: React.ReactNode;
 }
 
 const SLIDES: OnboardingSlide[] = [
   {
     id: '1',
-    icon: '🤝',
     title: 'Meet Your Saint',
-    description: 'Each day, share how you\'re feeling. We\'ll match you with a saint who walked a similar path.',
+    description:
+      'Each day, share how you\'re feeling. We\'ll match you with a saint who walked a similar path.',
+    illustration: <IconMeetSaint size={120} />,
   },
   {
     id: '2',
-    icon: '✨',
     title: 'Accept the Challenge',
-    description: 'Receive a simple, practical challenge inspired by your saint—something you can do in just a few minutes.',
+    description:
+      'Receive a simple, practical challenge inspired by your saint—something you can do in just a few minutes.',
+    illustration: <IconChallenge size={120} />,
   },
   {
     id: '3',
-    icon: '🔥',
     title: 'Build Your Streak',
-    description: 'Complete challenges daily to grow your streak and watch your virtues flourish over time.',
+    description:
+      'Complete challenges daily to grow your streak and watch your virtues flourish over time.',
+    illustration: <IconStreak size={120} />,
   },
 ];
 
@@ -74,8 +77,8 @@ export default function OnboardingScreen() {
 
   const renderSlide = ({ item }: { item: OnboardingSlide }) => (
     <View style={[styles.slide, { width }]}>
-      <View style={styles.iconContainer}>
-        <Text style={styles.icon}>{item.icon}</Text>
+      <View style={styles.illustrationContainer}>
+        {item.illustration}
       </View>
       <Text style={styles.slideTitle}>{item.title}</Text>
       <Text style={styles.slideDescription}>{item.description}</Text>
@@ -158,17 +161,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
   },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+  illustrationContainer: {
+    width: 160,
+    height: 160,
+    borderRadius: 80,
     backgroundColor: Colors.sageMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.xl,
-  },
-  icon: {
-    fontSize: 36,
   },
   slideTitle: {
     ...Typography.h1,

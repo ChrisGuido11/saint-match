@@ -13,19 +13,38 @@ import { Typography } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
 import { MOODS } from '../constants/saints';
 import { Mood } from '../types';
+import { 
+  IconPeace, 
+  IconFocus, 
+  IconGrow, 
+  IconGrateful, 
+  IconJoy, 
+  IconServe 
+} from './icons';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
+// Map mood IDs to icon components
+const moodIcons: Record<Mood, React.FC<{ size?: number; color?: string }>> = {
+  'seeking-peace': IconPeace,
+  'need-focus': IconFocus,
+  'want-to-grow': IconGrow,
+  'feeling-grateful': IconGrateful,
+  'full-of-joy': IconJoy,
+  'ready-to-serve': IconServe,
+};
+
 interface MoodButtonProps {
-  emoji: string;
+  mood: Mood;
   label: string;
   subtitle: string;
   index: number;
   onPress: () => void;
 }
 
-function MoodButton({ emoji, label, subtitle, index, onPress }: MoodButtonProps) {
+function MoodButton({ mood, label, subtitle, index, onPress }: MoodButtonProps) {
   const scale = useSharedValue(1);
+  const IconComponent = moodIcons[mood];
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -56,8 +75,8 @@ function MoodButton({ emoji, label, subtitle, index, onPress }: MoodButtonProps)
         onPressOut={handlePressOut}
         activeOpacity={1}
       >
-        <View style={styles.emojiContainer}>
-          <Text style={styles.moodEmoji}>{emoji}</Text>
+        <View style={styles.iconContainer}>
+          <IconComponent size={28} color={Colors.sage} />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.moodLabel}>{label}</Text>
@@ -86,7 +105,7 @@ export function MoodSelector({ onSelect }: MoodSelectorProps) {
         {MOODS.map((mood, index) => (
           <MoodButton
             key={mood.id}
-            emoji={mood.emoji}
+            mood={mood.id}
             label={mood.label}
             subtitle={mood.subtitle}
             index={index}
@@ -122,7 +141,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     ...Shadows.card,
   },
-  emojiContainer: {
+  iconContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
@@ -130,9 +149,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.md,
-  },
-  moodEmoji: {
-    fontSize: 24,
   },
   textContainer: {
     flex: 1,

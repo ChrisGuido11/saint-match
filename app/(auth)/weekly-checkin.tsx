@@ -7,13 +7,14 @@ import { Colors } from '../../constants/colors';
 import { Typography, FontFamily } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { addPatienceScore } from '../../lib/storage';
+import { IconPatienceScore, IconCompleted } from '../../components/icons';
 
 const SCORES = [
-  { value: 1, label: 'Struggling', emoji: '\u{1F614}' },
-  { value: 2, label: 'Difficult', emoji: '\u{1F615}' },
-  { value: 3, label: 'Okay', emoji: '\u{1F610}' },
-  { value: 4, label: 'Good', emoji: '\u{1F60A}' },
-  { value: 5, label: 'Peaceful', emoji: '\u{1F60C}' },
+  { value: 1, label: 'Struggling' },
+  { value: 2, label: 'Difficult' },
+  { value: 3, label: 'Okay' },
+  { value: 4, label: 'Good' },
+  { value: 5, label: 'Peaceful' },
 ];
 
 export default function WeeklyCheckinScreen() {
@@ -37,7 +38,7 @@ export default function WeeklyCheckinScreen() {
     return (
       <View style={styles.container}>
         <Animated.View entering={FadeIn.duration(500)} style={styles.successContent}>
-          <Text style={styles.successEmoji}>{'\u{2705}'}</Text>
+          <IconCompleted size={72} color={Colors.sage} />
           <Text style={styles.successTitle}>Score recorded!</Text>
           <Text style={styles.successSubtitle}>Check your Virtue Portfolio to see trends.</Text>
         </Animated.View>
@@ -69,7 +70,7 @@ export default function WeeklyCheckinScreen() {
               onPress={() => handleSelect(score.value)}
               activeOpacity={0.8}
             >
-              <Text style={styles.scoreEmoji}>{score.emoji}</Text>
+              <IconPatienceScore level={score.value as 1 | 2 | 3 | 4 | 5} size={36} color={selected === score.value ? Colors.terracotta : Colors.sage} />
               <Text style={styles.scoreValue}>{score.value}</Text>
               <Text style={styles.scoreLabel}>{score.label}</Text>
             </TouchableOpacity>
@@ -136,19 +137,17 @@ const styles = StyleSheet.create({
     borderColor: Colors.terracotta,
     backgroundColor: Colors.terracottaMuted,
   },
-  scoreEmoji: {
-    fontSize: 28,
-    marginBottom: Spacing.xxs,
-  },
   scoreValue: {
     fontFamily: FontFamily.sansBold,
     fontSize: 18,
     color: Colors.charcoal,
+    marginTop: Spacing.xs,
   },
   scoreLabel: {
     ...Typography.caption,
     color: Colors.charcoalMuted,
     fontSize: 10,
+    marginTop: 2,
   },
   submitButton: {
     width: '100%',
@@ -169,13 +168,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: Spacing.xl,
   },
-  successEmoji: {
-    fontSize: 56,
-    marginBottom: Spacing.md,
-  },
   successTitle: {
     ...Typography.h2,
     color: Colors.charcoal,
+    marginTop: Spacing.md,
   },
   successSubtitle: {
     ...Typography.body,

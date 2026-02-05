@@ -16,6 +16,7 @@ import { Typography } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { ConfettiAnimation } from '../../components/ConfettiAnimation';
 import { isMilestoneStreak } from '../../constants/saints';
+import { IconMilestone, IconCompleted } from '../../components/icons';
 
 const MESSAGES: Record<number, string> = {
   1: "The journey of a thousand miles begins with a single step.",
@@ -41,16 +42,16 @@ export default function CelebrationScreen() {
   const isMilestone = isMilestoneStreak(count);
   const message = MESSAGES[count] || DEFAULT_MESSAGES[Math.floor(Math.random() * DEFAULT_MESSAGES.length)];
 
-  const emojiScale = useSharedValue(0);
+  const iconScale = useSharedValue(0);
   const contentY = useSharedValue(20);
 
   useEffect(() => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-    emojiScale.value = withDelay(
+    iconScale.value = withDelay(
       100,
       withSequence(
-        withSpring(1.2, { damping: 8, stiffness: 200 }),
+        withSpring(1.1, { damping: 8, stiffness: 200 }),
         withSpring(1, { damping: 12 })
       )
     );
@@ -61,8 +62,8 @@ export default function CelebrationScreen() {
     );
   }, []);
 
-  const emojiStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: emojiScale.value }],
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: iconScale.value }],
   }));
 
   const contentStyle = useAnimatedStyle(() => ({
@@ -80,10 +81,14 @@ export default function CelebrationScreen() {
       {showConfetti && <ConfettiAnimation count={50} onFinish={() => setShowConfetti(false)} />}
 
       <View style={styles.content}>
-        {/* Main celebration emoji */}
-        <Animated.Text style={[styles.emoji, emojiStyle]}>
-          {isMilestone ? getMilestoneEmoji(count) : '✨'}
-        </Animated.Text>
+        {/* Celebration Icon */}
+        <Animated.View style={[styles.iconContainer, iconStyle]}>
+          {isMilestone ? (
+            <IconMilestone size={80} streak={count} />
+          ) : (
+            <IconCompleted size={80} color={Colors.sage} />
+          )}
+        </Animated.View>
 
         {/* Streak count */}
         <Animated.View entering={FadeIn.delay(400).duration(500)}>
@@ -91,13 +96,13 @@ export default function CelebrationScreen() {
           <Text style={styles.streakLabel}>{count === 1 ? 'day' : 'days'}</Text>
         </Animated.View>
 
-        {/* Single elegant message */}
+        {/* Message */}
         <Animated.Text style={[styles.message, contentStyle]}>
           {message}
         </Animated.Text>
       </View>
 
-      {/* Single continue button */}
+      {/* Continue button */}
       <Animated.View entering={FadeInUp.delay(600).duration(500)} style={styles.bottomSection}>
         <TouchableOpacity style={styles.button} onPress={handleDone} activeOpacity={0.85}>
           <Text style={styles.buttonText}>Continue</Text>
@@ -105,16 +110,6 @@ export default function CelebrationScreen() {
       </Animated.View>
     </View>
   );
-}
-
-function getMilestoneEmoji(count: number): string {
-  if (count >= 100) return '🏆';
-  if (count >= 50) return '⭐';
-  if (count >= 30) return '👑';
-  if (count >= 14) return '🌟';
-  if (count >= 7) return '🎉';
-  if (count >= 3) return '🔥';
-  return '🌱';
 }
 
 const styles = StyleSheet.create({
@@ -128,8 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: Spacing.xl,
   },
-  emoji: {
-    fontSize: 72,
+  iconContainer: {
     marginBottom: Spacing.lg,
   },
   streakNumber: {

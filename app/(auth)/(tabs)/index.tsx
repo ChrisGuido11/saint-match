@@ -14,6 +14,7 @@ import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 import { Mood } from '../../../types';
 import { getSaintMatch } from '../../../lib/claude';
 import { getEmotionFromMood } from '../../../constants/saints';
+import { IconCompleted, IconMatching } from '../../../components/icons';
 
 export default function HomeScreen() {
   const {
@@ -105,7 +106,7 @@ export default function HomeScreen() {
           </Animated.View>
         ) : activeChallenge?.completed ? (
           <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.completedState}>
-            <Text style={styles.completedEmoji}>🌙</Text>
+            <IconCompleted size={72} color={Colors.sage} />
             <Text style={styles.completedTitle}>Rest well</Text>
             <Text style={styles.completedSubtitle}>
               You've completed today's challenge. Return tomorrow to continue your journey.
@@ -113,7 +114,7 @@ export default function HomeScreen() {
           </Animated.View>
         ) : isMatching ? (
           <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.matchingState}>
-            <Text style={styles.matchingEmoji}>✨</Text>
+            <IconMatching size={64} color={Colors.sage} />
             <Text style={styles.matchingText}>Finding your saint...</Text>
           </Animated.View>
         ) : (
@@ -194,13 +195,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.xxl,
   },
-  completedEmoji: {
-    fontSize: 56,
-    marginBottom: Spacing.md,
-  },
   completedTitle: {
     ...Typography.h2,
     color: Colors.charcoal,
+    marginTop: Spacing.md,
     marginBottom: Spacing.sm,
   },
   completedSubtitle: {
@@ -213,13 +211,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.xxl,
   },
-  matchingEmoji: {
-    fontSize: 48,
-    marginBottom: Spacing.md,
-  },
   matchingText: {
     ...Typography.bodyLarge,
     color: Colors.charcoalMuted,
+    marginTop: Spacing.md,
   },
   usageSection: {
     marginTop: Spacing.xl,
