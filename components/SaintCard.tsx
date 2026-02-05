@@ -19,20 +19,17 @@ export function SaintCard({ saint, microAction, compact }: SaintCardProps) {
       entering={FadeInUp.duration(600).springify()}
       style={[styles.card, compact && styles.cardCompact]}
     >
-      {/* Saint avatar */}
+      {/* Avatar */}
       <View style={styles.avatarSection}>
-        <View style={styles.avatarOuter}>
-          <LinearGradient
-            colors={[Colors.sage, Colors.sageDark]}
-            style={styles.avatar}
-          >
-            <Text style={styles.avatarText}>{saint.initials}</Text>
-          </LinearGradient>
-        </View>
-        <View style={styles.haloRing} />
+        <LinearGradient
+          colors={[Colors.sage, Colors.sageDark]}
+          style={styles.avatar}
+        >
+          <Text style={styles.avatarText}>{saint.initials}</Text>
+        </LinearGradient>
       </View>
 
-      {/* Saint info */}
+      {/* Saint Name */}
       <Animated.Text
         entering={FadeInDown.delay(200).duration(400)}
         style={styles.saintName}
@@ -44,50 +41,27 @@ export function SaintCard({ saint, microAction, compact }: SaintCardProps) {
         entering={FadeInDown.delay(300).duration(400)}
         style={styles.feastDay}
       >
-        Feast Day: {saint.feastDay}
+        {saint.feastDay}
       </Animated.Text>
 
+      {/* Bio */}
       {!compact && (
-        <>
-          <Animated.View
-            entering={FadeInDown.delay(350).duration(400)}
-            style={styles.divider}
-          />
-
-          <Animated.Text
-            entering={FadeInDown.delay(400).duration(400)}
-            style={styles.bio}
-          >
-            {saint.bio}
-          </Animated.Text>
-        </>
+        <Animated.Text
+          entering={FadeInDown.delay(400).duration(400)}
+          style={styles.bio}
+        >
+          {saint.bio}
+        </Animated.Text>
       )}
 
-      {/* Virtues tags */}
-      <Animated.View
-        entering={FadeInDown.delay(450).duration(400)}
-        style={styles.virtuesRow}
-      >
-        {saint.virtues.map((virtue) => (
-          <View key={virtue} style={styles.virtueTag}>
-            <Text style={styles.virtueText}>{virtue}</Text>
-          </View>
-        ))}
-      </Animated.View>
-
-      {/* Micro action */}
+      {/* Challenge */}
       {microAction && !compact && (
         <Animated.View
           entering={FadeInDown.delay(500).duration(500)}
-          style={styles.actionCard}
+          style={styles.challengeCard}
         >
-          <Text style={styles.actionLabel}>TODAY'S CHALLENGE</Text>
-          <Text style={styles.actionText}>{microAction.actionText}</Text>
-          <View style={styles.actionMeta}>
-            <Text style={styles.actionTime}>
-              {'\u{23F1}\u{FE0F}'} ~{microAction.estimatedMinutes} min
-            </Text>
-          </View>
+          <Text style={styles.challengeText}>{microAction.actionText}</Text>
+          <Text style={styles.challengeTime}>~{microAction.estimatedMinutes} min</Text>
         </Animated.View>
       )}
     </Animated.View>
@@ -100,8 +74,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
     ...Shadows.card,
   },
   cardCompact: {
@@ -109,41 +81,19 @@ const styles = StyleSheet.create({
   },
   avatarSection: {
     marginBottom: Spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarOuter: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    borderWidth: 2,
-    borderColor: Colors.sage,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 3,
   },
   avatar: {
-    width: '100%',
-    height: '100%',
+    width: 80,
+    height: 80,
     borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
     fontFamily: FontFamily.serifBold,
-    fontSize: 28,
+    fontSize: 24,
     color: Colors.white,
     letterSpacing: 1,
-  },
-  haloRing: {
-    position: 'absolute',
-    top: -6,
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 1,
-    borderColor: Colors.sageMuted,
-    borderStyle: 'dashed',
   },
   saintName: {
     ...Typography.saintName,
@@ -155,63 +105,28 @@ const styles = StyleSheet.create({
     color: Colors.charcoalMuted,
     marginTop: Spacing.xxs,
   },
-  divider: {
-    width: 40,
-    height: 1,
-    backgroundColor: Colors.creamDark,
-    marginVertical: Spacing.md,
-  },
   bio: {
     ...Typography.body,
     color: Colors.charcoalLight,
     textAlign: 'center',
     lineHeight: 24,
-  },
-  virtuesRow: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
     marginTop: Spacing.md,
-    flexWrap: 'wrap',
-    justifyContent: 'center',
   },
-  virtueTag: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xxs,
-    backgroundColor: Colors.sageMuted,
-    borderRadius: BorderRadius.round,
-  },
-  virtueText: {
-    ...Typography.caption,
-    color: Colors.sageDark,
-    fontFamily: FontFamily.sansMedium,
-    textTransform: 'capitalize',
-  },
-  actionCard: {
+  challengeCard: {
     width: '100%',
     marginTop: Spacing.lg,
+    padding: Spacing.md,
     backgroundColor: Colors.creamWarm,
     borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
   },
-  actionLabel: {
-    ...Typography.label,
-    color: Colors.terracotta,
-    marginBottom: Spacing.xs,
-  },
-  actionText: {
+  challengeText: {
     ...Typography.bodyLarge,
     color: Colors.charcoal,
     lineHeight: 26,
   },
-  actionMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: Spacing.sm,
-  },
-  actionTime: {
-    ...Typography.bodySmall,
+  challengeTime: {
+    ...Typography.caption,
     color: Colors.charcoalMuted,
+    marginTop: Spacing.sm,
   },
 });

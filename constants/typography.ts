@@ -1,98 +1,106 @@
 import { TextStyle } from 'react-native';
 
+// Distinctive, characterful font pairing
+// Cormorant Garamond: Elegant serif for headlines (kept - works well)
+// DM Sans: Friendly, modern sans-serif with personality (replaces generic Inter)
+
 export const FontFamily = {
   serif: 'CormorantGaramond_600SemiBold',
   serifBold: 'CormorantGaramond_700Bold',
   serifItalic: 'CormorantGaramond_600SemiBold_Italic',
-  sans: 'Inter_400Regular',
-  sansMedium: 'Inter_500Medium',
-  sansSemiBold: 'Inter_600SemiBold',
-  sansBold: 'Inter_700Bold',
+  sans: 'DMSans_400Regular',
+  sansMedium: 'DMSans_500Medium',
+  sansSemiBold: 'DMSans_600SemiBold',
+  sansBold: 'DMSans_700Bold',
 } as const;
 
 export const Typography: Record<string, TextStyle> = {
-  // Display
+  // Display - Hero moments
   heroTitle: {
     fontFamily: FontFamily.serifBold,
-    fontSize: 40,
-    lineHeight: 46,
+    fontSize: 42,
+    lineHeight: 48,
     letterSpacing: -0.5,
   },
-  // Headings
+  
+  // Headings - Clear hierarchy with more contrast
   h1: {
     fontFamily: FontFamily.serifBold,
-    fontSize: 32,
-    lineHeight: 38,
+    fontSize: 34,
+    lineHeight: 40,
     letterSpacing: -0.3,
   },
   h2: {
     fontFamily: FontFamily.serif,
-    fontSize: 26,
-    lineHeight: 32,
+    fontSize: 24,
+    lineHeight: 30,
     letterSpacing: -0.2,
   },
   h3: {
     fontFamily: FontFamily.serif,
-    fontSize: 22,
-    lineHeight: 28,
+    fontSize: 20,
+    lineHeight: 26,
   },
-  // Saint names
+  
+  // Saint names - Special treatment
   saintName: {
     fontFamily: FontFamily.serifBold,
-    fontSize: 28,
-    lineHeight: 34,
+    fontSize: 26,
+    lineHeight: 32,
     letterSpacing: 0.3,
   },
-  // Body
+  
+  // Body - More contrast between sizes
   bodyLarge: {
     fontFamily: FontFamily.sans,
-    fontSize: 17,
-    lineHeight: 26,
+    fontSize: 18,
+    lineHeight: 28,
   },
   body: {
     fontFamily: FontFamily.sans,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
   },
   bodySmall: {
     fontFamily: FontFamily.sans,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
   },
-  // UI Elements
+  
+  // UI Elements - Refined
   button: {
     fontFamily: FontFamily.sansSemiBold,
     fontSize: 16,
     lineHeight: 20,
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
   buttonSmall: {
     fontFamily: FontFamily.sansMedium,
     fontSize: 14,
     lineHeight: 18,
-    letterSpacing: 0.2,
   },
   label: {
     fontFamily: FontFamily.sansMedium,
-    fontSize: 12,
-    lineHeight: 16,
-    letterSpacing: 0.8,
+    fontSize: 11,
+    lineHeight: 14,
+    letterSpacing: 1,
     textTransform: 'uppercase',
   },
   caption: {
     fontFamily: FontFamily.sans,
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 13,
+    lineHeight: 18,
   },
-  // Numbers
+  
+  // Numbers - Distinctive
   streakNumber: {
     fontFamily: FontFamily.sansBold,
-    fontSize: 48,
-    lineHeight: 52,
+    fontSize: 52,
+    lineHeight: 56,
   },
   statNumber: {
     fontFamily: FontFamily.sansBold,
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 28,
+    lineHeight: 32,
   },
 } as const;

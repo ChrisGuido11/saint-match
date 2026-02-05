@@ -27,7 +27,7 @@ export function ChallengeCard({ challenge, onComplete }: ChallengeCardProps) {
   }));
 
   const handlePressIn = () => {
-    buttonScale.value = withSpring(0.95, { damping: 15 });
+    buttonScale.value = withSpring(0.96, { damping: 15 });
   };
 
   const handlePressOut = () => {
@@ -43,10 +43,10 @@ export function ChallengeCard({ challenge, onComplete }: ChallengeCardProps) {
 
   return (
     <Animated.View entering={FadeInUp.duration(500).springify()} style={styles.card}>
-      {/* Saint header */}
+      {/* Saint Header */}
       <View style={styles.header}>
-        <View style={styles.avatarSmall}>
-          <Text style={styles.avatarSmallText}>{saint.initials}</Text>
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>{saint.initials}</Text>
         </View>
         <View style={styles.headerText}>
           <Text style={styles.saintName}>{saint.name}</Text>
@@ -54,29 +54,26 @@ export function ChallengeCard({ challenge, onComplete }: ChallengeCardProps) {
         </View>
       </View>
 
-      {/* Challenge text */}
-      <View style={styles.challengeSection}>
-        <Text style={styles.challengeLabel}>TODAY'S CHALLENGE</Text>
+      {/* Challenge */}
+      <View style={styles.challengeBox}>
         <Text style={styles.challengeText}>{microAction.actionText}</Text>
-        <Text style={styles.challengeTime}>
-          {'\u{23F1}\u{FE0F}'} ~{microAction.estimatedMinutes} minutes
-        </Text>
+        <Text style={styles.challengeTime}>~{microAction.estimatedMinutes} minutes</Text>
       </View>
 
-      {/* Complete button */}
+      {/* Complete Button */}
       {!challenge.completed ? (
         <AnimatedTouchable
-          style={[styles.completeButton, buttonAnimatedStyle]}
+          style={[styles.button, buttonAnimatedStyle]}
           onPress={handleComplete}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
           activeOpacity={1}
         >
-          <Text style={styles.completeButtonText}>I Did It!</Text>
+          <Text style={styles.buttonText}>I Did It!</Text>
         </AnimatedTouchable>
       ) : (
         <View style={styles.completedBadge}>
-          <Text style={styles.completedText}>{'\u{2713}'} Completed today!</Text>
+          <Text style={styles.completedText}>Completed today</Text>
         </View>
       )}
     </Animated.View>
@@ -88,8 +85,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
     ...Shadows.card,
   },
   header: {
@@ -98,17 +93,15 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     marginBottom: Spacing.md,
   },
-  avatarSmall: {
+  avatar: {
     width: 44,
     height: 44,
     borderRadius: 22,
     backgroundColor: Colors.sage,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: Colors.sageLight,
   },
-  avatarSmallText: {
+  avatarText: {
     fontFamily: FontFamily.serifBold,
     fontSize: 16,
     color: Colors.white,
@@ -125,18 +118,11 @@ const styles = StyleSheet.create({
     ...Typography.caption,
     color: Colors.charcoalMuted,
   },
-  challengeSection: {
+  challengeBox: {
     backgroundColor: Colors.creamWarm,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     marginBottom: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
-  },
-  challengeLabel: {
-    ...Typography.label,
-    color: Colors.terracotta,
-    marginBottom: Spacing.xs,
   },
   challengeText: {
     ...Typography.bodyLarge,
@@ -144,11 +130,11 @@ const styles = StyleSheet.create({
     lineHeight: 26,
   },
   challengeTime: {
-    ...Typography.bodySmall,
+    ...Typography.caption,
     color: Colors.charcoalMuted,
     marginTop: Spacing.sm,
   },
-  completeButton: {
+  button: {
     width: '100%',
     paddingVertical: Spacing.md,
     backgroundColor: Colors.terracotta,
@@ -156,10 +142,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     ...Shadows.button,
   },
-  completeButtonText: {
+  buttonText: {
     ...Typography.button,
     color: Colors.white,
-    fontSize: 18,
+    fontSize: 17,
   },
   completedBadge: {
     width: '100%',
@@ -167,8 +153,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.sageMuted,
     borderRadius: BorderRadius.md,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.sage,
   },
   completedText: {
     ...Typography.button,

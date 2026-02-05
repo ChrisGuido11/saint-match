@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../constants/colors';
-import { Typography, FontFamily } from '../../constants/typography';
+import { Typography } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { SaintCard } from '../../components/SaintCard';
 import { useApp } from '../../context/AppContext';
@@ -49,16 +49,13 @@ export default function SaintMatchScreen() {
         {/* Header */}
         <Animated.View entering={FadeIn.delay(100).duration(500)} style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>{'\u{2715}'}</Text>
+            <Text style={styles.closeButtonText}>×</Text>
           </TouchableOpacity>
-          <Animated.Text entering={FadeInDown.delay(200).duration(400)} style={styles.matchLabel}>
-            YOUR SAINT MATCH
-          </Animated.Text>
+          <Text style={styles.headerTitle}>Your Saint Match</Text>
           {selectedMoodData && (
-            <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.moodBadge}>
-              <Text style={styles.moodEmoji}>{selectedMoodData.emoji}</Text>
-              <Text style={styles.moodLabel}>{selectedMoodData.label}</Text>
-            </Animated.View>
+            <Text style={styles.moodLabel}>
+              {selectedMoodData.emoji} {selectedMoodData.label}
+            </Text>
           )}
         </Animated.View>
 
@@ -119,36 +116,22 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
+    ...Shadows.subtle,
   },
   closeButtonText: {
-    fontSize: 18,
+    fontSize: 24,
     color: Colors.charcoalMuted,
+    lineHeight: 28,
   },
-  matchLabel: {
+  headerTitle: {
     ...Typography.label,
     color: Colors.terracotta,
-    letterSpacing: 2,
-    marginTop: Spacing.xs,
-  },
-  moodBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.sageMuted,
-    borderRadius: BorderRadius.round,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
     marginTop: Spacing.sm,
-    gap: Spacing.xs,
-  },
-  moodEmoji: {
-    fontSize: 16,
   },
   moodLabel: {
     ...Typography.caption,
-    color: Colors.sageDark,
-    fontFamily: FontFamily.sansMedium,
+    color: Colors.charcoalMuted,
+    marginTop: Spacing.xs,
   },
   encouragement: {
     ...Typography.body,
@@ -162,9 +145,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingBottom: 40,
     paddingTop: Spacing.md,
-    backgroundColor: Colors.cream,
-    borderTopWidth: 1,
-    borderTopColor: Colors.creamDark,
   },
   acceptButton: {
     width: '100%',
@@ -177,7 +157,7 @@ const styles = StyleSheet.create({
   acceptButtonText: {
     ...Typography.button,
     color: Colors.white,
-    fontSize: 18,
+    fontSize: 17,
   },
   errorContainer: {
     flex: 1,

@@ -3,12 +3,12 @@ import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native
 import { router } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../../constants/colors';
-import { Typography, FontFamily } from '../../../constants/typography';
-import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
+import { Typography } from '../../../constants/typography';
+import { Spacing, BorderRadius } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
 import { getGreetingMessage } from '../../../constants/saints';
 import { MoodSelector } from '../../../components/MoodSelector';
-import { StreakCounter, StreakDisplay } from '../../../components/StreakCounter';
+import { StreakCounter } from '../../../components/StreakCounter';
 import { ChallengeCard } from '../../../components/ChallengeCard';
 import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 import { Mood } from '../../../types';
@@ -22,7 +22,6 @@ export default function HomeScreen() {
     activeChallenge,
     isPro,
     consumeMatch,
-    acceptChallenge,
     completeChallenge,
     refreshAll,
     setIsPro,
@@ -39,10 +38,8 @@ export default function HomeScreen() {
   }, [refreshAll]);
 
   const handleMoodSelect = async (mood: Mood) => {
-    // Convert mood to legacy emotion for saint matching
     const emotion = getEmotionFromMood(mood);
     
-    // Client-side pre-check (server is authoritative via Edge Function)
     const canMatch = await consumeMatch();
     if (!canMatch) {
       setShowPaywall(true);
@@ -64,7 +61,6 @@ export default function HomeScreen() {
         setShowPaywall(true);
         refreshAll();
       }
-      // Other errors: getSaintMatch already falls back to local
     } finally {
       setIsMatching(false);
     }
@@ -79,6 +75,7 @@ export default function HomeScreen() {
   };
 
   const matchesRemaining = usage.weeklyLimit - usage.matchesUsedThisWeek;
+  const hasContent = activeChallenge || isMatching;
 
   return (
     <ScrollView
@@ -89,85 +86,59 @@ export default function HomeScreen() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.sage} />
       }
     >
-      {/* Header */}
+      {/* Header - Clean and minimal */}
       <Animated.View entering={FadeIn.duration(500)} style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>
-            {getGreeting()}
-          </Text>
-          <Text style={styles.date}>
+        <View style={styles.greetingSection}>
+          <Text style={styles.greeting}>{getGreeting()}</Text>
+          <Text style={styles.subtitle}>
             {getGreetingMessage(streak.currentStreak)}
           </Text>
         </View>
         <StreakCounter count={streak.currentStreak} />
       </Animated.View>
 
-      {/* Streak Display */}
-      {streak.currentStreak > 0 && (
-        <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.streakSection}>
-          <StreakDisplay count={streak.currentStreak} />
-        </Animated.View>
-      )}
-
-      {/* Active challenge or emotion selector */}
-      {activeChallenge && !activeChallenge.completed ? (
-        <Animated.View entering={FadeInDown.delay(200).duration(500)}>
-          <Text style={styles.sectionTitle}>Today's Challenge</Text>
-          <ChallengeCard challenge={activeChallenge} onComplete={handleCompleteChallenge} />
-        </Animated.View>
-      ) : activeChallenge?.completed ? (
-        <Animated.View entering={FadeInDown.delay(200).duration(500)} style={styles.completedSection}>
-          <View style={styles.completedCard}>
-            <Text style={styles.completedEmoji}>{'\u{1F38A}'}</Text>
-            <Text style={styles.completedTitle}>All done for today!</Text>
+      {/* Main Content Area */}
+      <View style={styles.mainContent}>
+        {activeChallenge && !activeChallenge.completed ? (
+          <Animated.View entering={FadeInDown.delay(100).duration(500)}>
+            <ChallengeCard challenge={activeChallenge} onComplete={handleCompleteChallenge} />
+          </Animated.View>
+        ) : activeChallenge?.completed ? (
+          <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.completedState}>
+            <Text style={styles.completedEmoji}>🌙</Text>
+            <Text style={styles.completedTitle}>Rest well</Text>
             <Text style={styles.completedSubtitle}>
-              You showed up for yourself today. Rest well and return tomorrow! 🌙
+              You've completed today's challenge. Return tomorrow to continue your journey.
             </Text>
-          </View>
-        </Animated.View>
-      ) : (
-        <Animated.View entering={FadeInDown.delay(200).duration(500)}>
-          {isMatching ? (
-            <View style={styles.matchingContainer}>
-              <Text style={styles.matchingEmoji}>{'\u{1F52E}'}</Text>
-              <Text style={styles.matchingText}>Finding your saint...</Text>
-            </View>
-          ) : (
+          </Animated.View>
+        ) : isMatching ? (
+          <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.matchingState}>
+            <Text style={styles.matchingEmoji}>✨</Text>
+            <Text style={styles.matchingText}>Finding your saint...</Text>
+          </Animated.View>
+        ) : (
+          <Animated.View entering={FadeInDown.delay(100).duration(500)}>
             <MoodSelector onSelect={handleMoodSelect} />
-          )}
-        </Animated.View>
-      )}
+          </Animated.View>
+        )}
+      </View>
 
-      {/* Free match counter */}
-      {!isPro && (
-        <Animated.View entering={FadeInDown.delay(400).duration(500)} style={styles.usageContainer}>
-          <View style={styles.usageCard}>
-            <View style={styles.usageBar}>
-              <View
-                style={[
-                  styles.usageFill,
-                  { width: `${(matchesRemaining / usage.weeklyLimit) * 100}%` },
-                ]}
-              />
-            </View>
-            <Text style={styles.usageText}>
-              {matchesRemaining} of {usage.weeklyLimit} free matches remaining this week
-            </Text>
+      {/* Usage Indicator - Minimal */}
+      {!isPro && !hasContent && (
+        <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.usageSection}>
+          <View style={styles.usageBar}>
+            <View 
+              style={[
+                styles.usageFill,
+                { width: `${(matchesRemaining / usage.weeklyLimit) * 100}%` },
+              ]} 
+            />
           </View>
+          <Text style={styles.usageText}>
+            {matchesRemaining} free matches remaining
+          </Text>
         </Animated.View>
       )}
-
-      {/* Quick stats */}
-      <Animated.View entering={FadeInDown.delay(500).duration(500)} style={styles.statsRow}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{streak.currentStreak}</Text>
-          <Text style={styles.statLabel}>Current Streak</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{streak.longestStreak}</Text>
-          <Text style={styles.statLabel}>Longest Streak</Text>
-        </View>
-      </Animated.View>
 
       <PaywallBottomSheet
         visible={showPaywall}
@@ -196,124 +167,79 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: Spacing.lg,
     paddingTop: 60,
-    paddingBottom: 120,
+    paddingBottom: 100,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.md,
+    alignItems: 'flex-start',
+    marginBottom: Spacing.xl,
   },
-  streakSection: {
-    marginBottom: Spacing.lg,
+  greetingSection: {
+    flex: 1,
   },
   greeting: {
     ...Typography.h1,
     color: Colors.charcoal,
   },
-  date: {
+  subtitle: {
     ...Typography.body,
     color: Colors.charcoalMuted,
-    marginTop: 2,
+    marginTop: 4,
   },
-  sectionTitle: {
-    ...Typography.label,
-    color: Colors.charcoalMuted,
-    marginBottom: Spacing.sm,
+  mainContent: {
+    flex: 1,
   },
-  completedSection: {
-    marginBottom: Spacing.md,
-  },
-  completedCard: {
-    backgroundColor: Colors.white,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.xl,
+  completedState: {
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.sage,
-    ...Shadows.card,
+    paddingVertical: Spacing.xxl,
   },
   completedEmoji: {
-    fontSize: 48,
-    marginBottom: Spacing.sm,
+    fontSize: 56,
+    marginBottom: Spacing.md,
   },
   completedTitle: {
-    ...Typography.h3,
+    ...Typography.h2,
     color: Colors.charcoal,
-    textAlign: 'center',
+    marginBottom: Spacing.sm,
   },
   completedSubtitle: {
     ...Typography.body,
     color: Colors.charcoalMuted,
     textAlign: 'center',
-    marginTop: Spacing.xs,
+    maxWidth: 280,
   },
-  matchingContainer: {
-    backgroundColor: Colors.white,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.xxl,
+  matchingState: {
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
-    ...Shadows.card,
+    paddingVertical: Spacing.xxl,
   },
   matchingEmoji: {
     fontSize: 48,
     marginBottom: Spacing.md,
   },
   matchingText: {
-    ...Typography.h3,
+    ...Typography.bodyLarge,
     color: Colors.charcoalMuted,
   },
-  usageContainer: {
-    marginTop: Spacing.lg,
-  },
-  usageCard: {
-    backgroundColor: Colors.white,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
+  usageSection: {
+    marginTop: Spacing.xl,
+    alignItems: 'center',
   },
   usageBar: {
-    height: 6,
+    width: 120,
+    height: 4,
     backgroundColor: Colors.creamDark,
-    borderRadius: 3,
-    marginBottom: Spacing.xs,
+    borderRadius: 2,
     overflow: 'hidden',
   },
   usageFill: {
     height: '100%',
     backgroundColor: Colors.sage,
-    borderRadius: 3,
+    borderRadius: 2,
   },
   usageText: {
-    ...Typography.bodySmall,
-    color: Colors.charcoalMuted,
-    textAlign: 'center',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    marginTop: Spacing.lg,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.creamDark,
-    ...Shadows.subtle,
-  },
-  statNumber: {
-    ...Typography.statNumber,
-    color: Colors.charcoal,
-  },
-  statLabel: {
     ...Typography.caption,
-    color: Colors.charcoalMuted,
-    marginTop: 2,
+    color: Colors.charcoalSubtle,
+    marginTop: Spacing.xs,
   },
 });

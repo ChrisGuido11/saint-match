@@ -1,40 +1,40 @@
 export const Colors = {
-  // Primary palette
-  sage: '#8B9D83',
-  sageLight: '#A8B8A0',
-  sageDark: '#6E8066',
-  sageMuted: 'rgba(139, 157, 131, 0.12)',
-  sageSubtle: 'rgba(139, 157, 131, 0.06)',
+  // Primary palette - Richer, warmer sage
+  sage: '#7A8F70',
+  sageLight: '#9AAF8C',
+  sageDark: '#5D7054',
+  sageMuted: 'rgba(122, 143, 112, 0.12)',
+  sageSubtle: 'rgba(122, 143, 112, 0.06)',
 
-  // Accent
-  terracotta: '#D4735E',
-  terracottaLight: '#E09582',
-  terracottaDark: '#B85A46',
-  terracottaMuted: 'rgba(212, 115, 94, 0.12)',
-  terracottaGlow: 'rgba(212, 115, 94, 0.25)',
+  // Accent - Warmer, earthier terracotta
+  terracotta: '#C96B55',
+  terracottaLight: '#D98B73',
+  terracottaDark: '#A85440',
+  terracottaMuted: 'rgba(201, 107, 85, 0.12)',
+  terracottaGlow: 'rgba(201, 107, 85, 0.25)',
 
-  // Backgrounds
-  cream: '#FAF8F5',
-  creamDark: '#F2EDE7',
-  creamWarm: '#F7F3EE',
-  white: '#FFFFFF',
+  // Backgrounds - Warmer cream tones
+  cream: '#F5F1EA',        // Deeper, warmer cream
+  creamDark: '#E8E2D8',    // For borders/dividers
+  creamWarm: '#EDE7DC',    // Accent backgrounds
+  white: '#FFFCF8',        // Slightly warm white
 
-  // Text
-  charcoal: '#2C2C2C',
-  charcoalLight: '#4A4A4A',
-  charcoalMuted: '#7A7A7A',
-  charcoalSubtle: '#A8A8A8',
+  // Text - Softer charcoal for easier reading
+  charcoal: '#2D2A26',     // Warm charcoal
+  charcoalLight: '#4A4640', // Slightly lighter
+  charcoalMuted: '#6B665E', // For secondary text
+  charcoalSubtle: '#9A958A', // For hints/tertiary
 
   // Functional
   success: '#6B9E6B',
-  warning: '#D4A05E',
+  warning: '#C9A055',
   error: '#C45E5E',
-  streak: '#E8853E',
-  streakGlow: 'rgba(232, 133, 62, 0.3)',
+  streak: '#E07A3E',
+  streakGlow: 'rgba(224, 122, 62, 0.3)',
 
   // Overlays
-  overlay: 'rgba(44, 44, 44, 0.5)',
-  overlayLight: 'rgba(44, 44, 44, 0.25)',
-  glassBg: 'rgba(139, 157, 131, 0.08)',
-  cardShadow: 'rgba(44, 44, 44, 0.08)',
+  overlay: 'rgba(45, 42, 38, 0.5)',
+  overlayLight: 'rgba(45, 42, 38, 0.25)',
+  glassBg: 'rgba(122, 143, 112, 0.08)',
+  cardShadow: 'rgba(45, 42, 38, 0.08)',
 } as const;

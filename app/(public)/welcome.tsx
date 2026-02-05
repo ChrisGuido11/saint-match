@@ -1,75 +1,66 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
-import { Typography, FontFamily } from '../../constants/typography';
+import { Typography } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 
-const { width } = Dimensions.get('window');
-
 export default function WelcomeScreen() {
-  const handleGetStarted = () => {
+  const handleBegin = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push('/(public)/onboarding');
   };
 
   return (
     <View style={styles.container}>
-      {/* Decorative background elements */}
-      <View style={styles.bgCircle1} />
-      <View style={styles.bgCircle2} />
-      <View style={styles.bgCircle3} />
+      {/* Subtle gradient background */}
+      <LinearGradient
+        colors={[Colors.cream, Colors.white]}
+        style={StyleSheet.absoluteFill}
+      />
 
-      {/* Logo section */}
+      {/* Content */}
       <View style={styles.content}>
+        {/* Logo */}
         <Animated.View entering={FadeIn.delay(200).duration(800)} style={styles.logoSection}>
-          <View style={styles.logoWrapper}>
-            <View style={styles.haloOuter}>
-              <LinearGradient
-                colors={[Colors.sage, Colors.sageDark]}
-                style={styles.haloInner}
-              >
-                <View style={styles.flameContainer}>
-                  <View style={styles.flame} />
-                  <View style={styles.flameSmall} />
-                </View>
-              </LinearGradient>
-            </View>
-            {/* Decorative halo ring */}
-            <View style={styles.haloDecoration} />
+          <View style={styles.logoContainer}>
+            <LinearGradient
+              colors={[Colors.sage, Colors.sageDark]}
+              style={styles.logo}
+            >
+              <Text style={styles.logoIcon}>✦</Text>
+            </LinearGradient>
           </View>
         </Animated.View>
 
+        {/* Title */}
         <Animated.Text entering={FadeInDown.delay(400).duration(600)} style={styles.title}>
           Saint Match
         </Animated.Text>
 
+        {/* Tagline */}
         <Animated.Text entering={FadeInDown.delay(550).duration(600)} style={styles.tagline}>
-          Daily virtue challenges{'\n'}from the saints
+          Daily wisdom from the saints{'\n'}for your modern life
         </Animated.Text>
 
+        {/* Description */}
         <Animated.Text entering={FadeInDown.delay(700).duration(600)} style={styles.description}>
-          It's Duolingo for becoming a better person {'\u{2014}'} match with a saint, accept a
-          micro-challenge, and watch your virtues grow.
+          Match with a saint, receive a personal challenge, and grow in virtue—one small step at a time.
         </Animated.Text>
       </View>
 
-      {/* Bottom CTA */}
+      {/* CTA */}
       <Animated.View entering={FadeInDown.delay(900).duration(600)} style={styles.bottomSection}>
         <TouchableOpacity
-          style={styles.ctaButton}
-          onPress={handleGetStarted}
+          style={styles.button}
+          onPress={handleBegin}
           activeOpacity={0.85}
         >
-          <Text style={styles.ctaText}>Get Started</Text>
+          <Text style={styles.buttonText}>Begin Your Journey</Text>
         </TouchableOpacity>
-
-        <Text style={styles.footerNote}>
-          For Catholics seeking daily virtue growth
-        </Text>
       </Animated.View>
     </View>
   );
@@ -78,120 +69,59 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.cream,
-    paddingHorizontal: Spacing.lg,
-  },
-  bgCircle1: {
-    position: 'absolute',
-    top: -80,
-    right: -60,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: Colors.sageMuted,
-    opacity: 0.5,
-  },
-  bgCircle2: {
-    position: 'absolute',
-    bottom: 120,
-    left: -100,
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: Colors.terracottaMuted,
-    opacity: 0.3,
-  },
-  bgCircle3: {
-    position: 'absolute',
-    top: '40%',
-    right: -40,
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: Colors.sageSubtle,
   },
   content: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 60,
+    paddingHorizontal: Spacing.lg,
   },
   logoSection: {
     marginBottom: Spacing.xl,
   },
-  logoWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  logoContainer: {
+    shadowColor: Colors.sage,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 8,
   },
-  haloOuter: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    borderWidth: 2,
-    borderColor: Colors.sageLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 6,
-  },
-  haloInner: {
-    width: '100%',
-    height: '100%',
+  logo: {
+    width: 100,
+    height: 100,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  haloDecoration: {
-    position: 'absolute',
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-    borderWidth: 1,
-    borderColor: Colors.sageMuted,
-    borderStyle: 'dashed',
-  },
-  flameContainer: {
-    alignItems: 'center',
-  },
-  flame: {
-    width: 20,
-    height: 32,
-    borderRadius: 10,
-    backgroundColor: Colors.terracotta,
-  },
-  flameSmall: {
-    width: 10,
-    height: 16,
-    borderRadius: 5,
-    backgroundColor: Colors.terracottaLight,
-    marginTop: -10,
+  logoIcon: {
+    fontSize: 40,
+    color: Colors.white,
   },
   title: {
     ...Typography.heroTitle,
     color: Colors.charcoal,
     textAlign: 'center',
-    fontSize: 44,
-    lineHeight: 50,
   },
   tagline: {
     ...Typography.h2,
     color: Colors.charcoalLight,
     textAlign: 'center',
-    marginTop: Spacing.sm,
-    lineHeight: 34,
+    marginTop: Spacing.md,
+    lineHeight: 32,
   },
   description: {
     ...Typography.body,
     color: Colors.charcoalMuted,
     textAlign: 'center',
     marginTop: Spacing.lg,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.xl,
     lineHeight: 24,
   },
   bottomSection: {
+    paddingHorizontal: Spacing.lg,
     paddingBottom: 50,
-    alignItems: 'center',
   },
-  ctaButton: {
+  button: {
     width: '100%',
     paddingVertical: 18,
     backgroundColor: Colors.terracotta,
@@ -199,14 +129,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     ...Shadows.button,
   },
-  ctaText: {
+  buttonText: {
     ...Typography.button,
     color: Colors.white,
-    fontSize: 18,
-  },
-  footerNote: {
-    ...Typography.bodySmall,
-    color: Colors.charcoalSubtle,
-    marginTop: Spacing.md,
+    fontSize: 17,
   },
 });

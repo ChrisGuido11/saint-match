@@ -10,11 +10,11 @@ import {
   CormorantGaramond_600SemiBold_Italic,
 } from '@expo-google-fonts/cormorant-garamond';
 import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from '@expo-google-fonts/inter';
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_600SemiBold,
+  DMSans_700Bold,
+} from '@expo-google-fonts/dm-sans';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppProvider } from '../context/AppContext';
 import { Colors } from '../constants/colors';
@@ -27,10 +27,10 @@ export default function RootLayout() {
     CormorantGaramond_600SemiBold,
     CormorantGaramond_700Bold,
     CormorantGaramond_600SemiBold_Italic,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_600SemiBold,
+    DMSans_700Bold,
   });
 
   const onLayoutRootView = useCallback(async () => {

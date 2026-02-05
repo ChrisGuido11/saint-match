@@ -12,8 +12,9 @@ import {
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
-import { Typography, FontFamily } from '../../constants/typography';
+import { Typography } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { useApp } from '../../context/AppContext';
 import { requestNotificationPermission, scheduleDailyReminder } from '../../lib/notifications';
@@ -22,36 +23,29 @@ const { width } = Dimensions.get('window');
 
 interface OnboardingSlide {
   id: string;
-  emoji: string;
+  icon: string;
   title: string;
   description: string;
-  accent: string;
 }
 
 const SLIDES: OnboardingSlide[] = [
   {
     id: '1',
-    emoji: '\u{1F91D}',
-    title: 'Match with a Saint',
-    description:
-      'Each morning, tell us how you\'re feeling. Our AI matches you with a saint who overcame that exact struggle.',
-    accent: Colors.sage,
+    icon: '🤝',
+    title: 'Meet Your Saint',
+    description: 'Each day, share how you\'re feeling. We\'ll match you with a saint who walked a similar path.',
   },
   {
     id: '2',
-    emoji: '\u{26A1}',
+    icon: '✨',
     title: 'Accept the Challenge',
-    description:
-      'Get one micro-action inspired by your saint \u{2014} concrete, modern, and doable in 5\u{2013}15 minutes. No vague advice, real behavioral change.',
-    accent: Colors.terracotta,
+    description: 'Receive a simple, practical challenge inspired by your saint—something you can do in just a few minutes.',
   },
   {
     id: '3',
-    emoji: '\u{1F525}',
+    icon: '🔥',
     title: 'Build Your Streak',
-    description:
-      'Complete challenges daily to grow your streak and Virtue Portfolio. Watch real spiritual growth happen, one small act at a time.',
-    accent: Colors.streak,
+    description: 'Complete challenges daily to grow your streak and watch your virtues flourish over time.',
   },
 ];
 
@@ -66,17 +60,11 @@ export default function OnboardingScreen() {
     if (currentIndex < SLIDES.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1, animated: true });
     } else {
-      // Request notifications on last slide
       await requestNotificationPermission();
       await scheduleDailyReminder();
       await setOnboardingComplete();
       router.replace('/(auth)/(tabs)');
     }
-  };
-
-  const handleSkip = async () => {
-    await setOnboardingComplete();
-    router.replace('/(auth)/(tabs)');
   };
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -86,13 +74,11 @@ export default function OnboardingScreen() {
 
   const renderSlide = ({ item }: { item: OnboardingSlide }) => (
     <View style={[styles.slide, { width }]}>
-      <View style={styles.slideContent}>
-        <View style={[styles.emojiContainer, { backgroundColor: item.accent + '15' }]}>
-          <Text style={styles.emoji}>{item.emoji}</Text>
-        </View>
-        <Text style={styles.slideTitle}>{item.title}</Text>
-        <Text style={styles.slideDescription}>{item.description}</Text>
+      <View style={styles.iconContainer}>
+        <Text style={styles.icon}>{item.icon}</Text>
       </View>
+      <Text style={styles.slideTitle}>{item.title}</Text>
+      <Text style={styles.slideDescription}>{item.description}</Text>
     </View>
   );
 
@@ -100,9 +86,9 @@ export default function OnboardingScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Skip button */}
-      <Animated.View entering={FadeIn.delay(300).duration(400)} style={styles.skipContainer}>
-        <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
+      {/* Skip */}
+      <Animated.View entering={FadeIn.delay(300)} style={styles.skipContainer}>
+        <TouchableOpacity onPress={handleNext}>
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -121,10 +107,10 @@ export default function OnboardingScreen() {
         bounces={false}
       />
 
-      {/* Bottom section */}
-      <View style={styles.bottomSection}>
+      {/* Bottom */}
+      <View style={styles.bottom}>
         {/* Dots */}
-        <View style={styles.dotsContainer}>
+        <View style={styles.dots}>
           {SLIDES.map((_, index) => (
             <View
               key={index}
@@ -136,22 +122,16 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        {/* CTA */}
+        {/* Button */}
         <TouchableOpacity
-          style={styles.ctaButton}
+          style={styles.button}
           onPress={handleNext}
           activeOpacity={0.85}
         >
-          <Text style={styles.ctaText}>
-            {isLast ? 'Enable Reminders & Start' : 'Continue'}
+          <Text style={styles.buttonText}>
+            {isLast ? 'Get Started' : 'Continue'}
           </Text>
         </TouchableOpacity>
-
-        {isLast && (
-          <Text style={styles.notificationNote}>
-            We'll send you a gentle daily reminder at 8:30 AM
-          </Text>
-        )}
       </View>
     </View>
   );
@@ -168,10 +148,6 @@ const styles = StyleSheet.create({
     right: Spacing.lg,
     zIndex: 10,
   },
-  skipButton: {
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.md,
-  },
   skipText: {
     ...Typography.buttonSmall,
     color: Colors.charcoalMuted,
@@ -179,21 +155,20 @@ const styles = StyleSheet.create({
   slide: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: Spacing.xl,
   },
-  slideContent: {
-    alignItems: 'center',
-  },
-  emojiContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+  iconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.sageMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.xl,
   },
-  emoji: {
-    fontSize: 48,
+  icon: {
+    fontSize: 36,
   },
   slideTitle: {
     ...Typography.h1,
@@ -202,18 +177,18 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   slideDescription: {
-    ...Typography.bodyLarge,
+    ...Typography.body,
     color: Colors.charcoalMuted,
     textAlign: 'center',
     lineHeight: 26,
-    paddingHorizontal: Spacing.md,
+    maxWidth: 320,
   },
-  bottomSection: {
+  bottom: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: 50,
     alignItems: 'center',
   },
-  dotsContainer: {
+  dots: {
     flexDirection: 'row',
     gap: Spacing.xs,
     marginBottom: Spacing.lg,
@@ -228,7 +203,7 @@ const styles = StyleSheet.create({
     width: 24,
     backgroundColor: Colors.terracotta,
   },
-  ctaButton: {
+  button: {
     width: '100%',
     paddingVertical: 18,
     backgroundColor: Colors.terracotta,
@@ -236,15 +211,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     ...Shadows.button,
   },
-  ctaText: {
+  buttonText: {
     ...Typography.button,
     color: Colors.white,
     fontSize: 17,
-  },
-  notificationNote: {
-    ...Typography.bodySmall,
-    color: Colors.charcoalSubtle,
-    marginTop: Spacing.sm,
-    textAlign: 'center',
   },
 });
