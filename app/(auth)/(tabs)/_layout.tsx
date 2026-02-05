@@ -14,24 +14,26 @@ type TabName = 'Home' | 'Calendar' | 'Portfolio' | 'Settings';
 
 function TabIcon({ name, focused }: { name: TabName; focused: boolean }) {
   const color = focused ? Colors.terracotta : Colors.charcoalMuted;
-  
+
   const renderIcon = () => {
     switch (name) {
       case 'Home':
-        return <IconNavHome size={22} color={color} filled={focused} />;
+        return <IconNavHome size={22} color={color} />;
       case 'Calendar':
-        return <IconNavCalendar size={22} color={color} filled={focused} />;
+        return <IconNavCalendar size={22} color={color} />;
       case 'Portfolio':
-        return <IconNavPortfolio size={22} color={color} filled={focused} />;
+        return <IconNavPortfolio size={22} color={color} />;
       case 'Settings':
-        return <IconNavSettings size={22} color={color} filled={focused} />;
+        return <IconNavSettings size={22} color={color} />;
     }
   };
 
   return (
-    <View style={styles.tabIconContainer}>
+    <View style={[
+      styles.tabIconContainer,
+      focused && styles.tabIconContainerActive
+    ]}>
       {renderIcon()}
-      {focused && <View style={styles.tabDot} />}
     </View>
   );
 }
@@ -102,14 +104,11 @@ const styles = StyleSheet.create({
   tabIconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 36,
-    height: 28,
+    width: 48,
+    height: 32,
+    borderRadius: 16,
   },
-  tabDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: Colors.terracotta,
-    marginTop: 2,
+  tabIconContainerActive: {
+    backgroundColor: Colors.sageMuted,
   },
 });

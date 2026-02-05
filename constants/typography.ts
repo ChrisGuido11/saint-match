@@ -1,4 +1,5 @@
 import { TextStyle } from 'react-native';
+import { Colors } from './colors';
 
 // Distinctive, characterful font pairing
 // Cormorant Garamond: Elegant serif for headlines (kept - works well)
@@ -21,6 +22,12 @@ export const Typography: Record<string, TextStyle> = {
     fontSize: 42,
     lineHeight: 48,
     letterSpacing: -0.5,
+  },
+  streakDisplay: {
+    fontFamily: FontFamily.sansBold,
+    fontSize: 80,
+    lineHeight: 88,
+    color: Colors.charcoal,
   },
   
   // Headings - Clear hierarchy with more contrast

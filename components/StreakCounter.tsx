@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xxs,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 6,
     backgroundColor: Colors.white,

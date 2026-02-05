@@ -38,3 +38,12 @@ export const Colors = {
   glassBg: 'rgba(122, 143, 112, 0.08)',
   cardShadow: 'rgba(45, 42, 38, 0.08)',
 } as const;
+
+export const MoodColors = {
+  peace: '#8BA8A0',
+  focus: '#7B8FA3',
+  grow: '#9E8B83',
+  grateful: '#C49A6C',
+  joy: '#D4A85E',
+  serve: '#8B9D83',
+} as const;
