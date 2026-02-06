@@ -1,4 +1,4 @@
-import { Emotion, SaintMatch } from '../types';
+import { Emotion, Saint, SaintMatch } from '../types';
 import { SAINTS, getMicroActionsForEmotion } from '../constants/saints';
 import { supabase, isSupabaseConfigured } from './supabase';
 
@@ -65,24 +65,37 @@ export async function getSaintMatch(emotion: Emotion): Promise<SaintMatch> {
   const result = await fetchFromEdgeFunction(emotion);
 
   if (result) {
-    // Map response to our types using local SAINTS array
-    const saint = SAINTS.find(
+    // Try local saint first for richer data (image, virtues), fall back to Edge Function data
+    const localSaint = SAINTS.find(
       (s) => s.name.toLowerCase() === result.saint_name.toLowerCase()
     );
 
-    if (saint) {
-      return {
-        saint,
-        microAction: {
-          id: `match-${Date.now()}`,
-          saintId: saint.id,
-          emotion,
-          actionText: result.micro_action,
-          estimatedMinutes: result.estimated_minutes,
-        },
-        matchedAt: new Date().toISOString(),
-      };
-    }
+    const saint: Saint = localSaint ?? {
+      id: `ai-${result.saint_name.toLowerCase().replace(/[^a-z]/g, '-')}`,
+      name: result.saint_name,
+      feastDay: result.feast_day,
+      bio: result.bio,
+      virtues: [],
+      emotions: [emotion],
+      initials: result.saint_name
+        .split(' ')
+        .filter((w) => w[0] === w[0].toUpperCase())
+        .map((w) => w[0])
+        .slice(0, 2)
+        .join(''),
+    };
+
+    return {
+      saint,
+      microAction: {
+        id: `match-${Date.now()}`,
+        saintId: saint.id,
+        emotion,
+        actionText: result.micro_action,
+        estimatedMinutes: result.estimated_minutes,
+      },
+      matchedAt: new Date().toISOString(),
+    };
   }
 
   // Fallback to local matching (offline or unknown saint name)

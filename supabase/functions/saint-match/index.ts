@@ -147,10 +147,11 @@ async function callClaude(
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 300,
+        temperature: 1,
         messages: [
           {
             role: 'user',
-            content: `You are a Catholic spiritual director. The user is feeling ${emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "microAction": "", "estimatedMinutes": 10}`,
+            content: `You are a Catholic spiritual director. The user is feeling ${emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Pick a different saint each time — surprise the user with variety from the full calendar of saints. Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "microAction": "", "estimatedMinutes": 10}`,
           },
         ],
       }),
@@ -310,28 +311,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 4. Check cache
-    const { data: cached } = await supabaseAdmin
-      .from('match_cache')
-      .select('*')
-      .eq('emotion', emotion)
-      .gt('expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (cached) {
-      return jsonResponse({
-        saint_name: cached.saint_name,
-        feast_day: cached.feast_day,
-        bio: cached.bio,
-        micro_action: cached.micro_action,
-        estimated_minutes: cached.estimated_minutes,
-        source: 'cache',
-      }, 200, headers);
-    }
-
-    // 5. Call Claude API
+    // 4. Call Claude API (skip cache for dynamic variety)
     const claudeResult = await callClaude(emotion);
 
     if (claudeResult) {
