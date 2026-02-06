@@ -113,6 +113,7 @@ async function generate() {
   for (const icon of icons) {
     const outPath = join(assetsDir, icon.name);
     await sharp(Buffer.from(icon.svg))
+      .flatten({ background: CREAM }) // Remove alpha channel (required for iOS)
       .png()
       .toFile(outPath);
     console.log(`  ✓ ${icon.name} (${icon.size}×${icon.size})`);
