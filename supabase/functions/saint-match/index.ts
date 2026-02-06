@@ -134,9 +134,13 @@ function isValidClaudeResponse(obj: unknown): obj is ClaudeResponse {
 async function callClaude(
   emotion: string
 ): Promise<ClaudeResponse | null> {
-  if (!ANTHROPIC_API_KEY) return null;
+  if (!ANTHROPIC_API_KEY) {
+    console.error('ANTHROPIC_API_KEY is not set');
+    return null;
+  }
 
   try {
+    console.log('Calling Claude API with model claude-haiku-4-5-20251001...');
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -157,20 +161,35 @@ async function callClaude(
       }),
     });
 
-    if (!response.ok) return null;
+    if (!response.ok) {
+      const errBody = await response.text();
+      console.error(`Claude API error ${response.status}: ${errBody}`);
+      return null;
+    }
 
     const data = await response.json();
-    const text = data.content?.[0]?.text;
+    console.log('Claude API response received, source: claude');
+    let text = data.content?.[0]?.text;
     if (!text) return null;
 
-    const parsed = JSON.parse(text);
+    // Strip markdown code fences and extra whitespace that Haiku may add
+    text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+    // Extract JSON object if there's surrounding text
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error('No JSON object found in Claude response:', text.slice(0, 200));
+      return null;
+    }
+
+    const parsed = JSON.parse(jsonMatch[0]);
     if (!isValidClaudeResponse(parsed)) {
       console.error('Invalid Claude response structure:', JSON.stringify(parsed).slice(0, 200));
       return null;
     }
 
     return parsed;
-  } catch {
+  } catch (err) {
+    console.error('Claude API call exception:', err);
     return null;
   }
 }
