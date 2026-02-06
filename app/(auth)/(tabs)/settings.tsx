@@ -124,8 +124,7 @@ export default function SettingsScreen() {
 
   const handleManageSubscription = () => {
     if (isPro) {
-      // In production, open native subscription management
-      showToast('Subscription management opens in App Store/Play Store');
+      Linking.openURL('https://apps.apple.com/account/subscriptions');
     } else {
       showToast('You are currently on the free plan.');
     }

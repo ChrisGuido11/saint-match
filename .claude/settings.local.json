@@ -8,7 +8,16 @@
       "Bash(node -e:*)",
       "Bash(npx expo start:*)",
       "Bash(npx:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(supabase functions deploy:*)",
+      "Bash(curl -s https://ytqlekjvqhpmgjzjdtit.supabase.co/functions/v1/saint-match)",
+      "Bash(curl:*)",
+      "Bash(supabase functions invoke:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git -C \"C:\\\\Users\\\\cguid\\\\saint-match\" status --short)"
     ],
     "deny": [],
     "ask": []

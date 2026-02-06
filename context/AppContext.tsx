@@ -12,7 +12,7 @@ import {
   hasCompletedOnboarding,
   setOnboardingComplete as storeOnboardingComplete,
 } from '../lib/storage';
-import { checkProStatus } from '../lib/purchases';
+import { checkProStatus, initPurchases, loginRevenueCat } from '../lib/purchases';
 import { addCompletionDate } from '../lib/streak';
 import { format } from 'date-fns';
 import { supabase, isSupabaseConfigured, ensureAnonymousSession } from '../lib/supabase';
@@ -116,11 +116,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function init() {
+      // Initialize RevenueCat SDK (before auth so it's ready for logIn)
+      await initPurchases();
+
       // Initialize anonymous auth if Supabase is configured
       if (isSupabaseConfigured()) {
         try {
           const sess = await ensureAnonymousSession();
           setSession(sess);
+
+          // Link RevenueCat to Supabase user
+          if (sess?.user?.id) {
+            loginRevenueCat(sess.user.id).catch(() => {});
+          }
         } catch {
           // Auth failed — app still works offline with AsyncStorage
         }

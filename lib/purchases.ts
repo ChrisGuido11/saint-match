@@ -1,9 +1,16 @@
-// RevenueCat mock for Expo Go development
-// Replace with actual react-native-purchases when using custom dev client
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Purchases, {
+  PurchasesPackage,
+  LOG_LEVEL,
+} from 'react-native-purchases';
+import { Platform } from 'react-native';
 
 const PRO_STATUS_KEY = '@saint_match_pro_status';
+const PRO_CACHE_TIMESTAMP_KEY = '@saint_match_pro_cache_ts';
+const PRO_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+const REVENUECAT_IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? '';
+const ENTITLEMENT_ID = 'pro';
 
 export interface Package {
   identifier: string;
@@ -14,7 +21,8 @@ export interface Package {
   };
 }
 
-const PACKAGES: Package[] = [
+// Fallback packages shown when RevenueCat is unreachable
+const FALLBACK_PACKAGES: Package[] = [
   {
     identifier: 'pro_monthly',
     product: {
@@ -33,38 +41,159 @@ const PACKAGES: Package[] = [
   },
 ];
 
+let isConfigured = false;
+
 export async function initPurchases(): Promise<void> {
-  // In production, initialize RevenueCat SDK here
-  // await Purchases.configure({ apiKey: ... })
+  if (isConfigured) return;
+
+  const apiKey = Platform.OS === 'ios' ? REVENUECAT_IOS_KEY : '';
+  if (!apiKey) {
+    console.warn('RevenueCat API key not set — purchases will use fallback mode');
+    return;
+  }
+
+  if (__DEV__) {
+    Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+  }
+
+  Purchases.configure({ apiKey });
+  isConfigured = true;
+}
+
+/**
+ * Link RevenueCat anonymous user to Supabase user ID.
+ * Call after anonymous auth is established.
+ */
+export async function loginRevenueCat(supabaseUserId: string): Promise<void> {
+  if (!isConfigured) return;
+
+  try {
+    await Purchases.logIn(supabaseUserId);
+  } catch (err) {
+    console.warn('RevenueCat logIn failed:', err);
+  }
 }
 
 export async function getOfferings(): Promise<Package[]> {
-  return PACKAGES;
+  if (!isConfigured) return FALLBACK_PACKAGES;
+
+  try {
+    const offerings = await Purchases.getOfferings();
+    const current = offerings.current;
+    if (!current || current.availablePackages.length === 0) {
+      return FALLBACK_PACKAGES;
+    }
+
+    return current.availablePackages.map(mapPackage);
+  } catch (err) {
+    console.warn('Failed to fetch offerings:', err);
+    return FALLBACK_PACKAGES;
+  }
 }
 
 export async function purchasePro(packageIdentifier: string): Promise<boolean> {
-  // Mock purchase for development
-  await AsyncStorage.setItem(PRO_STATUS_KEY, 'true');
-  return true;
+  if (!isConfigured) {
+    // Fallback: mock purchase for development without RevenueCat key
+    await AsyncStorage.setItem(PRO_STATUS_KEY, 'true');
+    await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
+    return true;
+  }
+
+  try {
+    const offerings = await Purchases.getOfferings();
+    const pkg = offerings.current?.availablePackages.find(
+      (p: PurchasesPackage) => p.identifier === packageIdentifier ||
+        p.product.identifier === packageIdentifier
+    );
+
+    if (!pkg) {
+      console.error(`Package "${packageIdentifier}" not found in offerings`);
+      return false;
+    }
+
+    const { customerInfo } = await Purchases.purchasePackage(pkg);
+    const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+
+    if (isPro) {
+      await AsyncStorage.setItem(PRO_STATUS_KEY, 'true');
+      await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
+
+      // Fire-and-forget sync to Supabase
+      syncProToSupabase(true).catch(() => {});
+    }
+
+    return isPro;
+  } catch (err: any) {
+    if (err.userCancelled) return false;
+    console.error('Purchase failed:', err);
+    return false;
+  }
 }
 
 export async function restorePurchases(): Promise<boolean> {
-  const status = await AsyncStorage.getItem(PRO_STATUS_KEY);
-  return status === 'true';
+  if (!isConfigured) {
+    const status = await AsyncStorage.getItem(PRO_STATUS_KEY);
+    return status === 'true';
+  }
+
+  try {
+    const customerInfo = await Purchases.restorePurchases();
+    const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+
+    await AsyncStorage.setItem(PRO_STATUS_KEY, isPro ? 'true' : 'false');
+    await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
+
+    if (isPro) {
+      syncProToSupabase(true).catch(() => {});
+    }
+
+    return isPro;
+  } catch (err) {
+    console.error('Restore failed:', err);
+    return false;
+  }
 }
 
+/**
+ * 3-tier pro status check:
+ * 1. AsyncStorage cache (5min TTL) — instant
+ * 2. RevenueCat SDK — authoritative
+ * 3. Supabase profiles.is_pro — server fallback
+ */
 export async function checkProStatus(): Promise<boolean> {
-  // Check local first (offline support)
-  const status = await AsyncStorage.getItem(PRO_STATUS_KEY);
-  if (status === 'true') return true;
+  // Tier 1: AsyncStorage cache with TTL
+  const [cachedStatus, cachedTs] = await Promise.all([
+    AsyncStorage.getItem(PRO_STATUS_KEY),
+    AsyncStorage.getItem(PRO_CACHE_TIMESTAMP_KEY),
+  ]);
 
-  // Check server if online
+  if (cachedStatus !== null && cachedTs) {
+    const age = Date.now() - parseInt(cachedTs, 10);
+    if (age < PRO_CACHE_TTL_MS) {
+      return cachedStatus === 'true';
+    }
+  }
+
+  // Tier 2: RevenueCat SDK
+  if (isConfigured) {
+    try {
+      const customerInfo = await Purchases.getCustomerInfo();
+      const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+      await AsyncStorage.setItem(PRO_STATUS_KEY, isPro ? 'true' : 'false');
+      await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
+      return isPro;
+    } catch {
+      // RevenueCat unreachable — fall through to Supabase
+    }
+  }
+
+  // Tier 3: Supabase fallback
   try {
     const { supabase, isSupabaseConfigured } = require('./supabase');
-    if (!isSupabaseConfigured()) return false;
+    if (!isSupabaseConfigured()) return cachedStatus === 'true';
 
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return false;
+    if (!session) return cachedStatus === 'true';
 
     const { data: profile } = await supabase
       .from('profiles')
@@ -72,17 +201,64 @@ export async function checkProStatus(): Promise<boolean> {
       .eq('id', session.user.id)
       .single();
 
-    if (profile?.is_pro) {
-      await AsyncStorage.setItem(PRO_STATUS_KEY, 'true');
-      return true;
+    if (profile?.is_pro != null) {
+      const isPro = !!profile.is_pro;
+      await AsyncStorage.setItem(PRO_STATUS_KEY, isPro ? 'true' : 'false');
+      await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
+      return isPro;
     }
   } catch {
-    // Offline — use local status
+    // Offline — use cached status
   }
 
-  return false;
+  return cachedStatus === 'true';
 }
 
 export async function resetProStatus(): Promise<void> {
-  await AsyncStorage.removeItem(PRO_STATUS_KEY);
+  await AsyncStorage.multiRemove([PRO_STATUS_KEY, PRO_CACHE_TIMESTAMP_KEY]);
+}
+
+/**
+ * Transfer RevenueCat identity when user links email.
+ * Ensures subscription follows the permanent user ID.
+ */
+export async function transferPurchasesToUser(userId: string): Promise<void> {
+  if (!isConfigured) return;
+
+  try {
+    await Purchases.logIn(userId);
+    const customerInfo = await Purchases.getCustomerInfo();
+    const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+
+    await AsyncStorage.setItem(PRO_STATUS_KEY, isPro ? 'true' : 'false');
+    await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
+  } catch (err) {
+    console.warn('transferPurchasesToUser failed:', err);
+  }
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────
+
+function mapPackage(pkg: PurchasesPackage): Package {
+  return {
+    identifier: pkg.identifier,
+    product: {
+      title: pkg.product.title,
+      priceString: pkg.product.priceString,
+      description: pkg.product.description,
+    },
+  };
+}
+
+async function syncProToSupabase(isPro: boolean): Promise<void> {
+  const { supabase, isSupabaseConfigured } = require('./supabase');
+  if (!isSupabaseConfigured()) return;
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return;
+
+  await supabase
+    .from('profiles')
+    .update({ is_pro: isPro, subscription_status: isPro ? 'active' : 'expired' })
+    .eq('id', session.user.id);
 }

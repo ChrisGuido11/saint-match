@@ -41,6 +41,13 @@ export async function ensureAnonymousSession() {
 export async function linkEmailToAccount(email: string, password: string) {
   const { data, error } = await supabase.auth.updateUser({ email, password });
   if (error) throw error;
+
+  // Transfer RevenueCat identity to the permanent user ID
+  if (data.user?.id) {
+    const { transferPurchasesToUser } = require('./purchases');
+    transferPurchasesToUser(data.user.id).catch(() => {});
+  }
+
   return data;
 }
 
