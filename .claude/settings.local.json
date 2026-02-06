@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Skill(frontend-design)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npm install:*)",
+      "Bash(node scripts/generate-icons.mjs:*)"
     ],
     "deny": [],
     "ask": []

@@ -5,6 +5,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useApp } from '../context/AppContext';
 import { Colors } from '../constants/colors';
 import { Typography } from '../constants/typography';
+import { IconLogo } from '../components/icons/IconLogo';
 
 export default function SplashRedirect() {
   const { isLoading, isOnboarded } = useApp();
@@ -25,8 +26,8 @@ export default function SplashRedirect() {
   return (
     <Animated.View entering={FadeIn.duration(600)} exiting={FadeOut.duration(300)} style={styles.container}>
       <View style={styles.logoContainer}>
-        <View style={styles.halo}>
-          <View style={styles.flame} />
+        <View style={{ marginBottom: 24 }}>
+          <IconLogo size={80} />
         </View>
         <Text style={styles.title}>Saint Match</Text>
         <Text style={styles.tagline}>Daily virtue challenges from the saints</Text>
@@ -44,23 +45,6 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-  },
-  halo: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 2.5,
-    borderColor: Colors.sage,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginBottom: 24,
-  },
-  flame: {
-    width: 16,
-    height: 24,
-    borderRadius: 8,
-    backgroundColor: Colors.terracotta,
-    marginBottom: -8,
   },
   title: {
     ...Typography.heroTitle,

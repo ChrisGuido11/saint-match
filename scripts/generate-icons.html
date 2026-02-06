@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saint Match — App Icon Generator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #2D2A26;
+      color: #F5F1EA;
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #9A958A;
+      font-size: 14px;
+      margin-bottom: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+
+    .card {
+      background: #3A3632;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card h2 {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .card .meta {
+      font-size: 12px;
+      color: #9A958A;
+      margin-bottom: 16px;
+    }
+
+    .canvas-wrap {
+      background: repeating-conic-gradient(#444 0% 25%, #3A3632 0% 50%) 50% / 16px 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    canvas {
+      border-radius: 4px;
+    }
+
+    .preview-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      margin-bottom: 16px;
+    }
+
+    .preview-item {
+      text-align: center;
+    }
+
+    .preview-item .label {
+      font-size: 10px;
+      color: #9A958A;
+      margin-top: 4px;
+    }
+
+    button {
+      background: #7A8F70;
+      color: #F5F1EA;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #5D7054;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 400;
+      margin-bottom: 16px;
+      color: #9A958A;
+    }
+
+    .previews-section {
+      margin-bottom: 32px;
+    }
+
+    .small-previews {
+      display: flex;
+      gap: 24px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .ios-mask {
+      border-radius: 22.37%;
+      overflow: hidden;
+    }
+
+    .android-mask {
+      border-radius: 50%;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <h1>Saint Match — App Icon Generator</h1>
+  <p class="subtitle">Faithful to IconLogo.tsx line art. Open in Chrome/Edge, preview, then download PNGs.</p>
+
+  <div class="grid">
+    <!-- iOS Icon -->
+    <div class="card">
+      <h2>iOS App Icon</h2>
+      <p class="meta">1024 × 1024 — icon.png</p>
+      <div class="canvas-wrap">
+        <canvas id="ios" width="1024" height="1024" style="width:256px;height:256px;"></canvas>
+      </div>
+      <button onclick="download('ios', 'icon.png')">Download icon.png</button>
+    </div>
+
+    <!-- Android Adaptive -->
+    <div class="card">
+      <h2>Android Adaptive Foreground</h2>
+      <p class="meta">1024 × 1024 — adaptive-icon.png</p>
+      <div class="canvas-wrap">
+        <canvas id="android" width="1024" height="1024" style="width:256px;height:256px;"></canvas>
+      </div>
+      <button onclick="download('android', 'adaptive-icon.png')">Download adaptive-icon.png</button>
+    </div>
+
+    <!-- Splash Icon -->
+    <div class="card">
+      <h2>Splash Icon</h2>
+      <p class="meta">1024 × 1024 — splash-icon.png</p>
+      <div class="canvas-wrap">
+        <canvas id="splash" width="1024" height="1024" style="width:256px;height:256px;"></canvas>
+      </div>
+      <button onclick="download('splash', 'splash-icon.png')">Download splash-icon.png</button>
+    </div>
+
+    <!-- Favicon -->
+    <div class="card">
+      <h2>Favicon</h2>
+      <p class="meta">48 × 48 — favicon.png</p>
+      <div class="canvas-wrap">
+        <canvas id="favicon" width="48" height="48" style="width:192px;height:192px;image-rendering:pixelated;"></canvas>
+      </div>
+      <button onclick="download('favicon', 'favicon.png')">Download favicon.png</button>
+    </div>
+  </div>
+
+  <!-- Small-size legibility previews -->
+  <div class="previews-section">
+    <p class="section-title">Legibility Previews</p>
+    <div class="small-previews">
+      <div class="preview-item">
+        <div class="ios-mask">
+          <canvas id="preview-180" width="1024" height="1024" style="width:60px;height:60px;"></canvas>
+        </div>
+        <p class="label">iOS 60×60 (3x)</p>
+      </div>
+      <div class="preview-item">
+        <div class="ios-mask">
+          <canvas id="preview-120" width="1024" height="1024" style="width:40px;height:40px;"></canvas>
+        </div>
+        <p class="label">iOS 40×40 (2x)</p>
+      </div>
+      <div class="preview-item">
+        <div class="ios-mask">
+          <canvas id="preview-87" width="1024" height="1024" style="width:29px;height:29px;"></canvas>
+        </div>
+        <p class="label">iOS 29×29 (smallest)</p>
+      </div>
+      <div class="preview-item">
+        <div class="android-mask">
+          <canvas id="preview-android-48" width="1024" height="1024" style="width:48px;height:48px;"></canvas>
+        </div>
+        <p class="label">Android 48dp</p>
+      </div>
+      <div class="preview-item">
+        <canvas id="preview-favicon" width="48" height="48" style="width:16px;height:16px;"></canvas>
+        <p class="label">Favicon 16×16</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Color constants (from constants/colors.ts) ──
+    const SAGE       = '#7A8F70';
+    const SAGE_DARK  = '#5D7054';
+    const TERRACOTTA = '#C96B55';
+    const CREAM      = '#F5F1EA';
+
+    // ── Scale factor: original SVG viewBox is 0 0 100 100 → 1024x1024 ──
+    const S = 1024 / 100;  // 10.24
+
+    // ── Draw the full icon (iOS / splash variant) ──
+    function drawFullIcon(ctx, size) {
+      const s = size / 100; // scale relative to 100x100 viewBox
+      const cx = size / 2;
+      const cy = size / 2;
+
+      // Background — full bleed cream
+      ctx.fillStyle = CREAM;
+      ctx.fillRect(0, 0, size, size);
+
+      // Outer halo circle: r=42, strokeWidth=2.5, opacity=0.3
+      ctx.beginPath();
+      ctx.arc(cx, cy, 42 * s, 0, Math.PI * 2);
+      ctx.strokeStyle = SAGE;
+      ctx.lineWidth = 2.5 * s;
+      ctx.globalAlpha = 0.3;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // Inner circle: r=36, strokeWidth=2, opacity=1
+      ctx.beginPath();
+      ctx.arc(cx, cy, 36 * s, 0, Math.PI * 2);
+      ctx.strokeStyle = SAGE;
+      ctx.lineWidth = 2 * s;
+      ctx.stroke();
+
+      // Central cross — vertical: M50,28 V72
+      ctx.beginPath();
+      ctx.moveTo(50 * s, 28 * s);
+      ctx.lineTo(50 * s, 72 * s);
+      ctx.strokeStyle = TERRACOTTA;
+      ctx.lineWidth = 3 * s;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Central cross — horizontal: M28,50 H72
+      ctx.beginPath();
+      ctx.moveTo(28 * s, 50 * s);
+      ctx.lineTo(72 * s, 50 * s);
+      ctx.strokeStyle = TERRACOTTA;
+      ctx.lineWidth = 3 * s;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Decorative rays: strokeWidth=2, opacity=0.5
+      ctx.strokeStyle = SAGE;
+      ctx.lineWidth = 2 * s;
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = 0.5;
+
+      // Top ray: M50,14 V20
+      ctx.beginPath();
+      ctx.moveTo(50 * s, 14 * s);
+      ctx.lineTo(50 * s, 20 * s);
+      ctx.stroke();
+
+      // Bottom ray: M50,80 V86
+      ctx.beginPath();
+      ctx.moveTo(50 * s, 80 * s);
+      ctx.lineTo(50 * s, 86 * s);
+      ctx.stroke();
+
+      // Left ray: M14,50 H20
+      ctx.beginPath();
+      ctx.moveTo(14 * s, 50 * s);
+      ctx.lineTo(20 * s, 50 * s);
+      ctx.stroke();
+
+      // Right ray: M80,50 H86
+      ctx.beginPath();
+      ctx.moveTo(80 * s, 50 * s);
+      ctx.lineTo(86 * s, 50 * s);
+      ctx.stroke();
+
+      ctx.globalAlpha = 1;
+
+      // Corner accents: strokeWidth=1.5, opacity=0.4
+      ctx.strokeStyle = SAGE;
+      ctx.lineWidth = 1.5 * s;
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = 0.4;
+
+      // Top-left: M26,26 L30,30
+      ctx.beginPath();
+      ctx.moveTo(26 * s, 26 * s);
+      ctx.lineTo(30 * s, 30 * s);
+      ctx.stroke();
+
+      // Top-right: M74,26 L70,30
+      ctx.beginPath();
+      ctx.moveTo(74 * s, 26 * s);
+      ctx.lineTo(70 * s, 30 * s);
+      ctx.stroke();
+
+      // Bottom-left: M26,74 L30,70
+      ctx.beginPath();
+      ctx.moveTo(26 * s, 74 * s);
+      ctx.lineTo(30 * s, 70 * s);
+      ctx.stroke();
+
+      // Bottom-right: M74,74 L70,70
+      ctx.beginPath();
+      ctx.moveTo(74 * s, 74 * s);
+      ctx.lineTo(70 * s, 70 * s);
+      ctx.stroke();
+
+      ctx.globalAlpha = 1;
+    }
+
+    // ── Draw Android adaptive foreground (scaled down for safe zone) ──
+    function drawAdaptiveIcon(ctx, size) {
+      // Android adaptive icons: 108dp total, inner 72dp visible = 66.67%
+      // We scale the design to ~62% and center it to ensure safe zone compliance
+      const padding = size * 0.19; // ~19% padding on each side
+
+      ctx.fillStyle = CREAM;
+      ctx.fillRect(0, 0, size, size);
+
+      ctx.save();
+      ctx.translate(padding, padding);
+      const innerSize = size - padding * 2;
+
+      // Draw the same icon at reduced size
+      const s = innerSize / 100;
+      const cx = innerSize / 2;
+      const cy = innerSize / 2;
+
+      // Outer halo circle
+      ctx.beginPath();
+      ctx.arc(cx, cy, 42 * s, 0, Math.PI * 2);
+      ctx.strokeStyle = SAGE;
+      ctx.lineWidth = 2.5 * s;
+      ctx.globalAlpha = 0.3;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // Inner circle
+      ctx.beginPath();
+      ctx.arc(cx, cy, 36 * s, 0, Math.PI * 2);
+      ctx.strokeStyle = SAGE;
+      ctx.lineWidth = 2 * s;
+      ctx.stroke();
+
+      // Cross — vertical
+      ctx.beginPath();
+      ctx.moveTo(50 * s, 28 * s);
+      ctx.lineTo(50 * s, 72 * s);
+      ctx.strokeStyle = TERRACOTTA;
+      ctx.lineWidth = 3 * s;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Cross — horizontal
+      ctx.beginPath();
+      ctx.moveTo(28 * s, 50 * s);
+      ctx.lineTo(72 * s, 50 * s);
+      ctx.strokeStyle = TERRACOTTA;
+      ctx.lineWidth = 3 * s;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Decorative rays
+      ctx.strokeStyle = SAGE;
+      ctx.lineWidth = 2 * s;
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = 0.5;
+
+      ctx.beginPath(); ctx.moveTo(50*s, 14*s); ctx.lineTo(50*s, 20*s); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(50*s, 80*s); ctx.lineTo(50*s, 86*s); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(14*s, 50*s); ctx.lineTo(20*s, 50*s); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(80*s, 50*s); ctx.lineTo(86*s, 50*s); ctx.stroke();
+
+      ctx.globalAlpha = 1;
+
+      // Corner accents
+      ctx.strokeStyle = SAGE;
+      ctx.lineWidth = 1.5 * s;
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = 0.4;
+
+      ctx.beginPath(); ctx.moveTo(26*s, 26*s); ctx.lineTo(30*s, 30*s); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(74*s, 26*s); ctx.lineTo(70*s, 30*s); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(26*s, 74*s); ctx.lineTo(30*s, 70*s); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(74*s, 74*s); ctx.lineTo(70*s, 70*s); ctx.stroke();
+
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+
+    // ── Draw simplified favicon ──
+    function drawFavicon(ctx, size) {
+      const s = size / 100;
+      const cx = size / 2;
+      const cy = size / 2;
+
+      // Background
+      ctx.fillStyle = CREAM;
+      ctx.fillRect(0, 0, size, size);
+
+      // Single circle (inner only — outer halo too faint at this size)
+      ctx.beginPath();
+      ctx.arc(cx, cy, 36 * s, 0, Math.PI * 2);
+      ctx.strokeStyle = SAGE;
+      ctx.lineWidth = 3.5 * s;  // slightly thicker for legibility
+      ctx.stroke();
+
+      // Cross — vertical
+      ctx.beginPath();
+      ctx.moveTo(50 * s, 28 * s);
+      ctx.lineTo(50 * s, 72 * s);
+      ctx.strokeStyle = TERRACOTTA;
+      ctx.lineWidth = 5 * s;  // thicker for tiny size
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Cross — horizontal
+      ctx.beginPath();
+      ctx.moveTo(28 * s, 50 * s);
+      ctx.lineTo(72 * s, 50 * s);
+      ctx.strokeStyle = TERRACOTTA;
+      ctx.lineWidth = 5 * s;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+
+    // ── Download helper ──
+    function download(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    }
+
+    // ── Render all canvases ──
+    function renderAll() {
+      // Main icons
+      drawFullIcon(document.getElementById('ios').getContext('2d'), 1024);
+      drawAdaptiveIcon(document.getElementById('android').getContext('2d'), 1024);
+      drawFullIcon(document.getElementById('splash').getContext('2d'), 1024);
+      drawFavicon(document.getElementById('favicon').getContext('2d'), 48);
+
+      // Legibility previews (render at 1024 then CSS scales down)
+      drawFullIcon(document.getElementById('preview-180').getContext('2d'), 1024);
+      drawFullIcon(document.getElementById('preview-120').getContext('2d'), 1024);
+      drawFullIcon(document.getElementById('preview-87').getContext('2d'), 1024);
+      drawAdaptiveIcon(document.getElementById('preview-android-48').getContext('2d'), 1024);
+      drawFavicon(document.getElementById('preview-favicon').getContext('2d'), 48);
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
