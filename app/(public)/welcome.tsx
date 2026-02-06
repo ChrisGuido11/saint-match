@@ -54,6 +54,8 @@ export default function WelcomeScreen() {
           style={styles.button}
           onPress={handleBegin}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel="Begin your journey"
         >
           <Text style={styles.buttonText}>Begin Your Journey</Text>
         </TouchableOpacity>
@@ -104,7 +106,7 @@ const styles = StyleSheet.create({
   },
   bottomSection: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: 50,
+    paddingBottom: Spacing.safeBottom,
   },
   button: {
     width: '100%',
@@ -115,8 +117,7 @@ const styles = StyleSheet.create({
     ...Shadows.button,
   },
   buttonText: {
-    ...Typography.button,
+    ...Typography.buttonLarge,
     color: Colors.white,
-    fontSize: 17,
   },
 });

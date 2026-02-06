@@ -104,7 +104,7 @@ export default function CelebrationScreen() {
 
       {/* Continue button */}
       <Animated.View entering={FadeInUp.delay(600).duration(500)} style={styles.bottomSection}>
-        <TouchableOpacity style={styles.button} onPress={handleDone} activeOpacity={0.85}>
+        <TouchableOpacity style={styles.button} onPress={handleDone} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="Continue to home">
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -127,10 +127,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   streakNumber: {
-    ...Typography.heroTitle,
-    color: Colors.charcoal,
-    fontSize: 80,
-    lineHeight: 90,
+    ...Typography.streakDisplay,
     textAlign: 'center',
   },
   streakLabel: {
@@ -149,7 +146,7 @@ const styles = StyleSheet.create({
   },
   bottomSection: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: 50,
+    paddingBottom: Spacing.safeBottom,
   },
   button: {
     width: '100%',
@@ -157,11 +154,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.sage,
     borderRadius: BorderRadius.md,
     alignItems: 'center',
-    ...Shadows.card,
+    ...Shadows.button,
   },
   buttonText: {
-    ...Typography.button,
+    ...Typography.buttonLarge,
     color: Colors.white,
-    fontSize: 17,
   },
 });

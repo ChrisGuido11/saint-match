@@ -285,6 +285,37 @@ export function IconChevronRight({ size = 24, color = Colors.charcoal }: IconPro
   );
 }
 
+// Close/X icon for dismiss actions
+export function IconClose({ size = 20, color = Colors.charcoalMuted }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M18 6L6 18M6 6L18 18"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+// Sparkle icon for streaks (small inline)
+export function IconSparkle({ size = 16, color = Colors.terracotta }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </Svg>
+  );
+}
+
 // Chevron for settings rows
 export function IconChevron({ size = 20, color = Colors.charcoalSubtle }: IconProps) {
   return (

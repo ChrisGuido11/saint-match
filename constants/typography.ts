@@ -81,6 +81,12 @@ export const Typography: Record<string, TextStyle> = {
     lineHeight: 20,
     letterSpacing: 0.2,
   },
+  buttonLarge: {
+    fontFamily: FontFamily.sansSemiBold,
+    fontSize: 17,
+    lineHeight: 22,
+    letterSpacing: 0.2,
+  },
   buttonSmall: {
     fontFamily: FontFamily.sansMedium,
     fontSize: 14,
@@ -99,6 +105,13 @@ export const Typography: Record<string, TextStyle> = {
     lineHeight: 18,
   },
   
+  // Card headings - smaller than section h3
+  cardTitle: {
+    fontFamily: FontFamily.serif,
+    fontSize: 18,
+    lineHeight: 24,
+  },
+
   // Numbers - Distinctive
   streakNumber: {
     fontFamily: FontFamily.sansBold,

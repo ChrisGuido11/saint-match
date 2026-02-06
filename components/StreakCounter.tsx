@@ -9,6 +9,8 @@ import Animated, {
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
+import { Springs } from '../constants/animations';
+import { IconFire, IconTrophy, IconSparkle } from './icons';
 
 interface StreakCounterProps {
   count: number;
@@ -16,19 +18,19 @@ interface StreakCounterProps {
   showLabel?: boolean;
 }
 
-function getStreakEmoji(count: number): string {
-  if (count >= 100) return '🏆';
-  if (count >= 30) return '🔥';
-  if (count >= 7) return '✨';
-  if (count > 0) return '·'; // Simple dot for low streaks
-  return '';
+function StreakIcon({ count, size }: { count: number; size: number }) {
+  if (count >= 100) return <IconTrophy size={size} color={Colors.terracotta} />;
+  if (count >= 30) return <IconFire size={size} color={Colors.terracotta} />;
+  if (count >= 7) return <IconSparkle size={size} color={Colors.terracotta} />;
+  if (count > 0) return <IconFire size={size} color={Colors.charcoalSubtle} />;
+  return null;
 }
 
 export function StreakCounter({ count, size = 'compact', showLabel = true }: StreakCounterProps) {
   const scale = useSharedValue(0.9);
 
   useEffect(() => {
-    scale.value = withSpring(1, { damping: 12 });
+    scale.value = withSpring(1, Springs.buttonRelease);
   }, [count]);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -36,7 +38,7 @@ export function StreakCounter({ count, size = 'compact', showLabel = true }: Str
   }));
 
   const isLarge = size === 'large';
-  const emoji = getStreakEmoji(count);
+  const iconSize = isLarge ? 20 : 14;
 
   if (count === 0) {
     return (
@@ -48,16 +50,17 @@ export function StreakCounter({ count, size = 'compact', showLabel = true }: Str
   }
 
   return (
-    <Animated.View 
-      entering={FadeIn} 
+    <Animated.View
+      entering={FadeIn}
       style={[
-        styles.container, 
+        styles.container,
         isLarge && styles.large,
         count >= 7 && styles.active,
         animatedStyle,
       ]}
+      accessibilityLabel={`${count} day streak`}
     >
-      {emoji && <Text style={[styles.emoji, isLarge && styles.emojiLarge]}>{emoji}</Text>}
+      <StreakIcon count={count} size={iconSize} />
       <Text style={[styles.number, isLarge && styles.numberLarge]}>{count}</Text>
       {showLabel && <Text style={styles.label}>{count === 1 ? 'day' : 'days'}</Text>}
     </Animated.View>
@@ -82,12 +85,6 @@ const styles = StyleSheet.create({
   },
   active: {
     backgroundColor: Colors.terracottaMuted,
-  },
-  emoji: {
-    fontSize: 14,
-  },
-  emojiLarge: {
-    fontSize: 20,
   },
   number: {
     fontFamily: FontFamily.sansBold,

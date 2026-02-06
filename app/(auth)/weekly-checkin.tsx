@@ -69,6 +69,9 @@ export default function WeeklyCheckinScreen() {
               ]}
               onPress={() => handleSelect(score.value)}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={`Score ${score.value} — ${score.label}`}
+              accessibilityState={{ selected: selected === score.value }}
             >
               <IconPatienceScore level={score.value as 1 | 2 | 3 | 4 | 5} size={36} color={selected === score.value ? Colors.terracotta : Colors.sage} />
               <Text style={styles.scoreValue}>{score.value}</Text>
@@ -82,6 +85,9 @@ export default function WeeklyCheckinScreen() {
           onPress={handleSubmit}
           disabled={selected === null}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel="Submit patience score"
+          accessibilityState={{ disabled: selected === null }}
         >
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
@@ -151,7 +157,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     width: '100%',
-    paddingVertical: 16,
+    paddingVertical: 18,
     backgroundColor: Colors.terracotta,
     borderRadius: BorderRadius.md,
     alignItems: 'center',
@@ -161,7 +167,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   submitButtonText: {
-    ...Typography.button,
+    ...Typography.buttonLarge,
     color: Colors.white,
   },
   successContent: {

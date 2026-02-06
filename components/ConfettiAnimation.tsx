@@ -17,9 +17,9 @@ const CONFETTI_COLORS = [
   Colors.terracottaLight,
   Colors.sage,
   Colors.sageLight,
-  '#F5E6D3', // warm cream
+  Colors.creamWarm,
   Colors.white,
-  '#E8C4A0', // gold cream
+  Colors.creamDark,
 ];
 
 interface ConfettiPieceProps {

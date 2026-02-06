@@ -43,7 +43,7 @@ interface SettingRowProps {
 
 function SettingRow({ label, subtitle, onPress, destructive, rightText }: SettingRowProps) {
   return (
-    <TouchableOpacity style={styles.settingRow} onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.settingRow} onPress={onPress} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={`${label}${subtitle ? ` — ${subtitle}` : ''}`}>
       <View style={styles.settingContent}>
         <Text style={[styles.settingLabel, destructive && styles.settingLabelDestructive]}>
           {label}
@@ -294,7 +294,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm + 2,
+    paddingVertical: Spacing.md,
+    minHeight: 48,
   },
   settingContent: {
     flex: 1,

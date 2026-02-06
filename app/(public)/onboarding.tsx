@@ -11,7 +11,12 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
+import Animated, {
+  FadeInDown,
+  FadeIn,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
@@ -52,6 +57,15 @@ const SLIDES: OnboardingSlide[] = [
   },
 ];
 
+function AnimatedDot({ isActive }: { isActive: boolean }) {
+  const animatedStyle = useAnimatedStyle(() => ({
+    width: withTiming(isActive ? 24 : 8, { duration: 200 }),
+    backgroundColor: withTiming(isActive ? Colors.terracotta : Colors.charcoalSubtle, { duration: 200 }),
+  }));
+
+  return <Animated.View style={[styles.dot, animatedStyle]} />;
+}
+
 export default function OnboardingScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
@@ -91,7 +105,7 @@ export default function OnboardingScreen() {
     <View style={styles.container}>
       {/* Skip */}
       <Animated.View entering={FadeIn.delay(300)} style={styles.skipContainer}>
-        <TouchableOpacity onPress={handleNext}>
+        <TouchableOpacity onPress={handleNext} accessibilityRole="button" accessibilityLabel="Skip onboarding">
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -115,13 +129,7 @@ export default function OnboardingScreen() {
         {/* Dots */}
         <View style={styles.dots}>
           {SLIDES.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.dot,
-                index === currentIndex && styles.dotActive,
-              ]}
-            />
+            <AnimatedDot key={index} isActive={index === currentIndex} />
           ))}
         </View>
 
@@ -130,6 +138,8 @@ export default function OnboardingScreen() {
           style={styles.button}
           onPress={handleNext}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel={isLast ? 'Get started' : 'Continue to next slide'}
         >
           <Text style={styles.buttonText}>
             {isLast ? 'Get Started' : 'Continue'}
@@ -185,7 +195,7 @@ const styles = StyleSheet.create({
   },
   bottom: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: 50,
+    paddingBottom: Spacing.safeBottom,
     alignItems: 'center',
   },
   dots: {
@@ -194,14 +204,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   dot: {
-    width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.charcoalSubtle,
-  },
-  dotActive: {
-    width: 24,
-    backgroundColor: Colors.terracotta,
   },
   button: {
     width: '100%',
@@ -212,8 +216,7 @@ const styles = StyleSheet.create({
     ...Shadows.button,
   },
   buttonText: {
-    ...Typography.button,
+    ...Typography.buttonLarge,
     color: Colors.white,
-    fontSize: 17,
   },
 });

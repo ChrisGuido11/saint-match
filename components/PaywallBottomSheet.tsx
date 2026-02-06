@@ -85,6 +85,9 @@ export function PaywallBottomSheet({
               style={[styles.planCard, selectedPlan === 'annual' && styles.planCardSelected]}
               onPress={() => setSelectedPlan('annual')}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Yearly plan — $79 per year, save 17%"
+              accessibilityState={{ selected: selectedPlan === 'annual' }}
             >
               <View style={styles.saveBadge}>
                 <Text style={styles.saveBadgeText}>SAVE 17%</Text>
@@ -98,6 +101,9 @@ export function PaywallBottomSheet({
               style={[styles.planCard, selectedPlan === 'monthly' && styles.planCardSelected]}
               onPress={() => setSelectedPlan('monthly')}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Monthly plan — $7.99 per month"
+              accessibilityState={{ selected: selectedPlan === 'monthly' }}
             >
               <Text style={styles.planName}>Monthly</Text>
               <Text style={styles.planPrice}>$7.99/mo</Text>
@@ -139,12 +145,12 @@ export function PaywallBottomSheet({
           </TouchableOpacity>
 
           {/* Restore */}
-          <TouchableOpacity onPress={handleRestore} style={styles.restoreButton}>
+          <TouchableOpacity onPress={handleRestore} style={styles.restoreButton} accessibilityRole="button" accessibilityLabel="Restore purchases">
             <Text style={styles.restoreText}>Restore Purchases</Text>
           </TouchableOpacity>
 
           {/* Dismiss */}
-          <TouchableOpacity onPress={onClose} style={styles.dismissButton}>
+          <TouchableOpacity onPress={onClose} style={styles.dismissButton} accessibilityRole="button" accessibilityLabel="Dismiss">
             <Text style={styles.dismissText}>Maybe Later</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -209,7 +215,7 @@ const styles = StyleSheet.create({
   },
   planCardSelected: {
     borderColor: Colors.terracotta,
-    backgroundColor: 'rgba(212, 115, 94, 0.04)',
+    backgroundColor: Colors.terracottaSubtle,
   },
   saveBadge: {
     position: 'absolute',
@@ -263,7 +269,7 @@ const styles = StyleSheet.create({
   },
   ctaButton: {
     width: '100%',
-    paddingVertical: Spacing.md,
+    paddingVertical: 18,
     backgroundColor: Colors.terracotta,
     borderRadius: BorderRadius.md,
     alignItems: 'center',
@@ -273,7 +279,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   ctaText: {
-    ...Typography.button,
+    ...Typography.buttonLarge,
     color: Colors.white,
   },
   restoreButton: {

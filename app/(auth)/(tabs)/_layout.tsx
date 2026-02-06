@@ -85,13 +85,15 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: Colors.white,
-    borderTopWidth: 1,
-    borderTopColor: Colors.creamDark,
+    borderTopWidth: 0,
     height: 88,
     paddingTop: 8,
     paddingBottom: 24,
-    elevation: 0,
-    shadowOpacity: 0,
+    elevation: 8,
+    shadowColor: Colors.charcoal,
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
   },
   tabBarLabel: {
     fontFamily: FontFamily.sansMedium,
@@ -109,6 +111,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   tabIconContainerActive: {
-    backgroundColor: Colors.sageMuted,
+    backgroundColor: Colors.terracottaMuted,
   },
 });

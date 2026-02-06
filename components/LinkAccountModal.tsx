@@ -107,6 +107,7 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
+            accessibilityLabel="Email address"
           />
 
           <TextInput
@@ -117,6 +118,7 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
             onChangeText={setPassword}
             secureTextEntry
             autoComplete="new-password"
+            accessibilityLabel="Password"
           />
 
           {error && <Text style={styles.error}>{error}</Text>}
@@ -126,6 +128,8 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
             onPress={handleLink}
             disabled={isLoading}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Link account"
           >
             {isLoading ? (
               <ActivityIndicator color={Colors.white} />
@@ -134,7 +138,7 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleClose} style={styles.cancelButton}>
+          <TouchableOpacity onPress={handleClose} style={styles.cancelButton} accessibilityRole="button" accessibilityLabel="Cancel">
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
         </View>

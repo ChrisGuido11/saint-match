@@ -10,6 +10,7 @@ import { SaintCard } from '../../components/SaintCard';
 import { useApp } from '../../context/AppContext';
 import { SaintMatch as SaintMatchType, Mood } from '../../types';
 import { getMoodById } from '../../constants/saints';
+import { IconClose } from '../../components/icons';
 
 export default function SaintMatchScreen() {
   const { matchData, selectedMood } = useLocalSearchParams<{ matchData: string; selectedMood: Mood }>();
@@ -23,7 +24,7 @@ export default function SaintMatchScreen() {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>Something went wrong. Please try again.</Text>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Go back">
           <Text style={styles.backButtonText}>Go Back</Text>
         </TouchableOpacity>
       </View>
@@ -48,8 +49,8 @@ export default function SaintMatchScreen() {
       >
         {/* Header */}
         <Animated.View entering={FadeIn.delay(100).duration(500)} style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>×</Text>
+          <TouchableOpacity onPress={() => router.back()} style={styles.closeButton} accessibilityLabel="Close" accessibilityRole="button">
+            <IconClose size={20} color={Colors.charcoalMuted} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Your Saint Match</Text>
           {selectedMoodData && (
@@ -77,6 +78,8 @@ export default function SaintMatchScreen() {
           style={styles.acceptButton}
           onPress={handleAcceptChallenge}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel="Accept challenge"
         >
           <Text style={styles.acceptButtonText}>Accept Challenge</Text>
         </TouchableOpacity>
@@ -118,11 +121,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...Shadows.subtle,
   },
-  closeButtonText: {
-    fontSize: 24,
-    color: Colors.charcoalMuted,
-    lineHeight: 28,
-  },
+  // closeButtonText removed — replaced by IconClose component
   headerTitle: {
     ...Typography.label,
     color: Colors.terracotta,
@@ -143,7 +142,7 @@ const styles = StyleSheet.create({
   },
   bottomSection: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: 40,
+    paddingBottom: Spacing.safeBottom,
     paddingTop: Spacing.md,
   },
   acceptButton: {
@@ -155,9 +154,8 @@ const styles = StyleSheet.create({
     ...Shadows.button,
   },
   acceptButtonText: {
-    ...Typography.button,
+    ...Typography.buttonLarge,
     color: Colors.white,
-    fontSize: 17,
   },
   errorContainer: {
     flex: 1,

@@ -11,6 +11,7 @@ export const Colors = {
   terracottaLight: '#D98B73',
   terracottaDark: '#A85440',
   terracottaMuted: 'rgba(201, 107, 85, 0.12)',
+  terracottaSubtle: 'rgba(201, 107, 85, 0.04)',
   terracottaGlow: 'rgba(201, 107, 85, 0.25)',
 
   // Backgrounds - Warmer cream tones

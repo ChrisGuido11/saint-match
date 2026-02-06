@@ -13,9 +13,26 @@ import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { IconChart, IconLock } from '../../../components/icons';
 
+function SkeletonBlock({ width, height, style }: { width: number | string; height: number; style?: any }) {
+  return (
+    <Animated.View
+      entering={FadeIn.duration(300)}
+      style={[
+        {
+          width,
+          height,
+          borderRadius: BorderRadius.sm,
+          backgroundColor: Colors.creamDark,
+        },
+        style,
+      ]}
+    />
+  );
+}
+
 export default function PortfolioScreen() {
   const { completions, isPro, streak } = useApp();
-  const [patienceScores, setPatienceScores] = useState<PatienceScore[]>([]);
+  const [patienceScores, setPatienceScores] = useState<PatienceScore[] | null>(null);
 
   useEffect(() => {
     getPatienceScores().then(setPatienceScores);
@@ -41,8 +58,9 @@ export default function PortfolioScreen() {
     router.push('/(auth)/weekly-checkin');
   };
 
+  const isLoadingScores = patienceScores === null;
   // Chart data (last 8 scores)
-  const recentScores = patienceScores.slice(-8);
+  const recentScores = (patienceScores ?? []).slice(-8);
   const maxScore = 5;
 
   return (
@@ -57,7 +75,7 @@ export default function PortfolioScreen() {
           <Text style={styles.title}>Virtue Portfolio</Text>
           <Text style={styles.subtitle}>Your spiritual growth at a glance</Text>
         </View>
-        <TouchableOpacity onPress={handleCheckin} style={styles.checkinButton}>
+        <TouchableOpacity onPress={handleCheckin} style={styles.checkinButton} accessibilityRole="button" accessibilityLabel="Weekly check-in">
           <Text style={styles.checkinButtonText}>Weekly Check-in</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -65,7 +83,15 @@ export default function PortfolioScreen() {
       {/* Patience score chart */}
       <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.chartCard}>
         <Text style={styles.chartTitle}>Patience Score Trend</Text>
-        {recentScores.length > 0 ? (
+        {isLoadingScores ? (
+          <View style={[styles.chart, { alignItems: 'flex-end', gap: Spacing.xs }]}>
+            {[0.4, 0.6, 0.3, 0.7, 0.5, 0.8].map((h, i) => (
+              <View key={i} style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', height: '100%' }}>
+                <SkeletonBlock width="80%" height={160 * h} style={{ borderRadius: BorderRadius.sm }} />
+              </View>
+            ))}
+          </View>
+        ) : recentScores.length > 0 ? (
           <View style={styles.chart}>
             <View style={styles.chartYAxis}>
               {[5, 4, 3, 2, 1].map((val) => (
@@ -107,7 +133,7 @@ export default function PortfolioScreen() {
             <Text style={styles.emptyChartText}>
               Complete your first weekly check-in to see your patience trend!
             </Text>
-            <TouchableOpacity onPress={handleCheckin} style={styles.emptyChartCta}>
+            <TouchableOpacity onPress={handleCheckin} style={styles.emptyChartCta} accessibilityRole="button" accessibilityLabel="Rate your week">
               <Text style={styles.emptyChartCtaText}>Rate Your Week</Text>
             </TouchableOpacity>
           </View>
@@ -144,6 +170,7 @@ export default function PortfolioScreen() {
           ))
         ) : (
           <View style={styles.emptyLog}>
+            <IconChart size={48} color={Colors.sage} />
             <Text style={styles.emptyLogText}>
               Complete your first challenge to start building your Virtue Portfolio.
             </Text>
@@ -157,6 +184,8 @@ export default function PortfolioScreen() {
           style={[styles.exportButton, !isPro && styles.exportButtonLocked]}
           onPress={handleExport}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel={isPro ? 'Export portfolio as PDF' : 'Export portfolio — Pro feature'}
         >
           <View style={styles.exportButtonContent}>
             {!isPro && <IconLock size={16} color={Colors.white} />}
@@ -215,10 +244,9 @@ const styles = StyleSheet.create({
     ...Shadows.card,
   },
   chartTitle: {
-    ...Typography.h3,
+    ...Typography.cardTitle,
     color: Colors.charcoal,
     marginBottom: Spacing.md,
-    fontSize: 18,
   },
   chart: {
     flexDirection: 'row',
@@ -295,9 +323,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   logTitle: {
-    ...Typography.h3,
+    ...Typography.cardTitle,
     color: Colors.charcoal,
-    fontSize: 18,
   },
   logCount: {
     ...Typography.bodySmall,
@@ -347,13 +374,15 @@ const styles = StyleSheet.create({
     ...Typography.body,
     color: Colors.charcoalMuted,
     textAlign: 'center',
+    marginTop: Spacing.md,
   },
   exportButton: {
     width: '100%',
-    paddingVertical: 16,
+    paddingVertical: 18,
     backgroundColor: Colors.sage,
     borderRadius: BorderRadius.md,
     alignItems: 'center',
+    ...Shadows.button,
   },
   exportButtonLocked: {
     backgroundColor: Colors.charcoalSubtle,

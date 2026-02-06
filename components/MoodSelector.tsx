@@ -8,9 +8,10 @@ import Animated, {
   withDelay,
   FadeInDown,
 } from 'react-native-reanimated';
-import { Colors } from '../constants/colors';
+import { Colors, MoodColors } from '../constants/colors';
 import { Typography } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
+import { Springs } from '../constants/animations';
 import { MOODS } from '../constants/saints';
 import { Mood } from '../types';
 import { 
@@ -34,6 +35,16 @@ const moodIcons: Record<Mood, React.FC<{ size?: number; color?: string }>> = {
   'ready-to-serve': IconServe,
 };
 
+// Map mood IDs to their accent colors for icon tinting
+const moodAccentColors: Record<Mood, { icon: string; bg: string }> = {
+  'seeking-peace': { icon: MoodColors.peace, bg: 'rgba(139, 168, 160, 0.12)' },
+  'need-focus': { icon: MoodColors.focus, bg: 'rgba(123, 143, 163, 0.12)' },
+  'want-to-grow': { icon: MoodColors.grow, bg: 'rgba(158, 139, 131, 0.12)' },
+  'feeling-grateful': { icon: MoodColors.grateful, bg: 'rgba(196, 154, 108, 0.12)' },
+  'full-of-joy': { icon: MoodColors.joy, bg: 'rgba(212, 168, 94, 0.12)' },
+  'ready-to-serve': { icon: MoodColors.serve, bg: 'rgba(139, 157, 131, 0.12)' },
+};
+
 interface MoodButtonProps {
   mood: Mood;
   label: string;
@@ -45,17 +56,18 @@ interface MoodButtonProps {
 function MoodButton({ mood, label, subtitle, index, onPress }: MoodButtonProps) {
   const scale = useSharedValue(1);
   const IconComponent = moodIcons[mood];
+  const { icon: accentColor, bg: accentBg } = moodAccentColors[mood];
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.96, { damping: 15, stiffness: 300 });
+    scale.value = withSpring(0.96, Springs.buttonPress);
   };
 
   const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 12, stiffness: 200 });
+    scale.value = withSpring(1, Springs.buttonRelease);
   };
 
   const handlePress = () => {
@@ -74,9 +86,11 @@ function MoodButton({ mood, label, subtitle, index, onPress }: MoodButtonProps) 
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         activeOpacity={1}
+        accessibilityRole="button"
+        accessibilityLabel={`${label} — ${subtitle}`}
       >
-        <View style={styles.iconContainer}>
-          <IconComponent size={28} color={Colors.sage} />
+        <View style={[styles.iconContainer, { backgroundColor: accentBg }]}>
+          <IconComponent size={28} color={accentColor} />
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.moodLabel}>{label}</Text>

@@ -15,7 +15,7 @@ export { IconCompleted } from './IconCompleted';
 export { IconMatching } from './IconMatching';
 export { IconMilestone } from './IconMilestone';
 export { IconPatienceScore } from './IconPatienceScore';
-export { 
+export {
   IconNavHome,
   IconNavCalendar,
   IconNavPortfolio,
@@ -28,4 +28,6 @@ export {
   IconChevronLeft,
   IconChevronRight,
   IconChevron,
+  IconClose,
+  IconSparkle,
 } from './IconNav';

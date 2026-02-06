@@ -10,6 +10,7 @@ import Animated, {
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
+import { Springs } from '../constants/animations';
 import { ActiveChallenge } from '../types';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -27,11 +28,11 @@ export function ChallengeCard({ challenge, onComplete }: ChallengeCardProps) {
   }));
 
   const handlePressIn = () => {
-    buttonScale.value = withSpring(0.96, { damping: 15 });
+    buttonScale.value = withSpring(0.96, Springs.buttonPress);
   };
 
   const handlePressOut = () => {
-    buttonScale.value = withSpring(1, { damping: 10 });
+    buttonScale.value = withSpring(1, Springs.buttonRelease);
   };
 
   const handleComplete = () => {
@@ -68,6 +69,8 @@ export function ChallengeCard({ challenge, onComplete }: ChallengeCardProps) {
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
           activeOpacity={1}
+          accessibilityRole="button"
+          accessibilityLabel="Mark challenge as completed"
         >
           <Text style={styles.buttonText}>I Did It!</Text>
         </AnimatedTouchable>
@@ -110,9 +113,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   saintName: {
-    ...Typography.h3,
+    ...Typography.cardTitle,
     color: Colors.charcoal,
-    fontSize: 18,
   },
   feastDay: {
     ...Typography.caption,
@@ -136,16 +138,15 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    paddingVertical: Spacing.md,
+    paddingVertical: 18,
     backgroundColor: Colors.terracotta,
     borderRadius: BorderRadius.md,
     alignItems: 'center',
     ...Shadows.button,
   },
   buttonText: {
-    ...Typography.button,
+    ...Typography.buttonLarge,
     color: Colors.white,
-    fontSize: 17,
   },
   completedBadge: {
     width: '100%',

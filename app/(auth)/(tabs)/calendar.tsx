@@ -28,9 +28,26 @@ import {
 
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
+function SkeletonBlock({ width, height, style }: { width: number | string; height: number; style?: any }) {
+  return (
+    <Animated.View
+      entering={FadeIn.duration(300)}
+      style={[
+        {
+          width,
+          height,
+          borderRadius: BorderRadius.sm,
+          backgroundColor: Colors.creamDark,
+        },
+        style,
+      ]}
+    />
+  );
+}
+
 export default function CalendarScreen() {
   const { streak } = useApp();
-  const [completionDates, setCompletionDates] = useState<string[]>([]);
+  const [completionDates, setCompletionDates] = useState<string[] | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(() => {
@@ -42,9 +59,12 @@ export default function CalendarScreen() {
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
   const startDayOfWeek = getDay(monthStart);
 
+  const isLoading = completionDates === null;
+  const dates = completionDates ?? [];
+
   const isCompleted = (date: Date): boolean => {
     const dateStr = format(date, 'yyyy-MM-dd');
-    return completionDates.includes(dateStr);
+    return dates.includes(dateStr);
   };
 
   return (
@@ -60,6 +80,17 @@ export default function CalendarScreen() {
       </Animated.View>
 
       {/* Stats row */}
+      {isLoading ? (
+        <View style={styles.statsRow}>
+          {[0, 1, 2].map((i) => (
+            <View key={i} style={[styles.statCard, { alignItems: 'center', gap: Spacing.xs }]}>
+              <SkeletonBlock width={28} height={28} style={{ borderRadius: 14 }} />
+              <SkeletonBlock width={40} height={24} />
+              <SkeletonBlock width={48} height={14} />
+            </View>
+          ))}
+        </View>
+      ) : (
       <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.statsRow}>
         <View style={styles.statCard}>
           <IconFire size={28} color={Colors.terracotta} />
@@ -75,10 +106,11 @@ export default function CalendarScreen() {
         </View>
         <View style={styles.statCard}>
           <IconCheckCircle size={28} color={Colors.sage} />
-          <Text style={styles.statNumber}>{completionDates.length}</Text>
+          <Text style={styles.statNumber}>{dates.length}</Text>
           <Text style={styles.statLabel}>Total</Text>
         </View>
       </Animated.View>
+      )}
 
       {/* Calendar */}
       <Animated.View entering={FadeInDown.delay(200).duration(500)} style={styles.calendarCard}>
@@ -87,6 +119,8 @@ export default function CalendarScreen() {
           <TouchableOpacity
             onPress={() => setCurrentMonth(subMonths(currentMonth, 1))}
             style={styles.monthNavButton}
+            accessibilityRole="button"
+            accessibilityLabel="Previous month"
           >
             <IconChevronLeft size={20} color={Colors.charcoalLight} />
           </TouchableOpacity>
@@ -96,6 +130,8 @@ export default function CalendarScreen() {
           <TouchableOpacity
             onPress={() => setCurrentMonth(addMonths(currentMonth, 1))}
             style={styles.monthNavButton}
+            accessibilityRole="button"
+            accessibilityLabel="Next month"
           >
             <IconChevronRight size={20} color={Colors.charcoalLight} />
           </TouchableOpacity>
