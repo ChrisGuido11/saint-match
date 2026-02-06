@@ -25,6 +25,11 @@ export const isSupabaseConfigured = (): boolean => {
 // Auth helpers
 
 export async function ensureAnonymousSession() {
+  if (!isSupabaseConfigured()) {
+    console.warn('ensureAnonymousSession: Supabase not configured, skipping');
+    return null;
+  }
+
   const { data: { session } } = await supabase.auth.getSession();
   if (session) return session;
 

@@ -13,6 +13,74 @@ import {
 import { format, startOfWeek, addDays } from 'date-fns';
 
 const MIGRATION_KEY = '@saint_match_supabase_migrated';
+const SYNC_QUEUE_KEY = '@saint_match_sync_queue';
+
+// ── Sync retry queue ─────────────────────────────────────────────────
+
+interface SyncQueueItem {
+  type: 'completion' | 'streak' | 'challenge' | 'patience_score' | 'onboarding';
+  payload: unknown;
+  createdAt: string;
+}
+
+async function getSyncQueue(): Promise<SyncQueueItem[]> {
+  try {
+    const raw = await AsyncStorage.getItem(SYNC_QUEUE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+async function addToSyncQueue(item: SyncQueueItem): Promise<void> {
+  const queue = await getSyncQueue();
+  queue.push(item);
+  await AsyncStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(queue));
+}
+
+async function clearSyncQueue(): Promise<void> {
+  await AsyncStorage.removeItem(SYNC_QUEUE_KEY);
+}
+
+async function replaySyncQueue(): Promise<void> {
+  const queue = await getSyncQueue();
+  if (queue.length === 0) return;
+
+  const failedItems: SyncQueueItem[] = [];
+
+  for (const item of queue) {
+    try {
+      switch (item.type) {
+        case 'completion':
+          await syncCompletionToServer(item.payload as Completion);
+          break;
+        case 'streak':
+          await syncStreakToServer(item.payload as StreakData);
+          break;
+        case 'challenge':
+          await syncActiveChallengeToServer(item.payload as ActiveChallenge | null);
+          break;
+        case 'patience_score': {
+          const ps = item.payload as { score: number; weekEnding: string };
+          await syncPatienceScoreToServer(ps.score, ps.weekEnding);
+          break;
+        }
+        case 'onboarding':
+          await syncOnboardingToServer();
+          break;
+      }
+    } catch {
+      failedItems.push(item);
+    }
+  }
+
+  // Replace queue with only the items that failed again
+  if (failedItems.length > 0) {
+    await AsyncStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(failedItems));
+  } else {
+    await clearSyncQueue();
+  }
+}
 
 // ── Helper: Ensure profile exists ──────────────────────────────────────
 
@@ -60,6 +128,9 @@ export async function syncAllData(): Promise<SyncedData | null> {
 
   const userId = session.user.id;
 
+  // Replay any queued operations from previous failed syncs
+  await replaySyncQueue();
+
   // Run one-time migration if needed
   await migrateLocalDataToServer(userId);
 
@@ -87,7 +158,7 @@ export async function syncCompletionToServer(completion: Completion): Promise<vo
   try {
     // Ensure profile exists first
     await ensureProfileExists(session.user.id, session.user.email);
-    
+
     const result = await supabase.from('completions').upsert(
       {
         user_id: session.user.id,
@@ -101,14 +172,20 @@ export async function syncCompletionToServer(completion: Completion): Promise<vo
       },
       { onConflict: 'user_id,date_completed' }
     );
-    
+
     if (result.error) {
       console.error('syncCompletionToServer error:', result.error);
+      throw result.error;
     } else {
       console.log('syncCompletionToServer success');
     }
   } catch (err) {
     console.error('syncCompletionToServer exception:', err);
+    await addToSyncQueue({
+      type: 'completion',
+      payload: completion,
+      createdAt: new Date().toISOString(),
+    });
   }
 }
 
@@ -124,7 +201,7 @@ export async function syncStreakToServer(streak: StreakData): Promise<void> {
   try {
     // Ensure profile exists first
     await ensureProfileExists(session.user.id, session.user.email);
-    
+
     const result = await supabase.from('streaks').upsert({
       user_id: session.user.id,
       current_streak: streak.currentStreak,
@@ -135,11 +212,17 @@ export async function syncStreakToServer(streak: StreakData): Promise<void> {
 
     if (result.error) {
       console.error('syncStreakToServer error:', result.error);
+      throw result.error;
     } else {
       console.log('syncStreakToServer success');
     }
   } catch (err) {
     console.error('syncStreakToServer exception:', err);
+    await addToSyncQueue({
+      type: 'streak',
+      payload: streak,
+      createdAt: new Date().toISOString(),
+    });
   }
 }
 
@@ -153,18 +236,29 @@ export async function syncActiveChallengeToServer(
 
   const userId = session.user.id;
 
-  if (!challenge) {
-    await supabase.from('active_challenges').delete().eq('user_id', userId);
-    return;
-  }
+  try {
+    if (!challenge) {
+      await supabase.from('active_challenges').delete().eq('user_id', userId);
+      return;
+    }
 
-  await supabase.from('active_challenges').upsert({
-    user_id: userId,
-    match_data: challenge.match,
-    accepted_at: challenge.acceptedAt,
-    completed: challenge.completed,
-    date_for: new Date().toISOString().slice(0, 10),
-  });
+    const result = await supabase.from('active_challenges').upsert({
+      user_id: userId,
+      match_data: challenge.match,
+      accepted_at: challenge.acceptedAt,
+      completed: challenge.completed,
+      date_for: new Date().toISOString().slice(0, 10),
+    });
+
+    if (result.error) throw result.error;
+  } catch (err) {
+    console.error('syncActiveChallengeToServer exception:', err);
+    await addToSyncQueue({
+      type: 'challenge',
+      payload: challenge,
+      createdAt: new Date().toISOString(),
+    });
+  }
 }
 
 export async function syncPatienceScoreToServer(
@@ -176,14 +270,25 @@ export async function syncPatienceScoreToServer(
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return;
 
-  await supabase.from('patience_scores').upsert(
-    {
-      user_id: session.user.id,
-      score,
-      week_ending: weekEnding,
-    },
-    { onConflict: 'user_id,week_ending' }
-  );
+  try {
+    const result = await supabase.from('patience_scores').upsert(
+      {
+        user_id: session.user.id,
+        score,
+        week_ending: weekEnding,
+      },
+      { onConflict: 'user_id,week_ending' }
+    );
+
+    if (result.error) throw result.error;
+  } catch (err) {
+    console.error('syncPatienceScoreToServer exception:', err);
+    await addToSyncQueue({
+      type: 'patience_score',
+      payload: { score, weekEnding },
+      createdAt: new Date().toISOString(),
+    });
+  }
 }
 
 export async function syncOnboardingToServer(): Promise<void> {
@@ -192,10 +297,21 @@ export async function syncOnboardingToServer(): Promise<void> {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return;
 
-  await supabase
-    .from('profiles')
-    .update({ is_onboarded: true })
-    .eq('id', session.user.id);
+  try {
+    const result = await supabase
+      .from('profiles')
+      .update({ is_onboarded: true })
+      .eq('id', session.user.id);
+
+    if (result.error) throw result.error;
+  } catch (err) {
+    console.error('syncOnboardingToServer exception:', err);
+    await addToSyncQueue({
+      type: 'onboarding',
+      payload: null,
+      createdAt: new Date().toISOString(),
+    });
+  }
 }
 
 // ── Fetch functions (server → client) ──────────────────────────────────
@@ -270,61 +386,100 @@ async function migrateLocalDataToServer(userId: string): Promise<void> {
   const alreadyMigrated = await AsyncStorage.getItem(MIGRATION_KEY);
   if (alreadyMigrated === 'true') return;
 
+  // Track each step independently so partial failures can be retried
+  const STEP_KEYS = {
+    onboarding: '@saint_match_migrated_onboarding',
+    completions: '@saint_match_migrated_completions',
+    streaks: '@saint_match_migrated_streaks',
+    patience: '@saint_match_migrated_patience',
+  };
+
+  let allSucceeded = true;
+
+  // 1. Migrate onboarding status
   try {
-    // 1. Migrate onboarding status
-    const isOnboarded = await hasCompletedOnboarding();
-    if (isOnboarded) {
-      await supabase
-        .from('profiles')
-        .update({ is_onboarded: true })
-        .eq('id', userId);
+    if ((await AsyncStorage.getItem(STEP_KEYS.onboarding)) !== 'true') {
+      const isOnboarded = await hasCompletedOnboarding();
+      if (isOnboarded) {
+        await supabase
+          .from('profiles')
+          .update({ is_onboarded: true })
+          .eq('id', userId);
+      }
+      await AsyncStorage.setItem(STEP_KEYS.onboarding, 'true');
     }
-
-    // 2. Migrate completions
-    const completions = await getCompletions();
-    if (completions.length > 0) {
-      const rows = completions.map((c) => ({
-        user_id: userId,
-        saint_id: c.saintId,
-        micro_action_id: c.microActionId,
-        emotion_selected: c.emotionSelected,
-        saint_name: c.saintName,
-        action_text: c.actionText,
-        date_completed: c.dateCompleted,
-        completed_at: c.completedAt,
-      }));
-      await supabase
-        .from('completions')
-        .upsert(rows, { onConflict: 'user_id,date_completed' });
-    }
-
-    // 3. Migrate streak data
-    const streakData = await getStreakData();
-    await supabase.from('streaks').upsert({
-      user_id: userId,
-      current_streak: streakData.currentStreak,
-      longest_streak: streakData.longestStreak,
-      last_completion_date: streakData.lastCompletionDate,
-      streak_freezes_used_this_week: streakData.streakFreezesUsedThisWeek,
-    });
-
-    // 4. Migrate patience scores
-    const patienceScores = await getPatienceScores();
-    if (patienceScores.length > 0) {
-      const scoreRows = patienceScores.map((s) => ({
-        user_id: userId,
-        score: s.score,
-        week_ending: s.weekEnding,
-        created_at: s.createdAt,
-      }));
-      await supabase
-        .from('patience_scores')
-        .upsert(scoreRows, { onConflict: 'user_id,week_ending' });
-    }
-
-    // 5. Mark migration complete
-    await AsyncStorage.setItem(MIGRATION_KEY, 'true');
   } catch {
-    // Migration failed — will retry on next app launch
+    allSucceeded = false;
+  }
+
+  // 2. Migrate completions
+  try {
+    if ((await AsyncStorage.getItem(STEP_KEYS.completions)) !== 'true') {
+      const completions = await getCompletions();
+      if (completions.length > 0) {
+        const rows = completions.map((c) => ({
+          user_id: userId,
+          saint_id: c.saintId,
+          micro_action_id: c.microActionId,
+          emotion_selected: c.emotionSelected,
+          saint_name: c.saintName,
+          action_text: c.actionText,
+          date_completed: c.dateCompleted,
+          completed_at: c.completedAt,
+        }));
+        const { error } = await supabase
+          .from('completions')
+          .upsert(rows, { onConflict: 'user_id,date_completed' });
+        if (error) throw error;
+      }
+      await AsyncStorage.setItem(STEP_KEYS.completions, 'true');
+    }
+  } catch {
+    allSucceeded = false;
+  }
+
+  // 3. Migrate streak data
+  try {
+    if ((await AsyncStorage.getItem(STEP_KEYS.streaks)) !== 'true') {
+      const streakData = await getStreakData();
+      const { error } = await supabase.from('streaks').upsert({
+        user_id: userId,
+        current_streak: streakData.currentStreak,
+        longest_streak: streakData.longestStreak,
+        last_completion_date: streakData.lastCompletionDate,
+        streak_freezes_used_this_week: streakData.streakFreezesUsedThisWeek,
+      });
+      if (error) throw error;
+      await AsyncStorage.setItem(STEP_KEYS.streaks, 'true');
+    }
+  } catch {
+    allSucceeded = false;
+  }
+
+  // 4. Migrate patience scores
+  try {
+    if ((await AsyncStorage.getItem(STEP_KEYS.patience)) !== 'true') {
+      const patienceScores = await getPatienceScores();
+      if (patienceScores.length > 0) {
+        const scoreRows = patienceScores.map((s) => ({
+          user_id: userId,
+          score: s.score,
+          week_ending: s.weekEnding,
+          created_at: s.createdAt,
+        }));
+        const { error } = await supabase
+          .from('patience_scores')
+          .upsert(scoreRows, { onConflict: 'user_id,week_ending' });
+        if (error) throw error;
+      }
+      await AsyncStorage.setItem(STEP_KEYS.patience, 'true');
+    }
+  } catch {
+    allSucceeded = false;
+  }
+
+  // 5. Only mark overall migration complete if all steps succeeded
+  if (allSucceeded) {
+    await AsyncStorage.setItem(MIGRATION_KEY, 'true');
   }
 }

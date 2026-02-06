@@ -119,6 +119,12 @@ All design tokens live in `constants/`:
 
 All domain types in `types/index.ts`: `Saint`, `Emotion` (6 values), `MicroAction`, `SaintMatch`, `ActiveChallenge`, `Completion`, `StreakData`, `UsageData`, `PatienceScore`.
 
+### Database Migrations
+
+Schema lives in `supabase/migrations/`. Key files:
+- `001_initial_schema.sql` — Core tables, RLS policies, `handle_new_user()` trigger
+- `004_production_hardening.sql` — Atomic usage RPC, performance indexes, DELETE RLS policies, cache cleanup
+
 ### Patterns
 
 - Functional components with hooks only (no class components)
@@ -127,3 +133,36 @@ All domain types in `types/index.ts`: `Saint`, `Emotion` (6 values), `MicroActio
 - expo-haptics for tactile feedback on key actions
 - `@/` path alias maps to project root (configured in tsconfig.json)
 - Background sync: write to AsyncStorage first (instant UI), then fire-and-forget `.catch(() => {})` sync to Supabase
+- Sync retry queue: failed push operations are queued in AsyncStorage (`@saint_match_sync_queue`) and replayed on next `syncAllData()`
+
+## Production Deployment Checklist
+
+### Supabase Setup
+
+1. **Run migrations** in order in the Supabase SQL Editor:
+   - `001_initial_schema.sql` (if fresh project)
+   - `004_production_hardening.sql` (indexes, atomic usage RPC, DELETE policies)
+
+2. **Enable Anonymous Sign-Ins** in Supabase Dashboard → Authentication → Settings
+
+3. **Set Edge Function secrets:**
+   ```bash
+   supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+   # SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY are auto-provided
+   ```
+
+4. **Deploy Edge Function:**
+   ```bash
+   supabase functions deploy saint-match
+   ```
+
+5. **Verify** the Edge Function:
+   - Send malformed JSON body → expect 400 (not 500)
+   - Send without auth header → expect 401
+   - Send valid request → expect saint match response
+
+### Client Setup
+
+1. Copy `.env.example` to `.env` and fill in your Supabase project URL and anon key
+2. Run `npm install`
+3. Run `npm start` to verify

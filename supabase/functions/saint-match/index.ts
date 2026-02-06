@@ -1,10 +1,19 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { corsHeaders } from '../_shared/cors.ts';
+import { corsHeaders, getCorsHeaders } from '../_shared/cors.ts';
 
-const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')!;
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+// ── Env var validation ──────────────────────────────────────────────────
+
+const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+const MISSING_VARS = ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY']
+  .filter((v) => !Deno.env.get(v));
+
+if (MISSING_VARS.length > 0) {
+  console.error(`Missing required env vars: ${MISSING_VARS.join(', ')}`);
+}
 
 const VALID_EMOTIONS = [
   'anxious',
@@ -110,6 +119,18 @@ interface ClaudeResponse {
   estimatedMinutes: number;
 }
 
+function isValidClaudeResponse(obj: unknown): obj is ClaudeResponse {
+  if (!obj || typeof obj !== 'object') return false;
+  const r = obj as Record<string, unknown>;
+  return (
+    typeof r.saintName === 'string' && r.saintName.length > 0 &&
+    typeof r.feastDay === 'string' &&
+    typeof r.bio === 'string' &&
+    typeof r.microAction === 'string' && r.microAction.length > 0 &&
+    typeof r.estimatedMinutes === 'number' && r.estimatedMinutes > 0
+  );
+}
+
 async function callClaude(
   emotion: string
 ): Promise<ClaudeResponse | null> {
@@ -141,7 +162,13 @@ async function callClaude(
     const text = data.content?.[0]?.text;
     if (!text) return null;
 
-    return JSON.parse(text);
+    const parsed = JSON.parse(text);
+    if (!isValidClaudeResponse(parsed)) {
+      console.error('Invalid Claude response structure:', JSON.stringify(parsed).slice(0, 200));
+      return null;
+    }
+
+    return parsed;
   } catch {
     return null;
   }
@@ -167,50 +194,52 @@ async function checkAndIncrementUsage(
 ): Promise<boolean> {
   const { weekStartStr, nextMonday } = getWeekStart();
 
-  const { data: usage } = await supabase
-    .from('usage')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('week_start', weekStartStr)
-    .maybeSingle();
+  // Use atomic RPC to prevent TOCTOU race condition
+  const { data, error } = await supabase.rpc('increment_usage', {
+    p_user_id: userId,
+    p_week_start: weekStartStr,
+    p_reset_at: nextMonday.toISOString(),
+    p_weekly_limit: 3,
+  });
 
-  if (!usage) {
-    // First match this week — create row with count 1
-    await supabase.from('usage').insert({
-      user_id: userId,
-      matches_used_this_week: 1,
-      weekly_limit: 3,
-      week_start: weekStartStr,
-      reset_at: nextMonday.toISOString(),
-    });
+  if (error) {
+    console.error('increment_usage RPC error:', error);
+    // Fallback: allow the request rather than blocking on DB error
     return true;
   }
 
-  if (usage.matches_used_this_week >= usage.weekly_limit) {
-    return false;
-  }
-
-  await supabase
-    .from('usage')
-    .update({ matches_used_this_week: usage.matches_used_this_week + 1 })
-    .eq('id', usage.id);
-
-  return true;
+  return data === true;
 }
 
-function jsonResponse(body: Record<string, unknown>, status = 200) {
+function jsonResponse(
+  body: Record<string, unknown>,
+  status = 200,
+  headers: Record<string, string> = corsHeaders
+) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
 // ── Main handler ───────────────────────────────────────────────────────
 
 Deno.serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  const headers = getCorsHeaders(origin);
+
   // CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response('ok', { headers });
+  }
+
+  // Early exit if required env vars are missing
+  if (MISSING_VARS.length > 0) {
+    return jsonResponse(
+      { error: `Server misconfigured: missing ${MISSING_VARS.join(', ')}`, code: 'SERVER_ERROR' },
+      500,
+      headers
+    );
   }
 
   try {
@@ -219,12 +248,13 @@ Deno.serve(async (req) => {
     if (!authHeader) {
       return jsonResponse(
         { error: 'Unauthorized', code: 'UNAUTHORIZED' },
-        401
+        401,
+        headers
       );
     }
 
-    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    const supabaseUser = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    const supabaseAdmin = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
+    const supabaseUser = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
       global: { headers: { Authorization: authHeader } },
     });
 
@@ -236,16 +266,29 @@ Deno.serve(async (req) => {
     if (userError || !user) {
       return jsonResponse(
         { error: 'Unauthorized', code: 'UNAUTHORIZED' },
-        401
+        401,
+        headers
       );
     }
 
-    // 2. Validate input
-    const { emotion } = await req.json();
-    if (!VALID_EMOTIONS.includes(emotion)) {
+    // 2. Validate input — wrap in try/catch for malformed body
+    let emotion: string;
+    try {
+      const body = await req.json();
+      emotion = body.emotion;
+    } catch {
+      return jsonResponse(
+        { error: 'Invalid request body', code: 'BAD_REQUEST' },
+        400,
+        headers
+      );
+    }
+
+    if (!VALID_EMOTIONS.includes(emotion as typeof VALID_EMOTIONS[number])) {
       return jsonResponse(
         { error: 'Invalid emotion', code: 'INVALID_EMOTION' },
-        400
+        400,
+        headers
       );
     }
 
@@ -261,7 +304,8 @@ Deno.serve(async (req) => {
       if (!canUse) {
         return jsonResponse(
           { error: 'Weekly limit reached', code: 'USAGE_LIMIT_REACHED' },
-          429
+          429,
+          headers
         );
       }
     }
@@ -284,7 +328,7 @@ Deno.serve(async (req) => {
         micro_action: cached.micro_action,
         estimated_minutes: cached.estimated_minutes,
         source: 'cache',
-      });
+      }, 200, headers);
     }
 
     // 5. Call Claude API
@@ -314,17 +358,18 @@ Deno.serve(async (req) => {
         micro_action: claudeResult.microAction,
         estimated_minutes: claudeResult.estimatedMinutes,
         source: 'claude',
-      });
+      }, 200, headers);
     }
 
     // 6. Local fallback
     const localMatch = matchLocally(emotion);
-    return jsonResponse({ ...localMatch, source: 'local' });
+    return jsonResponse({ ...localMatch, source: 'local' }, 200, headers);
   } catch (error) {
     console.error('saint-match error:', error);
     return jsonResponse(
       { error: 'Internal error', code: 'INTERNAL_ERROR' },
-      500
+      500,
+      headers
     );
   }
 });
