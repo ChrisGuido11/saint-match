@@ -11,7 +11,7 @@ import { getPatienceScores, exportAllData } from '../../../lib/storage';
 import { PatienceScore, Completion } from '../../../types';
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-import { IconChart, IconLock } from '../../../components/icons';
+import { IconChart } from '../../../components/icons';
 
 function SkeletonBlock({ width, height, style }: { width: number | string; height: number; style?: any }) {
   return (
@@ -31,7 +31,7 @@ function SkeletonBlock({ width, height, style }: { width: number | string; heigh
 }
 
 export default function PortfolioScreen() {
-  const { completions, isPro, streak } = useApp();
+  const { completions, streak } = useApp();
   const [patienceScores, setPatienceScores] = useState<PatienceScore[] | null>(null);
 
   useEffect(() => {
@@ -39,10 +39,6 @@ export default function PortfolioScreen() {
   }, []);
 
   const handleExport = async () => {
-    if (!isPro) {
-      Alert.alert('Pro Feature', 'Upgrade to Pro to export your Virtue Portfolio.');
-      return;
-    }
     try {
       const data = await exportAllData();
       const json = JSON.stringify(data, null, 2);
@@ -181,17 +177,14 @@ export default function PortfolioScreen() {
       {/* Export button */}
       <Animated.View entering={FadeInDown.delay(400).duration(500)}>
         <TouchableOpacity
-          style={[styles.exportButton, !isPro && styles.exportButtonLocked]}
+          style={styles.exportButton}
           onPress={handleExport}
           activeOpacity={0.85}
           accessibilityRole="button"
-          accessibilityLabel={isPro ? 'Export portfolio as PDF' : 'Export portfolio — Pro feature'}
+          accessibilityLabel="Export portfolio as PDF"
         >
           <View style={styles.exportButtonContent}>
-            {!isPro && <IconLock size={16} color={Colors.white} />}
-            <Text style={styles.exportButtonText}>
-              {isPro ? 'Export Portfolio as PDF' : 'Export (Pro)'}
-            </Text>
+            <Text style={styles.exportButtonText}>Export Portfolio as PDF</Text>
           </View>
         </TouchableOpacity>
       </Animated.View>
@@ -383,9 +376,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     alignItems: 'center',
     ...Shadows.button,
-  },
-  exportButtonLocked: {
-    backgroundColor: Colors.charcoalSubtle,
   },
   exportButtonContent: {
     flexDirection: 'row',

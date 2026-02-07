@@ -312,23 +312,24 @@ Deno.serve(async (req) => {
       );
     }
 
-    // 3. Check usage (server-side enforcement)
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('is_pro')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile?.is_pro) {
-      const canUse = await checkAndIncrementUsage(supabaseAdmin, user.id);
-      if (!canUse) {
-        return jsonResponse(
-          { error: 'Weekly limit reached', code: 'USAGE_LIMIT_REACHED' },
-          429,
-          headers
-        );
-      }
-    }
+    // 3. Usage limits disabled for free beta — all users get unlimited matches
+    // Re-enable by uncommenting the block below:
+    // const { data: profile } = await supabaseAdmin
+    //   .from('profiles')
+    //   .select('is_pro')
+    //   .eq('id', user.id)
+    //   .single();
+    //
+    // if (!profile?.is_pro) {
+    //   const canUse = await checkAndIncrementUsage(supabaseAdmin, user.id);
+    //   if (!canUse) {
+    //     return jsonResponse(
+    //       { error: 'Weekly limit reached', code: 'USAGE_LIMIT_REACHED' },
+    //       429,
+    //       headers
+    //     );
+    //   }
+    // }
 
     // 4. Call Claude API (skip cache for dynamic variety)
     const claudeResult = await callClaude(emotion);

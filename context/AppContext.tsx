@@ -12,7 +12,8 @@ import {
   hasCompletedOnboarding,
   setOnboardingComplete as storeOnboardingComplete,
 } from '../lib/storage';
-import { checkProStatus, initPurchases, loginRevenueCat } from '../lib/purchases';
+// RevenueCat kept dormant — re-enable for paid tiers later
+// import { checkProStatus, initPurchases, loginRevenueCat } from '../lib/purchases';
 import { addCompletionDate } from '../lib/streak';
 import { format } from 'date-fns';
 import { supabase, isSupabaseConfigured, ensureAnonymousSession } from '../lib/supabase';
@@ -63,7 +64,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
   const [activeChallenge, setActiveChallenge] = useState<ActiveChallenge | null>(null);
   const [completions, setCompletions] = useState<Completion[]>([]);
-  const [isPro, setIsPro] = useState(false);
+  const [isPro, setIsPro] = useState(true); // Free beta: everyone gets full access
   const [isOnboarded, setIsOnboarded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
@@ -81,19 +82,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const refreshAll = useCallback(async () => {
     // Fast path: load from AsyncStorage
-    const [streakData, usageData, challenge, comps, proStatus, onboarded] = await Promise.all([
+    const [streakData, usageData, challenge, comps, onboarded] = await Promise.all([
       getStreakData(),
       getUsageData(),
       getActiveChallenge(),
       getCompletions(),
-      checkProStatus(),
       hasCompletedOnboarding(),
     ]);
     setStreak(streakData);
     setUsage(usageData);
     setActiveChallenge(challenge);
     setCompletions(comps);
-    setIsPro(proStatus);
+    // isPro stays true — free beta, no pro check needed
     setIsOnboarded(onboarded);
 
     // Slow path: background sync with Supabase
@@ -116,19 +116,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function init() {
-      // Initialize RevenueCat SDK (before auth so it's ready for logIn)
-      await initPurchases();
+      // RevenueCat init skipped for free beta
+      // await initPurchases();
 
       // Initialize anonymous auth if Supabase is configured
       if (isSupabaseConfigured()) {
         try {
           const sess = await ensureAnonymousSession();
           setSession(sess);
-
-          // Link RevenueCat to Supabase user
-          if (sess?.user?.id) {
-            loginRevenueCat(sess.user.id).catch(() => {});
-          }
         } catch {
           // Auth failed — app still works offline with AsyncStorage
         }
@@ -197,14 +192,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [activeChallenge]);
 
   const consumeMatch = useCallback(async () => {
-    // Client-side pre-check (server is authoritative via Edge Function)
-    if (isPro) return true;
-    const data = await getUsageData();
-    if (data.matchesUsedThisWeek >= data.weeklyLimit) return false;
-    const updated = await incrementUsage();
-    setUsage(updated);
+    // Free beta: always allow matches, no usage limit
     return true;
-  }, [isPro]);
+  }, []);
 
   const handleSetOnboardingComplete = useCallback(async () => {
     await storeOnboardingComplete();

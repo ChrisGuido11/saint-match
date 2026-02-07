@@ -10,7 +10,7 @@ import { getGreetingMessage } from '../../../constants/saints';
 import { MoodSelector } from '../../../components/MoodSelector';
 import { StreakCounter } from '../../../components/StreakCounter';
 import { ChallengeCard } from '../../../components/ChallengeCard';
-import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
+
 import { Mood } from '../../../types';
 import { getSaintMatch } from '../../../lib/claude';
 import { getEmotionFromMood } from '../../../constants/saints';
@@ -19,16 +19,12 @@ import { IconCompleted, IconMatching } from '../../../components/icons';
 export default function HomeScreen() {
   const {
     streak,
-    usage,
     activeChallenge,
-    isPro,
     consumeMatch,
     completeChallenge,
     refreshAll,
-    setIsPro,
   } = useApp();
 
-  const [showPaywall, setShowPaywall] = useState(false);
   const [isMatching, setIsMatching] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -41,11 +37,7 @@ export default function HomeScreen() {
   const handleMoodSelect = async (mood: Mood) => {
     const emotion = getEmotionFromMood(mood);
 
-    const canMatch = await consumeMatch();
-    if (!canMatch) {
-      setShowPaywall(true);
-      return;
-    }
+    await consumeMatch();
 
     setIsMatching(true);
     try {
@@ -57,11 +49,8 @@ export default function HomeScreen() {
           selectedMood: mood,
         },
       });
-    } catch (error) {
-      if (error instanceof Error && error.message === 'USAGE_LIMIT_REACHED') {
-        setShowPaywall(true);
-        refreshAll();
-      }
+    } catch {
+      // Match failed — user can retry
     } finally {
       setIsMatching(false);
     }
@@ -74,9 +63,6 @@ export default function HomeScreen() {
       params: { streakCount: updatedStreak.currentStreak.toString() },
     });
   };
-
-  const matchesRemaining = usage.weeklyLimit - usage.matchesUsedThisWeek;
-  const hasContent = activeChallenge || isMatching;
 
   return (
     <ScrollView
@@ -124,31 +110,6 @@ export default function HomeScreen() {
         )}
       </View>
 
-      {/* Usage Indicator - Minimal */}
-      {!isPro && !hasContent && (
-        <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.usageSection}>
-          <View style={styles.usageBar}>
-            <View 
-              style={[
-                styles.usageFill,
-                { width: `${(matchesRemaining / usage.weeklyLimit) * 100}%` },
-              ]} 
-            />
-          </View>
-          <Text style={styles.usageText}>
-            {matchesRemaining} free matches remaining
-          </Text>
-        </Animated.View>
-      )}
-
-      <PaywallBottomSheet
-        visible={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        onPurchaseSuccess={() => {
-          setIsPro(true);
-          setShowPaywall(false);
-        }}
-      />
     </ScrollView>
   );
 }
@@ -215,26 +176,5 @@ const styles = StyleSheet.create({
     ...Typography.bodyLarge,
     color: Colors.charcoalMuted,
     marginTop: Spacing.md,
-  },
-  usageSection: {
-    marginTop: Spacing.xl,
-    alignItems: 'center',
-  },
-  usageBar: {
-    width: 120,
-    height: 4,
-    backgroundColor: Colors.creamDark,
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  usageFill: {
-    height: '100%',
-    backgroundColor: Colors.sage,
-    borderRadius: 2,
-  },
-  usageText: {
-    ...Typography.caption,
-    color: Colors.charcoalSubtle,
-    marginTop: Spacing.xs,
   },
 });

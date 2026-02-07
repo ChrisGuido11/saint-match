@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Linking,
   ToastAndroid,
   Platform,
 } from 'react-native';
@@ -18,7 +17,7 @@ import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
 import { clearAllData, exportAllData } from '../../../lib/storage';
 import { resetAllData } from '../../../lib/streak';
-import { resetProStatus, checkProStatus, showCustomerCenter, isRevenueCatConfigured } from '../../../lib/purchases';
+import { resetProStatus } from '../../../lib/purchases';
 import { signOut, isSupabaseConfigured, deleteUserAccount } from '../../../lib/supabase';
 import { LinkAccountModal } from '../../../components/LinkAccountModal';
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
@@ -60,7 +59,7 @@ function SettingRow({ label, subtitle, onPress, destructive, rightText }: Settin
 }
 
 export default function SettingsScreen() {
-  const { isPro, setIsPro, refreshAll, session } = useApp();
+  const { refreshAll, session } = useApp();
   const [isExporting, setIsExporting] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
   const userEmail = session?.user?.email;
@@ -122,33 +121,8 @@ export default function SettingsScreen() {
     );
   };
 
-  const handleManageSubscription = async () => {
-    if (isPro) {
-      if (isRevenueCatConfigured()) {
-        await showCustomerCenter();
-        refreshAll();
-      } else {
-        Linking.openURL('https://apps.apple.com/account/subscriptions');
-      }
-    } else {
-      showToast('You are currently on the free plan.');
-    }
-  };
-
   const handleNotifications = () => {
     showToast('Notification settings coming soon');
-  };
-
-  // Dev mode toggle for pro
-  const handleTogglePro = async () => {
-    if (isPro) {
-      await resetProStatus();
-      setIsPro(false);
-    } else {
-      const { purchasePro } = await import('../../../lib/purchases');
-      await purchasePro('pro_monthly');
-      setIsPro(true);
-    }
   };
 
   return (
@@ -166,13 +140,6 @@ export default function SettingsScreen() {
       <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.section}>
         <Text style={styles.sectionTitle}>ACCOUNT</Text>
         <View style={styles.sectionCard}>
-          <SettingRow
-            label="Subscription"
-            subtitle={isPro ? 'Pro Member' : 'Free Plan'}
-            onPress={handleManageSubscription}
-            rightText={isPro ? 'Manage' : 'Upgrade'}
-          />
-          <View style={styles.divider} />
           <SettingRow
             label="Notifications"
             subtitle="Daily reminder at 8:30 AM"
@@ -225,19 +192,6 @@ export default function SettingsScreen() {
             subtitle="Permanently delete all data"
             onPress={handleDeleteAccount}
             destructive
-          />
-        </View>
-      </Animated.View>
-
-      {/* Dev mode */}
-      <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.section}>
-        <Text style={styles.sectionTitle}>DEVELOPER</Text>
-        <View style={styles.sectionCard}>
-          <SettingRow
-            label="Toggle Pro Status"
-            subtitle={`Current: ${isPro ? 'Pro' : 'Free'} (dev mode)`}
-            onPress={handleTogglePro}
-            rightText={isPro ? 'Disable' : 'Enable'}
           />
         </View>
       </Animated.View>
