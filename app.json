@@ -38,8 +38,7 @@
           "icon": "./assets/icon.png",
           "color": "#8B9D83"
         }
-      ],
-      "react-native-purchases"
+      ]
     ],
     "extra": {
       "router": {},

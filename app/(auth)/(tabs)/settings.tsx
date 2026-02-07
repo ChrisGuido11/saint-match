@@ -18,7 +18,7 @@ import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
 import { clearAllData, exportAllData } from '../../../lib/storage';
 import { resetAllData } from '../../../lib/streak';
-import { resetProStatus, checkProStatus } from '../../../lib/purchases';
+import { resetProStatus, checkProStatus, showCustomerCenter, isRevenueCatConfigured } from '../../../lib/purchases';
 import { signOut, isSupabaseConfigured, deleteUserAccount } from '../../../lib/supabase';
 import { LinkAccountModal } from '../../../components/LinkAccountModal';
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
@@ -122,9 +122,14 @@ export default function SettingsScreen() {
     );
   };
 
-  const handleManageSubscription = () => {
+  const handleManageSubscription = async () => {
     if (isPro) {
-      Linking.openURL('https://apps.apple.com/account/subscriptions');
+      if (isRevenueCatConfigured()) {
+        await showCustomerCenter();
+        refreshAll();
+      } else {
+        Linking.openURL('https://apps.apple.com/account/subscriptions');
+      }
     } else {
       showToast('You are currently on the free plan.');
     }

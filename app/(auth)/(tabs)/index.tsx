@@ -40,7 +40,7 @@ export default function HomeScreen() {
 
   const handleMoodSelect = async (mood: Mood) => {
     const emotion = getEmotionFromMood(mood);
-    
+
     const canMatch = await consumeMatch();
     if (!canMatch) {
       setShowPaywall(true);

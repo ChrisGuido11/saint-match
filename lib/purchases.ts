@@ -3,6 +3,7 @@ import Purchases, {
   PurchasesPackage,
   LOG_LEVEL,
 } from 'react-native-purchases';
+import RevenueCatUI from 'react-native-purchases-ui';
 import { Platform } from 'react-native';
 
 const PRO_STATUS_KEY = '@saint_match_pro_status';
@@ -10,7 +11,7 @@ const PRO_CACHE_TIMESTAMP_KEY = '@saint_match_pro_cache_ts';
 const PRO_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 const REVENUECAT_IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? '';
-const ENTITLEMENT_ID = 'pro';
+const ENTITLEMENT_ID = 'Saint Match Pro';
 
 export interface Package {
   identifier: string;
@@ -24,7 +25,7 @@ export interface Package {
 // Fallback packages shown when RevenueCat is unreachable
 const FALLBACK_PACKAGES: Package[] = [
   {
-    identifier: 'pro_monthly',
+    identifier: 'monthly',
     product: {
       title: 'Pro Monthly',
       priceString: '$7.99/mo',
@@ -32,7 +33,7 @@ const FALLBACK_PACKAGES: Package[] = [
     },
   },
   {
-    identifier: 'pro_annual',
+    identifier: 'yearly',
     product: {
       title: 'Pro Annual',
       priceString: '$79/yr',
@@ -42,6 +43,10 @@ const FALLBACK_PACKAGES: Package[] = [
 ];
 
 let isConfigured = false;
+
+export function isRevenueCatConfigured(): boolean {
+  return isConfigured;
+}
 
 export async function initPurchases(): Promise<void> {
   if (isConfigured) return;
@@ -115,10 +120,7 @@ export async function purchasePro(packageIdentifier: string): Promise<boolean> {
     const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
 
     if (isPro) {
-      await AsyncStorage.setItem(PRO_STATUS_KEY, 'true');
-      await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
-
-      // Fire-and-forget sync to Supabase
+      await cacheProStatus(true);
       syncProToSupabase(true).catch(() => {});
     }
 
@@ -140,8 +142,7 @@ export async function restorePurchases(): Promise<boolean> {
     const customerInfo = await Purchases.restorePurchases();
     const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
 
-    await AsyncStorage.setItem(PRO_STATUS_KEY, isPro ? 'true' : 'false');
-    await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
+    await cacheProStatus(isPro);
 
     if (isPro) {
       syncProToSupabase(true).catch(() => {});
@@ -179,8 +180,7 @@ export async function checkProStatus(): Promise<boolean> {
     try {
       const customerInfo = await Purchases.getCustomerInfo();
       const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
-      await AsyncStorage.setItem(PRO_STATUS_KEY, isPro ? 'true' : 'false');
-      await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
+      await cacheProStatus(isPro);
       return isPro;
     } catch {
       // RevenueCat unreachable — fall through to Supabase
@@ -203,8 +203,7 @@ export async function checkProStatus(): Promise<boolean> {
 
     if (profile?.is_pro != null) {
       const isPro = !!profile.is_pro;
-      await AsyncStorage.setItem(PRO_STATUS_KEY, isPro ? 'true' : 'false');
-      await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
+      await cacheProStatus(isPro);
       return isPro;
     }
   } catch {
@@ -229,11 +228,35 @@ export async function transferPurchasesToUser(userId: string): Promise<void> {
     await Purchases.logIn(userId);
     const customerInfo = await Purchases.getCustomerInfo();
     const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
-
-    await AsyncStorage.setItem(PRO_STATUS_KEY, isPro ? 'true' : 'false');
-    await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
+    await cacheProStatus(isPro);
   } catch (err) {
     console.warn('transferPurchasesToUser failed:', err);
+  }
+}
+
+// ── RevenueCat UI ────────────────────────────────────────────────────────
+
+/**
+ * Present RevenueCat's Customer Center for subscription management.
+ * Allows users to manage, cancel, or request refunds for their subscription.
+ */
+export async function showCustomerCenter(): Promise<void> {
+  if (!isConfigured) return;
+
+  try {
+    await RevenueCatUI.presentCustomerCenter({
+      callbacks: {
+        onRestoreCompleted: async ({ customerInfo }) => {
+          const isPro = customerInfo.entitlements.active[ENTITLEMENT_ID] !== undefined;
+          await cacheProStatus(isPro);
+        },
+        onRestoreFailed: ({ error }) => {
+          console.warn('Customer Center restore failed:', error);
+        },
+      },
+    });
+  } catch (err) {
+    console.error('showCustomerCenter error:', err);
   }
 }
 
@@ -248,6 +271,11 @@ function mapPackage(pkg: PurchasesPackage): Package {
       description: pkg.product.description,
     },
   };
+}
+
+async function cacheProStatus(isPro: boolean): Promise<void> {
+  await AsyncStorage.setItem(PRO_STATUS_KEY, isPro ? 'true' : 'false');
+  await AsyncStorage.setItem(PRO_CACHE_TIMESTAMP_KEY, Date.now().toString());
 }
 
 async function syncProToSupabase(isPro: boolean): Promise<void> {
