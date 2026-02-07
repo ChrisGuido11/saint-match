@@ -15,6 +15,7 @@ import { Mood } from '../../../types';
 import { getSaintMatch } from '../../../lib/claude';
 import { getEmotionFromMood } from '../../../constants/saints';
 import { IconCompleted, IconMatching } from '../../../components/icons';
+import { ActiveNovenaCard } from '../../../components/ActiveNovenaCard';
 
 export default function HomeScreen() {
   const {
@@ -23,7 +24,10 @@ export default function HomeScreen() {
     consumeMatch,
     completeChallenge,
     refreshAll,
+    userNovenas,
   } = useApp();
+
+  const activeNovenas = userNovenas.filter((n) => !n.completed);
 
   const [isMatching, setIsMatching] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -110,6 +114,25 @@ export default function HomeScreen() {
         )}
       </View>
 
+      {/* Active Novenas */}
+      {activeNovenas.length > 0 && (
+        <View style={styles.novenasSection}>
+          {activeNovenas.map((userNovena) => (
+            <Animated.View key={userNovena.id} entering={FadeInDown.delay(200).duration(400)} style={styles.novenaCardWrapper}>
+              <ActiveNovenaCard
+                userNovena={userNovena}
+                onPrayNow={() => {
+                  router.push({
+                    pathname: '/(auth)/novena-prayer',
+                    params: { userNovenaId: userNovena.id },
+                  });
+                }}
+              />
+            </Animated.View>
+          ))}
+        </View>
+      )}
+
     </ScrollView>
   );
 }
@@ -176,5 +199,11 @@ const styles = StyleSheet.create({
     ...Typography.bodyLarge,
     color: Colors.charcoalMuted,
     marginTop: Spacing.md,
+  },
+  novenasSection: {
+    marginTop: Spacing.xl,
+  },
+  novenaCardWrapper: {
+    marginBottom: Spacing.sm,
   },
 });

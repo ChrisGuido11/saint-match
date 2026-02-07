@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActiveChallenge, Completion, PatienceScore, UsageData } from '../types';
+import { ActiveChallenge, Completion, PatienceScore, UsageData, UserNovena } from '../types';
 import { format, startOfWeek, addDays } from 'date-fns';
 
 const KEYS = {
@@ -9,6 +9,7 @@ const KEYS = {
   usage: '@saint_match_usage',
   patienceScores: '@saint_match_patience_scores',
   isPro: '@saint_match_pro_status',
+  userNovenas: '@saint_match_user_novenas',
 } as const;
 
 // Onboarding
@@ -136,6 +137,43 @@ export async function addPatienceScore(score: number): Promise<void> {
   }
 
   await AsyncStorage.setItem(KEYS.patienceScores, JSON.stringify(scores));
+}
+
+// User Novenas
+export async function getUserNovenas(): Promise<UserNovena[]> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.userNovenas);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getActiveUserNovenas(): Promise<UserNovena[]> {
+  const all = await getUserNovenas();
+  return all.filter((n) => !n.completed);
+}
+
+export async function getCompletedUserNovenas(): Promise<UserNovena[]> {
+  const all = await getUserNovenas();
+  return all.filter((n) => n.completed);
+}
+
+export async function saveUserNovena(novena: UserNovena): Promise<void> {
+  const all = await getUserNovenas();
+  const index = all.findIndex((n) => n.id === novena.id);
+  if (index >= 0) {
+    all[index] = novena;
+  } else {
+    all.unshift(novena);
+  }
+  await AsyncStorage.setItem(KEYS.userNovenas, JSON.stringify(all));
+}
+
+export async function deleteUserNovena(id: string): Promise<void> {
+  const all = await getUserNovenas();
+  const filtered = all.filter((n) => n.id !== id);
+  await AsyncStorage.setItem(KEYS.userNovenas, JSON.stringify(filtered));
 }
 
 // Full data export

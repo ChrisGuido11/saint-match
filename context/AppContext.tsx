@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
-import { StreakData, UsageData, ActiveChallenge, Completion } from '../types';
+import { StreakData, UsageData, ActiveChallenge, Completion, UserNovena } from '../types';
 import { getStreakData, incrementStreak as incrementStreakData } from '../lib/streak';
 import {
   getUsageData,
@@ -11,6 +11,9 @@ import {
   getCompletions,
   hasCompletedOnboarding,
   setOnboardingComplete as storeOnboardingComplete,
+  getUserNovenas,
+  saveUserNovena as storeUserNovena,
+  deleteUserNovena as removeUserNovena,
 } from '../lib/storage';
 // RevenueCat kept dormant — re-enable for paid tiers later
 // import { checkProStatus, initPurchases, loginRevenueCat } from '../lib/purchases';
@@ -23,7 +26,9 @@ import {
   syncStreakToServer,
   syncActiveChallengeToServer,
   syncOnboardingToServer,
+  syncUserNovenaToServer,
 } from '../lib/sync';
+import { generateNovenaPrayers } from '../lib/novenaGenerate';
 import type { Session } from '@supabase/supabase-js';
 
 interface AppContextType {
@@ -36,6 +41,7 @@ interface AppContextType {
   isOnboarded: boolean;
   isLoading: boolean;
   session: Session | null;
+  userNovenas: UserNovena[];
 
   // Actions
   refreshStreak: () => Promise<void>;
@@ -46,6 +52,10 @@ interface AppContextType {
   setOnboardingComplete: () => Promise<void>;
   setIsPro: (value: boolean) => void;
   refreshAll: () => Promise<void>;
+  startNovena: (novenaId: string, saintId: string, saintName: string, saintBio: string, personalIntention: string) => Promise<UserNovena>;
+  markNovenaDayPrayed: (userNovenaId: string) => Promise<{ alreadyPrayed: boolean; completed: boolean }>;
+  saveNovenaReflection: (userNovenaId: string, reflection: string) => Promise<void>;
+  abandonNovena: (userNovenaId: string) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -66,6 +76,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [completions, setCompletions] = useState<Completion[]>([]);
   const [isPro, setIsPro] = useState(true); // Free beta: everyone gets full access
   const [isOnboarded, setIsOnboarded] = useState(false);
+  const [userNovenas, setUserNovenas] = useState<UserNovena[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const authListenerRef = useRef<{ subscription: { unsubscribe: () => void } } | null>(null);
@@ -82,12 +93,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const refreshAll = useCallback(async () => {
     // Fast path: load from AsyncStorage
-    const [streakData, usageData, challenge, comps, onboarded] = await Promise.all([
+    const [streakData, usageData, challenge, comps, onboarded, novenas] = await Promise.all([
       getStreakData(),
       getUsageData(),
       getActiveChallenge(),
       getCompletions(),
       hasCompletedOnboarding(),
+      getUserNovenas(),
     ]);
     setStreak(streakData);
     setUsage(usageData);
@@ -95,6 +107,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCompletions(comps);
     // isPro stays true — free beta, no pro check needed
     setIsOnboarded(onboarded);
+    setUserNovenas(novenas);
 
     // Slow path: background sync with Supabase
     if (isSupabaseConfigured()) {
@@ -105,6 +118,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
             if (serverData.streak) setStreak(serverData.streak);
             if (serverData.completions && serverData.completions.length > 0) {
               setCompletions(serverData.completions);
+            }
+            if (serverData.novenas && serverData.novenas.length > 0) {
+              setUserNovenas(serverData.novenas);
             }
           }
         })
@@ -196,6 +212,76 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
+  const startNovena = useCallback(async (novenaId: string, saintId: string, saintName: string, saintBio: string, personalIntention: string): Promise<UserNovena> => {
+    // Try to generate AI prayers
+    const generatedPrayers = await generateNovenaPrayers(saintName, saintBio, personalIntention);
+
+    const newNovena: UserNovena = {
+      id: `un-${Date.now()}`,
+      novenaId,
+      saintId,
+      saintName,
+      currentDay: 1,
+      completedDays: [false, false, false, false, false, false, false, false, false],
+      personalIntention,
+      startedAt: new Date().toISOString(),
+      lastPrayerDate: null,
+      completed: false,
+      completedAt: null,
+      reflection: null,
+      generatedPrayers,
+    };
+    await storeUserNovena(newNovena);
+    setUserNovenas((prev) => [newNovena, ...prev]);
+    syncUserNovenaToServer(newNovena).catch(() => {});
+    return newNovena;
+  }, []);
+
+  const markNovenaDayPrayed = useCallback(async (userNovenaId: string): Promise<{ alreadyPrayed: boolean; completed: boolean }> => {
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const novena = userNovenas.find((n) => n.id === userNovenaId);
+    if (!novena) return { alreadyPrayed: false, completed: false };
+
+    if (novena.lastPrayerDate === today) {
+      return { alreadyPrayed: true, completed: false };
+    }
+
+    const dayIndex = novena.currentDay - 1;
+    const newCompletedDays = [...novena.completedDays];
+    newCompletedDays[dayIndex] = true;
+
+    const isComplete = novena.currentDay >= 9;
+    const updated: UserNovena = {
+      ...novena,
+      completedDays: newCompletedDays,
+      lastPrayerDate: today,
+      currentDay: isComplete ? 9 : novena.currentDay + 1,
+      completed: isComplete,
+      completedAt: isComplete ? new Date().toISOString() : null,
+    };
+
+    await storeUserNovena(updated);
+    setUserNovenas((prev) => prev.map((n) => (n.id === userNovenaId ? updated : n)));
+    syncUserNovenaToServer(updated).catch(() => {});
+
+    return { alreadyPrayed: false, completed: isComplete };
+  }, [userNovenas]);
+
+  const saveNovenaReflection = useCallback(async (userNovenaId: string, reflection: string) => {
+    const novena = userNovenas.find((n) => n.id === userNovenaId);
+    if (!novena) return;
+
+    const updated: UserNovena = { ...novena, reflection };
+    await storeUserNovena(updated);
+    setUserNovenas((prev) => prev.map((n) => (n.id === userNovenaId ? updated : n)));
+    syncUserNovenaToServer(updated).catch(() => {});
+  }, [userNovenas]);
+
+  const abandonNovena = useCallback(async (userNovenaId: string) => {
+    await removeUserNovena(userNovenaId);
+    setUserNovenas((prev) => prev.filter((n) => n.id !== userNovenaId));
+  }, []);
+
   const handleSetOnboardingComplete = useCallback(async () => {
     await storeOnboardingComplete();
     setIsOnboarded(true);
@@ -215,6 +301,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isOnboarded,
         isLoading,
         session,
+        userNovenas,
         refreshStreak,
         refreshUsage,
         acceptChallenge,
@@ -223,6 +310,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setOnboardingComplete: handleSetOnboardingComplete,
         setIsPro,
         refreshAll,
+        startNovena,
+        markNovenaDayPrayed,
+        saveNovenaReflection,
+        abandonNovena,
       }}
     >
       {children}

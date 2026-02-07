@@ -9,6 +9,7 @@ import {
   UsageData,
   ActiveChallenge,
   PatienceScore,
+  UserNovena,
 } from '../types';
 import { format, startOfWeek, addDays } from 'date-fns';
 
@@ -18,7 +19,7 @@ const SYNC_QUEUE_KEY = '@saint_match_sync_queue';
 // ── Sync retry queue ─────────────────────────────────────────────────
 
 interface SyncQueueItem {
-  type: 'completion' | 'streak' | 'challenge' | 'patience_score' | 'onboarding';
+  type: 'completion' | 'streak' | 'challenge' | 'patience_score' | 'onboarding' | 'user_novena';
   payload: unknown;
   createdAt: string;
 }
@@ -68,6 +69,9 @@ async function replaySyncQueue(): Promise<void> {
         case 'onboarding':
           await syncOnboardingToServer();
           break;
+        case 'user_novena':
+          await syncUserNovenaToServer(item.payload as UserNovena);
+          break;
       }
     } catch {
       failedItems.push(item);
@@ -116,6 +120,7 @@ export interface SyncedData {
   streak: StreakData | null;
   usage: UsageData | null;
   completions: Completion[] | null;
+  novenas: UserNovena[] | null;
 }
 
 // ── Main sync function ─────────────────────────────────────────────────
@@ -135,13 +140,14 @@ export async function syncAllData(): Promise<SyncedData | null> {
   await migrateLocalDataToServer(userId);
 
   // Pull data from server in parallel
-  const [streak, usage, completions] = await Promise.all([
+  const [streak, usage, completions, novenas] = await Promise.all([
     fetchServerStreak(userId),
     fetchServerUsage(userId),
     fetchServerCompletions(userId),
+    fetchServerNovenas(userId),
   ]);
 
-  return { streak, usage, completions };
+  return { streak, usage, completions, novenas };
 }
 
 // ── Push functions (client → server) ───────────────────────────────────
@@ -377,6 +383,71 @@ async function fetchServerCompletions(userId: string): Promise<Completion[] | nu
     emotionSelected: row.emotion_selected,
     saintName: row.saint_name,
     actionText: row.action_text,
+  }));
+}
+
+// ── Novena sync functions ────────────────────────────────────────────
+
+export async function syncUserNovenaToServer(novena: UserNovena): Promise<void> {
+  if (!isSupabaseConfigured()) return;
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return;
+
+  try {
+    await ensureProfileExists(session.user.id, session.user.email);
+
+    const result = await supabase.from('user_novenas').upsert({
+      id: novena.id,
+      user_id: session.user.id,
+      novena_id: novena.novenaId,
+      saint_id: novena.saintId,
+      saint_name: novena.saintName,
+      current_day: novena.currentDay,
+      completed_days: novena.completedDays,
+      personal_intention: novena.personalIntention,
+      started_at: novena.startedAt,
+      last_prayer_date: novena.lastPrayerDate,
+      completed: novena.completed,
+      completed_at: novena.completedAt,
+      reflection: novena.reflection,
+      generated_prayers: novena.generatedPrayers,
+    });
+
+    if (result.error) throw result.error;
+  } catch (err) {
+    console.error('syncUserNovenaToServer exception:', err);
+    await addToSyncQueue({
+      type: 'user_novena',
+      payload: novena,
+      createdAt: new Date().toISOString(),
+    });
+  }
+}
+
+export async function fetchServerNovenas(userId: string): Promise<UserNovena[] | null> {
+  const { data } = await supabase
+    .from('user_novenas')
+    .select('*')
+    .eq('user_id', userId)
+    .order('started_at', { ascending: false });
+
+  if (!data) return null;
+
+  return data.map((row) => ({
+    id: row.id,
+    novenaId: row.novena_id,
+    saintId: row.saint_id,
+    saintName: row.saint_name ?? '',
+    currentDay: row.current_day,
+    completedDays: row.completed_days,
+    personalIntention: row.personal_intention,
+    startedAt: row.started_at,
+    lastPrayerDate: row.last_prayer_date,
+    completed: row.completed,
+    completedAt: row.completed_at,
+    reflection: row.reflection,
+    generatedPrayers: row.generated_prayers ?? null,
   }));
 }
 

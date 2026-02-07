@@ -5,12 +5,12 @@ import { Colors } from '../../../constants/colors';
 import { FontFamily } from '../../../constants/typography';
 import {
   IconNavHome,
-  IconNavCalendar,
+  IconNavNovenas,
   IconNavPortfolio,
   IconNavSettings,
 } from '../../../components/icons';
 
-type TabName = 'Home' | 'Calendar' | 'Portfolio' | 'Settings';
+type TabName = 'Home' | 'Novenas' | 'Portfolio' | 'Settings';
 
 function TabIcon({ name, focused }: { name: TabName; focused: boolean }) {
   const color = focused ? Colors.terracotta : Colors.charcoalMuted;
@@ -19,8 +19,8 @@ function TabIcon({ name, focused }: { name: TabName; focused: boolean }) {
     switch (name) {
       case 'Home':
         return <IconNavHome size={22} color={color} />;
-      case 'Calendar':
-        return <IconNavCalendar size={22} color={color} />;
+      case 'Novenas':
+        return <IconNavNovenas size={22} color={color} />;
       case 'Portfolio':
         return <IconNavPortfolio size={22} color={color} />;
       case 'Settings':
@@ -58,10 +58,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="calendar"
+        name="novenas"
         options={{
-          title: 'Calendar',
-          tabBarIcon: ({ focused }) => <TabIcon name="Calendar" focused={focused} />,
+          title: 'Novenas',
+          tabBarIcon: ({ focused }) => <TabIcon name="Novenas" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -76,6 +76,13 @@ export default function TabLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ focused }) => <TabIcon name="Settings" focused={focused} />,
+        }}
+      />
+      {/* Hide the old calendar tab if the file still exists */}
+      <Tabs.Screen
+        name="calendar"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

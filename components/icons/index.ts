@@ -18,6 +18,7 @@ export { IconPatienceScore } from './IconPatienceScore';
 export {
   IconNavHome,
   IconNavCalendar,
+  IconNavNovenas,
   IconNavPortfolio,
   IconNavSettings,
   IconFire,

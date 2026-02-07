@@ -115,6 +115,40 @@ export function IconNavSettings({ size = 24, color = Colors.sage, filled = false
   );
 }
 
+// Novenas icon - rosary/prayer beads
+export function IconNavNovenas({ size = 24, color = Colors.sage, filled = false }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle
+        cx="12"
+        cy="12"
+        r="8"
+        stroke={color}
+        strokeWidth="1.5"
+        fill={filled ? color : 'none'}
+      />
+      <Circle cx="12" cy="4" r="1.5" fill={filled ? 'white' : color} />
+      <Circle cx="18.5" cy="8" r="1.5" fill={filled ? 'white' : color} />
+      <Circle cx="18.5" cy="16" r="1.5" fill={filled ? 'white' : color} />
+      <Circle cx="12" cy="20" r="1.5" fill={filled ? 'white' : color} />
+      <Circle cx="5.5" cy="16" r="1.5" fill={filled ? 'white' : color} />
+      <Circle cx="5.5" cy="8" r="1.5" fill={filled ? 'white' : color} />
+      <Path
+        d="M12 8V11M12 13V16"
+        stroke={filled ? 'white' : color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <Path
+        d="M9 12H15"
+        stroke={filled ? 'white' : color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
+}
+
 // Fire/Streak icon for calendar
 export function IconFire({ size = 24, color = Colors.terracotta }: IconProps) {
   return (

@@ -11,10 +11,11 @@ import { useApp } from '../../context/AppContext';
 import { SaintMatch as SaintMatchType, Mood } from '../../types';
 import { getMoodById } from '../../constants/saints';
 import { IconClose } from '../../components/icons';
+import { NovenaSuggestionCard } from '../../components/NovenaSuggestionCard';
 
 export default function SaintMatchScreen() {
   const { matchData, selectedMood } = useLocalSearchParams<{ matchData: string; selectedMood: Mood }>();
-  const { acceptChallenge } = useApp();
+  const { acceptChallenge, userNovenas } = useApp();
   
   const selectedMoodData = selectedMood ? getMoodById(selectedMood) : null;
 
@@ -62,6 +63,25 @@ export default function SaintMatchScreen() {
 
         {/* Saint Card */}
         <SaintCard saint={match.saint} microAction={match.microAction} />
+
+        {/* Novena Suggestion */}
+        {!userNovenas.some((n) => n.saintId === match.saint.id && !n.completed) && (
+          <NovenaSuggestionCard
+            saintId={match.saint.id}
+            saintName={match.saint.name}
+            saintBio={match.saint.bio}
+            onStartNovena={() => {
+              router.push({
+                pathname: '/(auth)/start-novena',
+                params: {
+                  saintId: match.saint.id,
+                  saintName: match.saint.name,
+                  saintBio: match.saint.bio,
+                },
+              });
+            }}
+          />
+        )}
 
         {/* Encouragement */}
         <Animated.Text

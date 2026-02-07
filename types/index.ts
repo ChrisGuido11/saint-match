@@ -90,6 +90,40 @@ export interface ActiveChallenge {
   completed: boolean;
 }
 
+// Novena types
+export interface Novena {
+  id: string;
+  saintId: string;
+  title: string;
+  description: string;
+  openingPrayer: string;
+  dailyPrayers: string[];
+  closingPrayer: string;
+  intentionSuggestions: string[];
+}
+
+export interface GeneratedPrayers {
+  openingPrayer: string;
+  dailyPrayers: string[];
+  closingPrayer: string;
+}
+
+export interface UserNovena {
+  id: string;
+  novenaId: string;
+  saintId: string;
+  saintName: string;
+  currentDay: number;
+  completedDays: boolean[];
+  personalIntention: string;
+  startedAt: string;
+  lastPrayerDate: string | null;
+  completed: boolean;
+  completedAt: string | null;
+  reflection: string | null;
+  generatedPrayers: GeneratedPrayers | null;
+}
+
 // Achievement/Milestone types for enhanced gamification
 export type MilestoneType = 
   | 'first-challenge'

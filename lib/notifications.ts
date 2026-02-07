@@ -93,3 +93,45 @@ export async function cancelStreakAlert(): Promise<void> {
     }
   }
 }
+
+// Novena reminders
+export async function scheduleNovenaReminders(
+  userNovena: { id: string; currentDay: number },
+  saintName: string
+): Promise<void> {
+  const remainingDays = 9 - userNovena.currentDay + 1;
+
+  for (let i = 0; i < remainingDays; i++) {
+    const day = userNovena.currentDay + i;
+    const triggerDate = new Date();
+    triggerDate.setDate(triggerDate.getDate() + i);
+    triggerDate.setHours(12, 0, 0, 0);
+
+    // Don't schedule past notifications
+    if (triggerDate <= new Date()) continue;
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: `Day ${day} of your novena`,
+        body: `Time to pray with ${saintName}`,
+        data: { type: 'novena_reminder', userNovenaId: userNovena.id, day },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: triggerDate,
+      },
+    });
+  }
+}
+
+export async function cancelNovenaNotifications(userNovenaId: string): Promise<void> {
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  for (const notification of scheduled) {
+    if (
+      notification.content.data?.type === 'novena_reminder' &&
+      notification.content.data?.userNovenaId === userNovenaId
+    ) {
+      await Notifications.cancelScheduledNotificationAsync(notification.identifier);
+    }
+  }
+}

@@ -27,6 +27,18 @@ export default function AuthLayout() {
         name="weekly-checkin"
         options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
       />
+      <Stack.Screen
+        name="start-novena"
+        options={{ animation: 'slide_from_bottom' }}
+      />
+      <Stack.Screen
+        name="novena-prayer"
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
+        name="novena-complete"
+        options={{ animation: 'fade', gestureEnabled: false }}
+      />
     </Stack>
   );
 }

@@ -1,0 +1,53 @@
+import { supabase, isSupabaseConfigured } from './supabase';
+
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
+
+export interface GeneratedPrayers {
+  openingPrayer: string;
+  dailyPrayers: string[];
+  closingPrayer: string;
+}
+
+export async function generateNovenaPrayers(
+  saintName: string,
+  saintBio: string,
+  personalIntention: string
+): Promise<GeneratedPrayers | null> {
+  if (!isSupabaseConfigured() || !SUPABASE_URL) return null;
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return null;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/novena-generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!,
+      },
+      body: JSON.stringify({ saintName, saintBio, personalIntention }),
+    });
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+
+    if (
+      data.openingPrayer &&
+      Array.isArray(data.dailyPrayers) &&
+      data.dailyPrayers.length === 9 &&
+      data.closingPrayer
+    ) {
+      return {
+        openingPrayer: data.openingPrayer,
+        dailyPrayers: data.dailyPrayers,
+        closingPrayer: data.closingPrayer,
+      };
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
