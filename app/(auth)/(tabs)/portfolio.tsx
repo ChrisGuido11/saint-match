@@ -7,9 +7,9 @@ import { Colors } from '../../../constants/colors';
 import { Typography, FontFamily } from '../../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
-import { getPatienceScores, exportAllData } from '../../../lib/storage';
-import { PatienceScore, Completion } from '../../../types';
-import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
+import { getPatienceScores } from '../../../lib/storage';
+import { PatienceScore } from '../../../types';
+import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { IconChart } from '../../../components/icons';
 
@@ -33,20 +33,140 @@ function SkeletonBlock({ width, height, style }: { width: number | string; heigh
 export default function PortfolioScreen() {
   const { completions, streak } = useApp();
   const [patienceScores, setPatienceScores] = useState<PatienceScore[] | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     getPatienceScores().then(setPatienceScores);
   }, []);
 
   const handleExport = async () => {
+    setIsExporting(true);
     try {
-      const data = await exportAllData();
-      const json = JSON.stringify(data, null, 2);
-      const fileUri = documentDirectory + 'saint-match-export.json';
-      await writeAsStringAsync(fileUri, json);
-      await Sharing.shareAsync(fileUri);
+      const exportDate = format(new Date(), 'MMMM d, yyyy');
+      const scoresHtml = (patienceScores ?? []).length > 0
+        ? `<table>
+            <tr><th>Week Ending</th><th>Score</th></tr>
+            ${(patienceScores ?? []).map(s =>
+              `<tr><td>${format(new Date(s.weekEnding), 'MMM d, yyyy')}</td><td>${s.score} / 5</td></tr>`
+            ).join('')}
+          </table>`
+        : '<p class="empty">No patience scores recorded yet.</p>';
+
+      const completionsHtml = completions.length > 0
+        ? completions.map(c =>
+            `<div class="entry">
+              <div class="entry-date">${format(new Date(c.completedAt), 'MMM d, yyyy')}</div>
+              <div class="entry-action">${c.actionText}</div>
+              <div class="entry-saint">Inspired by ${c.saintName}</div>
+            </div>`
+          ).join('')
+        : '<p class="empty">No completed challenges yet.</p>';
+
+      const html = `
+        <html>
+        <head>
+          <meta charset="utf-8" />
+          <style>
+            body {
+              font-family: Georgia, 'Times New Roman', serif;
+              background: #FAF8F5;
+              color: #2D2D2D;
+              padding: 40px;
+              max-width: 700px;
+              margin: 0 auto;
+            }
+            h1 {
+              color: #8B9D83;
+              font-size: 28px;
+              margin-bottom: 4px;
+            }
+            .export-date {
+              color: #999;
+              font-size: 13px;
+              margin-bottom: 32px;
+            }
+            h2 {
+              color: #D4735E;
+              font-size: 20px;
+              border-bottom: 2px solid #E8E4DF;
+              padding-bottom: 6px;
+              margin-top: 32px;
+            }
+            .streak-summary {
+              display: flex;
+              gap: 32px;
+              margin: 16px 0;
+            }
+            .streak-box {
+              background: #fff;
+              border-radius: 8px;
+              padding: 16px 24px;
+              box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            }
+            .streak-label { color: #999; font-size: 13px; }
+            .streak-value { font-size: 28px; color: #8B9D83; font-weight: bold; }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 16px 0;
+            }
+            th {
+              text-align: left;
+              background: #8B9D83;
+              color: #fff;
+              padding: 8px 12px;
+              font-size: 14px;
+            }
+            td {
+              padding: 8px 12px;
+              border-bottom: 1px solid #E8E4DF;
+              font-size: 14px;
+            }
+            tr:nth-child(even) { background: #fff; }
+            .entry {
+              background: #fff;
+              border-radius: 8px;
+              padding: 14px 16px;
+              margin-bottom: 10px;
+              box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            }
+            .entry-date { color: #999; font-size: 12px; margin-bottom: 4px; }
+            .entry-action { color: #2D2D2D; font-size: 15px; line-height: 1.4; }
+            .entry-saint { color: #8B9D83; font-size: 13px; margin-top: 6px; font-style: italic; }
+            .empty { color: #999; font-style: italic; }
+          </style>
+        </head>
+        <body>
+          <h1>Saint Match — Virtue Portfolio</h1>
+          <p class="export-date">Exported ${exportDate}</p>
+
+          <h2>Streak</h2>
+          <div class="streak-summary">
+            <div class="streak-box">
+              <div class="streak-label">Current Streak</div>
+              <div class="streak-value">${streak.currentStreak} day${streak.currentStreak !== 1 ? 's' : ''}</div>
+            </div>
+            <div class="streak-box">
+              <div class="streak-label">Longest Streak</div>
+              <div class="streak-value">${streak.longestStreak} day${streak.longestStreak !== 1 ? 's' : ''}</div>
+            </div>
+          </div>
+
+          <h2>Patience Score Trend</h2>
+          ${scoresHtml}
+
+          <h2>Micro-Vocation Log (${completions.length} ${completions.length === 1 ? 'entry' : 'entries'})</h2>
+          ${completionsHtml}
+        </body>
+        </html>
+      `;
+
+      const { uri } = await Print.printToFileAsync({ html });
+      await Sharing.shareAsync(uri);
     } catch {
-      Alert.alert('Error', 'Could not export data. Please try again.');
+      Alert.alert('Error', 'Could not export PDF. Please try again.');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -177,14 +297,17 @@ export default function PortfolioScreen() {
       {/* Export button */}
       <Animated.View entering={FadeInDown.delay(400).duration(500)}>
         <TouchableOpacity
-          style={styles.exportButton}
+          style={[styles.exportButton, isExporting && styles.exportButtonDisabled]}
           onPress={handleExport}
           activeOpacity={0.85}
+          disabled={isExporting}
           accessibilityRole="button"
           accessibilityLabel="Export portfolio as PDF"
         >
           <View style={styles.exportButtonContent}>
-            <Text style={styles.exportButtonText}>Export Portfolio as PDF</Text>
+            <Text style={styles.exportButtonText}>
+              {isExporting ? 'Exporting...' : 'Export Portfolio as PDF'}
+            </Text>
           </View>
         </TouchableOpacity>
       </Animated.View>
@@ -376,6 +499,9 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     alignItems: 'center',
     ...Shadows.button,
+  },
+  exportButtonDisabled: {
+    opacity: 0.6,
   },
   exportButtonContent: {
     flexDirection: 'row',
