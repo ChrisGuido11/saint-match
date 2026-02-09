@@ -6,13 +6,12 @@ import { Colors } from '../../../constants/colors';
 import { Typography, FontFamily } from '../../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
-import { SAINTS } from '../../../constants/saints';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { IconChart } from '../../../components/icons';
 
 export default function PortfolioScreen() {
-  const { completions, streak } = useApp();
+  const { completions, streak, discoveredSaints } = useApp();
   const [isExporting, setIsExporting] = useState(false);
 
   const saintCompletionMap = useMemo(() => {
@@ -23,7 +22,14 @@ export default function PortfolioScreen() {
     return map;
   }, [completions]);
 
-  const uniqueSaintsCount = useMemo(() => saintCompletionMap.size, [saintCompletionMap]);
+  const sortedSaints = useMemo(() => {
+    return [...discoveredSaints].sort((a, b) => {
+      const countA = saintCompletionMap.get(a.id) ?? 0;
+      const countB = saintCompletionMap.get(b.id) ?? 0;
+      return countB - countA;
+    });
+  }, [discoveredSaints, saintCompletionMap]);
+
   const totalChallenges = completions.length;
 
   const handleExport = async () => {
@@ -31,13 +37,13 @@ export default function PortfolioScreen() {
     try {
       const exportDate = format(new Date(), 'MMMM d, yyyy');
 
-      const saintsHtml = SAINTS.map((saint) => {
+      const saintsHtml = sortedSaints.map((saint) => {
         const count = saintCompletionMap.get(saint.id) ?? 0;
-        return `<div class="saint-item ${count > 0 ? '' : 'dimmed'}">
+        return `<div class="saint-item">
           <div class="saint-initials">${saint.initials}</div>
           <div class="saint-info">
             <strong>${saint.name}</strong>
-            ${count > 0 ? `<span class="saint-count">${count} challenge${count !== 1 ? 's' : ''}</span>` : '<span class="saint-count">Not yet met</span>'}
+            <span class="saint-count">${count} challenge${count !== 1 ? 's' : ''}</span>
           </div>
         </div>`;
       }).join('');
@@ -102,7 +108,6 @@ export default function PortfolioScreen() {
               padding: 8px 0;
               border-bottom: 1px solid #E8E4DF;
             }
-            .saint-item.dimmed { opacity: 0.4; }
             .saint-initials {
               width: 36px;
               height: 36px;
@@ -148,7 +153,7 @@ export default function PortfolioScreen() {
             </div>
           </div>
 
-          <h2>Saints Collection (${uniqueSaintsCount} of ${SAINTS.length})</h2>
+          <h2>Saints Collection (${sortedSaints.length} Saints Discovered)</h2>
           ${saintsHtml}
 
           <h2>Challenge History (${completions.length} ${completions.length === 1 ? 'entry' : 'entries'})</h2>
@@ -182,34 +187,39 @@ export default function PortfolioScreen() {
       <Animated.View entering={FadeInDown.delay(100).duration(500)}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>YOUR SAINTS</Text>
-          <Text style={styles.sectionSubtitle}>{uniqueSaintsCount} of {SAINTS.length} saints</Text>
+          <Text style={styles.sectionSubtitle}>{sortedSaints.length} saints discovered</Text>
         </View>
-        <View style={styles.saintsGrid}>
-          {SAINTS.map((saint) => {
-            const count = saintCompletionMap.get(saint.id) ?? 0;
-            const encountered = count > 0;
-            return (
-              <View
-                key={saint.id}
-                style={[styles.saintCard, !encountered && styles.saintCardDimmed]}
-              >
-                <View style={[styles.saintInitials, !encountered && styles.saintInitialsDimmed]}>
-                  <Text style={[styles.saintInitialsText, !encountered && styles.saintInitialsTextDimmed]}>
-                    {saint.initials}
-                  </Text>
-                </View>
-                <Text style={[styles.saintName, !encountered && styles.saintNameDimmed]} numberOfLines={2}>
-                  {saint.name}
-                </Text>
-                {encountered && (
-                  <View style={styles.saintCountBadge}>
-                    <Text style={styles.saintCountText}>{count}</Text>
+        {sortedSaints.length > 0 ? (
+          <View style={styles.saintsGrid}>
+            {sortedSaints.map((saint) => {
+              const count = saintCompletionMap.get(saint.id) ?? 0;
+              return (
+                <View key={saint.id} style={styles.saintCard}>
+                  <View style={styles.saintInitials}>
+                    <Text style={styles.saintInitialsText}>
+                      {saint.initials}
+                    </Text>
                   </View>
-                )}
-              </View>
-            );
-          })}
-        </View>
+                  <Text style={styles.saintName} numberOfLines={2}>
+                    {saint.name}
+                  </Text>
+                  {count > 0 && (
+                    <View style={styles.saintCountBadge}>
+                      <Text style={styles.saintCountText}>{count}</Text>
+                    </View>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        ) : (
+          <View style={styles.emptyCard}>
+            <IconChart size={48} color={Colors.sage} />
+            <Text style={styles.emptyText}>
+              Your saint collection is waiting to begin. Complete your first challenge to discover your first saint.
+            </Text>
+          </View>
+        )}
       </Animated.View>
 
       {/* Journey Stats */}
@@ -231,8 +241,8 @@ export default function PortfolioScreen() {
                 <Text style={styles.statLabel}>Longest{'\n'}Streak</Text>
               </View>
               <View style={styles.statBlock}>
-                <Text style={styles.statNumber}>{uniqueSaintsCount}</Text>
-                <Text style={styles.statLabel}>Saints{'\n'}Met</Text>
+                <Text style={styles.statNumber}>{sortedSaints.length}</Text>
+                <Text style={styles.statLabel}>Saints{'\n'}Discovered</Text>
               </View>
             </View>
           </View>
@@ -358,12 +368,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     ...Shadows.card,
   },
-  saintCardDimmed: {
-    backgroundColor: Colors.creamDark,
-    opacity: 0.35,
-    shadowOpacity: 0,
-    elevation: 0,
-  },
   saintInitials: {
     width: 44,
     height: 44,
@@ -373,25 +377,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: Spacing.xs,
   },
-  saintInitialsDimmed: {
-    backgroundColor: Colors.creamWarm,
-  },
   saintInitialsText: {
     fontFamily: FontFamily.sansSemiBold,
     fontSize: 16,
     color: Colors.sage,
-  },
-  saintInitialsTextDimmed: {
-    color: Colors.charcoalSubtle,
   },
   saintName: {
     ...Typography.caption,
     color: Colors.charcoal,
     textAlign: 'center',
     fontFamily: FontFamily.sansMedium,
-  },
-  saintNameDimmed: {
-    color: Colors.charcoalSubtle,
   },
   saintCountBadge: {
     position: 'absolute',

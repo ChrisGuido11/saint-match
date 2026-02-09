@@ -22,6 +22,8 @@ const VALID_EMOTIONS = [
   'impatient',
   'frustrated',
   'peaceful',
+  'grateful',
+  'joyful',
 ] as const;
 
 const CACHE_DURATION_HOURS = 6;
@@ -115,6 +117,7 @@ interface ClaudeResponse {
   saintName: string;
   feastDay: string;
   bio: string;
+  virtues?: string[];
   microAction: string;
   estimatedMinutes: number;
 }
@@ -155,7 +158,7 @@ async function callClaude(
         messages: [
           {
             role: 'user',
-            content: `You are a Catholic spiritual director. The user is feeling ${emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Pick a different saint each time — surprise the user with variety from the full calendar of saints. Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "microAction": "", "estimatedMinutes": 10}`,
+            content: `You are a Catholic spiritual director. The user is feeling ${emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Pick a different saint each time — surprise the user with variety from the full calendar of saints. Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "", "estimatedMinutes": 10}`,
           },
         ],
       }),
@@ -355,6 +358,7 @@ Deno.serve(async (req) => {
         saint_name: claudeResult.saintName,
         feast_day: claudeResult.feastDay,
         bio: claudeResult.bio,
+        virtues: claudeResult.virtues ?? [],
         micro_action: claudeResult.microAction,
         estimated_minutes: claudeResult.estimatedMinutes,
         source: 'claude',

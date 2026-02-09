@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActiveChallenge, Completion, UsageData, UserNovena } from '../types';
+import { ActiveChallenge, Completion, Saint, UsageData, UserNovena } from '../types';
 import { format, startOfWeek, addDays } from 'date-fns';
+import { SAINTS } from '../constants/saints';
 
 const KEYS = {
   onboarding: '@saint_match_onboarding',
@@ -9,6 +10,7 @@ const KEYS = {
   usage: '@saint_match_usage',
   isPro: '@saint_match_pro_status',
   userNovenas: '@saint_match_user_novenas',
+  discoveredSaints: '@saint_match_discovered_saints',
 } as const;
 
 // Onboarding
@@ -138,6 +140,62 @@ export async function deleteUserNovena(id: string): Promise<void> {
   const all = await getUserNovenas();
   const filtered = all.filter((n) => n.id !== id);
   await AsyncStorage.setItem(KEYS.userNovenas, JSON.stringify(filtered));
+}
+
+// Discovered Saints
+export async function getDiscoveredSaints(): Promise<Saint[]> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.discoveredSaints);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function saveDiscoveredSaint(saint: Saint): Promise<void> {
+  const all = await getDiscoveredSaints();
+  const index = all.findIndex((s) => s.id === saint.id);
+  if (index >= 0) {
+    all[index] = saint;
+  } else {
+    all.push(saint);
+  }
+  await AsyncStorage.setItem(KEYS.discoveredSaints, JSON.stringify(all));
+}
+
+export async function migrateDiscoveredSaintsFromCompletions(completions: Completion[]): Promise<Saint[]> {
+  const uniqueMap = new Map<string, Completion>();
+  for (const c of completions) {
+    if (!uniqueMap.has(c.saintId)) {
+      uniqueMap.set(c.saintId, c);
+    }
+  }
+
+  const saints: Saint[] = [];
+  for (const [saintId, comp] of uniqueMap) {
+    const local = SAINTS.find((s) => s.id === saintId);
+    if (local) {
+      saints.push(local);
+    } else {
+      saints.push({
+        id: saintId,
+        name: comp.saintName,
+        feastDay: '',
+        bio: '',
+        virtues: [],
+        emotions: [comp.emotionSelected],
+        initials: comp.saintName
+          .split(' ')
+          .filter((w) => w[0] === w[0].toUpperCase())
+          .map((w) => w[0])
+          .slice(0, 2)
+          .join(''),
+      });
+    }
+  }
+
+  await AsyncStorage.setItem(KEYS.discoveredSaints, JSON.stringify(saints));
+  return saints;
 }
 
 // Full data export

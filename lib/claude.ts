@@ -8,6 +8,7 @@ interface EdgeFunctionResponse {
   saint_name: string;
   feast_day: string;
   bio: string;
+  virtues?: string[];
   micro_action: string;
   estimated_minutes: number;
   source: 'claude' | 'cache' | 'local';
@@ -75,7 +76,7 @@ export async function getSaintMatch(emotion: Emotion): Promise<SaintMatch> {
       name: result.saint_name,
       feastDay: result.feast_day,
       bio: result.bio,
-      virtues: [],
+      virtues: result.virtues ?? [],
       emotions: [emotion],
       initials: result.saint_name
         .split(' ')

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
-import { StreakData, UsageData, ActiveChallenge, Completion, UserNovena } from '../types';
+import { Saint, StreakData, UsageData, ActiveChallenge, Completion, UserNovena } from '../types';
 import { getStreakData, incrementStreak as incrementStreakData } from '../lib/streak';
 import {
   getUsageData,
@@ -14,6 +14,9 @@ import {
   getUserNovenas,
   saveUserNovena as storeUserNovena,
   deleteUserNovena as removeUserNovena,
+  getDiscoveredSaints,
+  saveDiscoveredSaint,
+  migrateDiscoveredSaintsFromCompletions,
 } from '../lib/storage';
 // RevenueCat kept dormant — re-enable for paid tiers later
 // import { checkProStatus, initPurchases, loginRevenueCat } from '../lib/purchases';
@@ -42,6 +45,7 @@ interface AppContextType {
   isLoading: boolean;
   session: Session | null;
   userNovenas: UserNovena[];
+  discoveredSaints: Saint[];
 
   // Actions
   refreshStreak: () => Promise<void>;
@@ -77,6 +81,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isPro, setIsPro] = useState(true); // Free beta: everyone gets full access
   const [isOnboarded, setIsOnboarded] = useState(false);
   const [userNovenas, setUserNovenas] = useState<UserNovena[]>([]);
+  const [discoveredSaints, setDiscoveredSaints] = useState<Saint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const authListenerRef = useRef<{ subscription: { unsubscribe: () => void } } | null>(null);
@@ -93,13 +98,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const refreshAll = useCallback(async () => {
     // Fast path: load from AsyncStorage
-    const [streakData, usageData, challenge, comps, onboarded, novenas] = await Promise.all([
+    const [streakData, usageData, challenge, comps, onboarded, novenas, discovered] = await Promise.all([
       getStreakData(),
       getUsageData(),
       getActiveChallenge(),
       getCompletions(),
       hasCompletedOnboarding(),
       getUserNovenas(),
+      getDiscoveredSaints(),
     ]);
     setStreak(streakData);
     setUsage(usageData);
@@ -108,6 +114,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // isPro stays true — free beta, no pro check needed
     setIsOnboarded(onboarded);
     setUserNovenas(novenas);
+
+    // Migrate discovered saints from completions for existing users
+    if (discovered.length === 0 && comps.length > 0) {
+      const migrated = await migrateDiscoveredSaintsFromCompletions(comps);
+      setDiscoveredSaints(migrated);
+    } else {
+      setDiscoveredSaints(discovered);
+    }
 
     // Slow path: background sync with Supabase
     if (isSupabaseConfigured()) {
@@ -189,6 +203,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       };
       await addCompletion(completion);
       setCompletions((prev) => [completion, ...prev]);
+
+      // Persist the full Saint object for the portfolio
+      const saint = activeChallenge.match.saint;
+      await saveDiscoveredSaint(saint);
+      setDiscoveredSaints((prev) =>
+        prev.some((s) => s.id === saint.id) ? prev : [...prev, saint]
+      );
 
       const updated: ActiveChallenge = { ...activeChallenge, completed: true };
       await storeChallenge(updated);
@@ -302,6 +323,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isLoading,
         session,
         userNovenas,
+        discoveredSaints,
         refreshStreak,
         refreshUsage,
         acceptChallenge,
