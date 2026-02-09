@@ -14,7 +14,6 @@ export { IconLogo } from './IconLogo';
 export { IconCompleted } from './IconCompleted';
 export { IconMatching } from './IconMatching';
 export { IconMilestone } from './IconMilestone';
-export { IconPatienceScore } from './IconPatienceScore';
 export {
   IconNavHome,
   IconNavCalendar,

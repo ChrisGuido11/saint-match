@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase, isSupabaseConfigured } from './supabase';
-import { getCompletions, getPatienceScores, getUsageData } from './storage';
+import { getCompletions, getUsageData } from './storage';
 import { getStreakData, getCompletionDates } from './streak';
 import { hasCompletedOnboarding } from './storage';
 import {
@@ -8,7 +8,6 @@ import {
   StreakData,
   UsageData,
   ActiveChallenge,
-  PatienceScore,
   UserNovena,
 } from '../types';
 import { format, startOfWeek, addDays } from 'date-fns';
@@ -19,7 +18,7 @@ const SYNC_QUEUE_KEY = '@saint_match_sync_queue';
 // ── Sync retry queue ─────────────────────────────────────────────────
 
 interface SyncQueueItem {
-  type: 'completion' | 'streak' | 'challenge' | 'patience_score' | 'onboarding' | 'user_novena';
+  type: 'completion' | 'streak' | 'challenge' | 'onboarding' | 'user_novena';
   payload: unknown;
   createdAt: string;
 }
@@ -61,11 +60,6 @@ async function replaySyncQueue(): Promise<void> {
         case 'challenge':
           await syncActiveChallengeToServer(item.payload as ActiveChallenge | null);
           break;
-        case 'patience_score': {
-          const ps = item.payload as { score: number; weekEnding: string };
-          await syncPatienceScoreToServer(ps.score, ps.weekEnding);
-          break;
-        }
         case 'onboarding':
           await syncOnboardingToServer();
           break;
@@ -267,36 +261,6 @@ export async function syncActiveChallengeToServer(
   }
 }
 
-export async function syncPatienceScoreToServer(
-  score: number,
-  weekEnding: string
-): Promise<void> {
-  if (!isSupabaseConfigured()) return;
-
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return;
-
-  try {
-    const result = await supabase.from('patience_scores').upsert(
-      {
-        user_id: session.user.id,
-        score,
-        week_ending: weekEnding,
-      },
-      { onConflict: 'user_id,week_ending' }
-    );
-
-    if (result.error) throw result.error;
-  } catch (err) {
-    console.error('syncPatienceScoreToServer exception:', err);
-    await addToSyncQueue({
-      type: 'patience_score',
-      payload: { score, weekEnding },
-      createdAt: new Date().toISOString(),
-    });
-  }
-}
-
 export async function syncOnboardingToServer(): Promise<void> {
   if (!isSupabaseConfigured()) return;
 
@@ -462,7 +426,6 @@ async function migrateLocalDataToServer(userId: string): Promise<void> {
     onboarding: '@saint_match_migrated_onboarding',
     completions: '@saint_match_migrated_completions',
     streaks: '@saint_match_migrated_streaks',
-    patience: '@saint_match_migrated_patience',
   };
 
   let allSucceeded = true;
@@ -527,29 +490,7 @@ async function migrateLocalDataToServer(userId: string): Promise<void> {
     allSucceeded = false;
   }
 
-  // 4. Migrate patience scores
-  try {
-    if ((await AsyncStorage.getItem(STEP_KEYS.patience)) !== 'true') {
-      const patienceScores = await getPatienceScores();
-      if (patienceScores.length > 0) {
-        const scoreRows = patienceScores.map((s) => ({
-          user_id: userId,
-          score: s.score,
-          week_ending: s.weekEnding,
-          created_at: s.createdAt,
-        }));
-        const { error } = await supabase
-          .from('patience_scores')
-          .upsert(scoreRows, { onConflict: 'user_id,week_ending' });
-        if (error) throw error;
-      }
-      await AsyncStorage.setItem(STEP_KEYS.patience, 'true');
-    }
-  } catch {
-    allSucceeded = false;
-  }
-
-  // 5. Only mark overall migration complete if all steps succeeded
+  // 4. Only mark overall migration complete if all steps succeeded
   if (allSucceeded) {
     await AsyncStorage.setItem(MIGRATION_KEY, 'true');
   }

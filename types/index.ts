@@ -68,13 +68,6 @@ export interface UsageData {
   resetAt: string;
 }
 
-export interface PatienceScore {
-  id: string;
-  score: number;
-  weekEnding: string;
-  createdAt: string;
-}
-
 export interface UserProfile {
   id: string;
   email: string;

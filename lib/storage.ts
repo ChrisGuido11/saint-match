@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActiveChallenge, Completion, PatienceScore, UsageData, UserNovena } from '../types';
+import { ActiveChallenge, Completion, UsageData, UserNovena } from '../types';
 import { format, startOfWeek, addDays } from 'date-fns';
 
 const KEYS = {
@@ -7,7 +7,6 @@ const KEYS = {
   activeChallenge: '@saint_match_active_challenge',
   completions: '@saint_match_completions_log',
   usage: '@saint_match_usage',
-  patienceScores: '@saint_match_patience_scores',
   isPro: '@saint_match_pro_status',
   userNovenas: '@saint_match_user_novenas',
 } as const;
@@ -104,41 +103,6 @@ function getDefaultUsage(): UsageData {
   };
 }
 
-// Patience scores
-export async function getPatienceScores(): Promise<PatienceScore[]> {
-  try {
-    const raw = await AsyncStorage.getItem(KEYS.patienceScores);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-export async function addPatienceScore(score: number): Promise<void> {
-  const scores = await getPatienceScores();
-  const weekEnding = format(
-    addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 6),
-    'yyyy-MM-dd'
-  );
-
-  // Replace score for this week if exists
-  const existingIndex = scores.findIndex((s) => s.weekEnding === weekEnding);
-  const newScore: PatienceScore = {
-    id: `ps-${Date.now()}`,
-    score,
-    weekEnding,
-    createdAt: new Date().toISOString(),
-  };
-
-  if (existingIndex >= 0) {
-    scores[existingIndex] = newScore;
-  } else {
-    scores.push(newScore);
-  }
-
-  await AsyncStorage.setItem(KEYS.patienceScores, JSON.stringify(scores));
-}
-
 // User Novenas
 export async function getUserNovenas(): Promise<UserNovena[]> {
   try {
@@ -178,16 +142,14 @@ export async function deleteUserNovena(id: string): Promise<void> {
 
 // Full data export
 export async function exportAllData(): Promise<Record<string, unknown>> {
-  const [completions, patienceScores, usage] = await Promise.all([
+  const [completions, usage] = await Promise.all([
     getCompletions(),
-    getPatienceScores(),
     getUsageData(),
   ]);
 
   return {
     exportedAt: new Date().toISOString(),
     completions,
-    patienceScores,
     usage,
   };
 }

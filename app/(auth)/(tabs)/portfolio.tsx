@@ -1,56 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { router } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { format } from 'date-fns';
 import { Colors } from '../../../constants/colors';
 import { Typography, FontFamily } from '../../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
-import { getPatienceScores } from '../../../lib/storage';
-import { PatienceScore } from '../../../types';
+import { SAINTS } from '../../../constants/saints';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { IconChart } from '../../../components/icons';
 
-function SkeletonBlock({ width, height, style }: { width: number | string; height: number; style?: any }) {
-  return (
-    <Animated.View
-      entering={FadeIn.duration(300)}
-      style={[
-        {
-          width,
-          height,
-          borderRadius: BorderRadius.sm,
-          backgroundColor: Colors.creamDark,
-        },
-        style,
-      ]}
-    />
-  );
-}
-
 export default function PortfolioScreen() {
   const { completions, streak } = useApp();
-  const [patienceScores, setPatienceScores] = useState<PatienceScore[] | null>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  useEffect(() => {
-    getPatienceScores().then(setPatienceScores);
-  }, []);
+  const saintCompletionMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const c of completions) {
+      map.set(c.saintId, (map.get(c.saintId) ?? 0) + 1);
+    }
+    return map;
+  }, [completions]);
+
+  const uniqueSaintsCount = useMemo(() => saintCompletionMap.size, [saintCompletionMap]);
+  const totalChallenges = completions.length;
 
   const handleExport = async () => {
     setIsExporting(true);
     try {
       const exportDate = format(new Date(), 'MMMM d, yyyy');
-      const scoresHtml = (patienceScores ?? []).length > 0
-        ? `<table>
-            <tr><th>Week Ending</th><th>Score</th></tr>
-            ${(patienceScores ?? []).map(s =>
-              `<tr><td>${format(new Date(s.weekEnding), 'MMM d, yyyy')}</td><td>${s.score} / 5</td></tr>`
-            ).join('')}
-          </table>`
-        : '<p class="empty">No patience scores recorded yet.</p>';
+
+      const saintsHtml = SAINTS.map((saint) => {
+        const count = saintCompletionMap.get(saint.id) ?? 0;
+        return `<div class="saint-item ${count > 0 ? '' : 'dimmed'}">
+          <div class="saint-initials">${saint.initials}</div>
+          <div class="saint-info">
+            <strong>${saint.name}</strong>
+            ${count > 0 ? `<span class="saint-count">${count} challenge${count !== 1 ? 's' : ''}</span>` : '<span class="saint-count">Not yet met</span>'}
+          </div>
+        </div>`;
+      }).join('');
 
       const completionsHtml = completions.length > 0
         ? completions.map(c =>
@@ -105,24 +95,30 @@ export default function PortfolioScreen() {
             }
             .streak-label { color: #999; font-size: 13px; }
             .streak-value { font-size: 28px; color: #8B9D83; font-weight: bold; }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin: 16px 0;
+            .saint-item {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              padding: 8px 0;
+              border-bottom: 1px solid #E8E4DF;
             }
-            th {
-              text-align: left;
+            .saint-item.dimmed { opacity: 0.4; }
+            .saint-initials {
+              width: 36px;
+              height: 36px;
+              border-radius: 50%;
               background: #8B9D83;
               color: #fff;
-              padding: 8px 12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
               font-size: 14px;
+              font-weight: bold;
+              text-align: center;
+              line-height: 36px;
             }
-            td {
-              padding: 8px 12px;
-              border-bottom: 1px solid #E8E4DF;
-              font-size: 14px;
-            }
-            tr:nth-child(even) { background: #fff; }
+            .saint-info { flex: 1; }
+            .saint-count { color: #999; font-size: 13px; margin-left: 8px; }
             .entry {
               background: #fff;
               border-radius: 8px;
@@ -152,10 +148,10 @@ export default function PortfolioScreen() {
             </div>
           </div>
 
-          <h2>Patience Score Trend</h2>
-          ${scoresHtml}
+          <h2>Saints Collection (${uniqueSaintsCount} of ${SAINTS.length})</h2>
+          ${saintsHtml}
 
-          <h2>Micro-Vocation Log (${completions.length} ${completions.length === 1 ? 'entry' : 'entries'})</h2>
+          <h2>Challenge History (${completions.length} ${completions.length === 1 ? 'entry' : 'entries'})</h2>
           ${completionsHtml}
         </body>
         </html>
@@ -170,15 +166,6 @@ export default function PortfolioScreen() {
     }
   };
 
-  const handleCheckin = () => {
-    router.push('/(auth)/weekly-checkin');
-  };
-
-  const isLoadingScores = patienceScores === null;
-  // Chart data (last 8 scores)
-  const recentScores = (patienceScores ?? []).slice(-8);
-  const maxScore = 5;
-
   return (
     <ScrollView
       style={styles.container}
@@ -187,81 +174,86 @@ export default function PortfolioScreen() {
     >
       {/* Header */}
       <Animated.View entering={FadeIn.duration(500)} style={styles.header}>
-        <View>
-          <Text style={styles.title}>Virtue Portfolio</Text>
-          <Text style={styles.subtitle}>Your spiritual growth at a glance</Text>
-        </View>
-        <TouchableOpacity onPress={handleCheckin} style={styles.checkinButton} accessibilityRole="button" accessibilityLabel="Weekly check-in">
-          <Text style={styles.checkinButtonText}>Weekly Check-in</Text>
-        </TouchableOpacity>
+        <Text style={styles.title}>Virtue Portfolio</Text>
+        <Text style={styles.subtitle}>Your spiritual growth at a glance</Text>
       </Animated.View>
 
-      {/* Patience score chart */}
-      <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.chartCard}>
-        <Text style={styles.chartTitle}>Patience Score Trend</Text>
-        {isLoadingScores ? (
-          <View style={[styles.chart, { alignItems: 'flex-end', gap: Spacing.xs }]}>
-            {[0.4, 0.6, 0.3, 0.7, 0.5, 0.8].map((h, i) => (
-              <View key={i} style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', height: '100%' }}>
-                <SkeletonBlock width="80%" height={160 * h} style={{ borderRadius: BorderRadius.sm }} />
-              </View>
-            ))}
-          </View>
-        ) : recentScores.length > 0 ? (
-          <View style={styles.chart}>
-            <View style={styles.chartYAxis}>
-              {[5, 4, 3, 2, 1].map((val) => (
-                <Text key={val} style={styles.chartYLabel}>
-                  {val}
-                </Text>
-              ))}
-            </View>
-            <View style={styles.chartBars}>
-              {recentScores.map((score, index) => (
-                <View key={score.id} style={styles.chartBarContainer}>
-                  <View style={styles.chartBarTrack}>
-                    <Animated.View
-                      entering={FadeInDown.delay(200 + index * 100).duration(400)}
-                      style={[
-                        styles.chartBar,
-                        {
-                          height: `${(score.score / maxScore) * 100}%`,
-                          backgroundColor:
-                            score.score >= 4
-                              ? Colors.sage
-                              : score.score >= 3
-                                ? Colors.sageLight
-                                : Colors.terracotta,
-                        },
-                      ]}
-                    />
-                  </View>
-                  <Text style={styles.chartXLabel}>
-                    {format(new Date(score.weekEnding), 'M/d')}
+      {/* Saints Collection */}
+      <Animated.View entering={FadeInDown.delay(100).duration(500)}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>YOUR SAINTS</Text>
+          <Text style={styles.sectionSubtitle}>{uniqueSaintsCount} of {SAINTS.length} saints</Text>
+        </View>
+        <View style={styles.saintsGrid}>
+          {SAINTS.map((saint) => {
+            const count = saintCompletionMap.get(saint.id) ?? 0;
+            const encountered = count > 0;
+            return (
+              <View
+                key={saint.id}
+                style={[styles.saintCard, !encountered && styles.saintCardDimmed]}
+              >
+                <View style={[styles.saintInitials, !encountered && styles.saintInitialsDimmed]}>
+                  <Text style={[styles.saintInitialsText, !encountered && styles.saintInitialsTextDimmed]}>
+                    {saint.initials}
                   </Text>
                 </View>
-              ))}
+                <Text style={[styles.saintName, !encountered && styles.saintNameDimmed]} numberOfLines={2}>
+                  {saint.name}
+                </Text>
+                {encountered && (
+                  <View style={styles.saintCountBadge}>
+                    <Text style={styles.saintCountText}>{count}</Text>
+                  </View>
+                )}
+              </View>
+            );
+          })}
+        </View>
+      </Animated.View>
+
+      {/* Journey Stats */}
+      <Animated.View entering={FadeInDown.delay(200).duration(500)}>
+        <Text style={styles.sectionTitle}>YOUR JOURNEY</Text>
+        {totalChallenges > 0 ? (
+          <View style={styles.statsCard}>
+            <View style={styles.statsGrid}>
+              <View style={styles.statBlock}>
+                <Text style={styles.statNumber}>{totalChallenges}</Text>
+                <Text style={styles.statLabel}>Challenges{'\n'}Completed</Text>
+              </View>
+              <View style={styles.statBlock}>
+                <Text style={styles.statNumber}>{streak.currentStreak}</Text>
+                <Text style={styles.statLabel}>Current{'\n'}Streak</Text>
+              </View>
+              <View style={styles.statBlock}>
+                <Text style={styles.statNumber}>{streak.longestStreak}</Text>
+                <Text style={styles.statLabel}>Longest{'\n'}Streak</Text>
+              </View>
+              <View style={styles.statBlock}>
+                <Text style={styles.statNumber}>{uniqueSaintsCount}</Text>
+                <Text style={styles.statLabel}>Saints{'\n'}Met</Text>
+              </View>
             </View>
           </View>
         ) : (
-          <View style={styles.emptyChart}>
-            <IconChart size={64} color={Colors.sage} />
-            <Text style={styles.emptyChartText}>
-              Complete your first weekly check-in to see your patience trend!
+          <View style={styles.emptyCard}>
+            <IconChart size={48} color={Colors.sage} />
+            <Text style={styles.emptyText}>
+              Complete your first challenge to start building your Virtue Portfolio.
             </Text>
-            <TouchableOpacity onPress={handleCheckin} style={styles.emptyChartCta} accessibilityRole="button" accessibilityLabel="Rate your week">
-              <Text style={styles.emptyChartCtaText}>Rate Your Week</Text>
-            </TouchableOpacity>
           </View>
         )}
       </Animated.View>
 
-      {/* Completions log */}
-      <Animated.View entering={FadeInDown.delay(200).duration(500)} style={styles.logSection}>
-        <View style={styles.logHeader}>
-          <Text style={styles.logTitle}>Micro-Vocation Log</Text>
+      {/* Challenge History */}
+      <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.historySection}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>CHALLENGE HISTORY</Text>
           {completions.length > 0 && (
-            <Text style={styles.logCount}>{completions.length} entries</Text>
+            <View style={styles.countBadge}>
+              <Text style={styles.countBadgeText}>{completions.length}</Text>
+            </View>
           )}
         </View>
 
@@ -269,33 +261,30 @@ export default function PortfolioScreen() {
           completions.slice(0, 20).map((completion, index) => (
             <Animated.View
               key={completion.id}
-              entering={FadeInDown.delay(300 + index * 50).duration(300)}
-              style={styles.logEntry}
+              entering={FadeInDown.delay(400 + index * 50).duration(300)}
+              style={styles.historyCard}
             >
-              <View style={styles.logDot} />
-              <View style={styles.logContent}>
-                <Text style={styles.logDate}>
-                  {format(new Date(completion.completedAt), 'MMM d, yyyy')}
-                </Text>
-                <Text style={styles.logAction}>{completion.actionText}</Text>
-                <Text style={styles.logSaint}>
-                  Inspired by {completion.saintName}
-                </Text>
-              </View>
+              <Text style={styles.historyDate}>
+                {format(new Date(completion.completedAt), 'MMM d, yyyy')}
+              </Text>
+              <Text style={styles.historyAction}>{completion.actionText}</Text>
+              <Text style={styles.historySaint}>
+                Inspired by {completion.saintName}
+              </Text>
             </Animated.View>
           ))
         ) : (
-          <View style={styles.emptyLog}>
+          <View style={styles.emptyCard}>
             <IconChart size={48} color={Colors.sage} />
-            <Text style={styles.emptyLogText}>
-              Complete your first challenge to start building your Virtue Portfolio.
+            <Text style={styles.emptyText}>
+              Your challenge history will appear here after you complete your first challenge.
             </Text>
           </View>
         )}
       </Animated.View>
 
-      {/* Export button */}
-      <Animated.View entering={FadeInDown.delay(400).duration(500)}>
+      {/* Export PDF */}
+      <Animated.View entering={FadeInDown.delay(500).duration(500)}>
         <TouchableOpacity
           style={[styles.exportButton, isExporting && styles.exportButtonDisabled]}
           onPress={handleExport}
@@ -304,11 +293,9 @@ export default function PortfolioScreen() {
           accessibilityRole="button"
           accessibilityLabel="Export portfolio as PDF"
         >
-          <View style={styles.exportButtonContent}>
-            <Text style={styles.exportButtonText}>
-              {isExporting ? 'Exporting...' : 'Export Portfolio as PDF'}
-            </Text>
-          </View>
+          <Text style={styles.exportButtonText}>
+            {isExporting ? 'Exporting...' : 'Export Portfolio as PDF'}
+          </Text>
         </TouchableOpacity>
       </Animated.View>
     </ScrollView>
@@ -326,9 +313,6 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: Spacing.lg,
   },
   title: {
@@ -340,158 +324,178 @@ const styles = StyleSheet.create({
     color: Colors.charcoalMuted,
     marginTop: 4,
   },
-  checkinButton: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
+
+  // Section headers
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
+  },
+  sectionTitle: {
+    ...Typography.label,
+    color: Colors.charcoalMuted,
+    marginBottom: Spacing.sm,
+  },
+  sectionSubtitle: {
+    ...Typography.bodySmall,
+    color: Colors.charcoalSubtle,
+    marginBottom: Spacing.sm,
+  },
+
+  // Saints Collection
+  saintsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+    marginBottom: Spacing.xl,
+  },
+  saintCard: {
+    width: '30%',
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.sm,
+    alignItems: 'center',
+    ...Shadows.card,
+  },
+  saintCardDimmed: {
+    backgroundColor: Colors.creamDark,
+    opacity: 0.35,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  saintInitials: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.sageMuted,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.xs,
+  },
+  saintInitialsDimmed: {
+    backgroundColor: Colors.creamWarm,
+  },
+  saintInitialsText: {
+    fontFamily: FontFamily.sansSemiBold,
+    fontSize: 16,
+    color: Colors.sage,
+  },
+  saintInitialsTextDimmed: {
+    color: Colors.charcoalSubtle,
+  },
+  saintName: {
+    ...Typography.caption,
+    color: Colors.charcoal,
+    textAlign: 'center',
+    fontFamily: FontFamily.sansMedium,
+  },
+  saintNameDimmed: {
+    color: Colors.charcoalSubtle,
+  },
+  saintCountBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
     backgroundColor: Colors.terracotta,
     borderRadius: BorderRadius.round,
-    marginTop: 4,
+    minWidth: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
   },
-  checkinButtonText: {
-    ...Typography.buttonSmall,
+  saintCountText: {
+    fontFamily: FontFamily.sansBold,
+    fontSize: 11,
     color: Colors.white,
-    fontSize: 12,
   },
-  chartCard: {
+
+  // Journey Stats
+  statsCard: {
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
     ...Shadows.card,
   },
-  chartTitle: {
-    ...Typography.cardTitle,
-    color: Colors.charcoal,
-    marginBottom: Spacing.md,
-  },
-  chart: {
+  statsGrid: {
     flexDirection: 'row',
-    height: 160,
-    gap: Spacing.sm,
+    flexWrap: 'wrap',
   },
-  chartYAxis: {
-    justifyContent: 'space-between',
-    paddingVertical: 4,
-  },
-  chartYLabel: {
-    ...Typography.caption,
-    color: Colors.charcoalSubtle,
-    width: 16,
-    textAlign: 'right',
-  },
-  chartBars: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: Spacing.xs,
-  },
-  chartBarContainer: {
-    flex: 1,
+  statBlock: {
+    width: '50%',
     alignItems: 'center',
+    paddingVertical: Spacing.sm,
   },
-  chartBarTrack: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: Colors.creamDark,
-    borderRadius: BorderRadius.sm,
-    justifyContent: 'flex-end',
-    overflow: 'hidden',
+  statNumber: {
+    ...Typography.statNumber,
+    color: Colors.sage,
   },
-  chartBar: {
-    width: '100%',
-    borderRadius: BorderRadius.sm,
-    minHeight: 8,
-  },
-  chartXLabel: {
+  statLabel: {
     ...Typography.caption,
-    color: Colors.charcoalSubtle,
-    marginTop: Spacing.xxs,
-    fontSize: 10,
-  },
-  emptyChart: {
-    alignItems: 'center',
-    padding: Spacing.lg,
-  },
-  emptyChartText: {
-    ...Typography.body,
     color: Colors.charcoalMuted,
     textAlign: 'center',
-    marginTop: Spacing.md,
-    marginBottom: Spacing.md,
+    marginTop: 4,
   },
-  emptyChartCta: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    backgroundColor: Colors.sage,
-    borderRadius: BorderRadius.round,
-  },
-  emptyChartCtaText: {
-    ...Typography.buttonSmall,
-    color: Colors.white,
-  },
-  logSection: {
+
+  // Challenge History
+  historySection: {
     marginBottom: Spacing.lg,
   },
-  logHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.md,
+  countBadge: {
+    backgroundColor: Colors.sageMuted,
+    borderRadius: BorderRadius.round,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginBottom: Spacing.sm,
   },
-  logTitle: {
-    ...Typography.cardTitle,
-    color: Colors.charcoal,
+  countBadgeText: {
+    fontFamily: FontFamily.sansSemiBold,
+    fontSize: 12,
+    color: Colors.sage,
   },
-  logCount: {
-    ...Typography.bodySmall,
-    color: Colors.charcoalMuted,
-  },
-  logEntry: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
-  logDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: Colors.sage,
-    marginTop: 6,
-  },
-  logContent: {
-    flex: 1,
+  historyCard: {
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
+    marginBottom: Spacing.sm,
+    ...Shadows.card,
   },
-  logDate: {
+  historyDate: {
     ...Typography.caption,
     color: Colors.charcoalSubtle,
     marginBottom: 4,
   },
-  logAction: {
+  historyAction: {
     ...Typography.body,
     color: Colors.charcoalLight,
     lineHeight: 22,
   },
-  logSaint: {
+  historySaint: {
     ...Typography.bodySmall,
     color: Colors.sage,
     marginTop: Spacing.xs,
     fontFamily: FontFamily.sansMedium,
   },
-  emptyLog: {
+
+  // Empty states
+  emptyCard: {
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.md,
     padding: Spacing.lg,
     alignItems: 'center',
+    marginBottom: Spacing.xl,
+    ...Shadows.card,
   },
-  emptyLogText: {
+  emptyText: {
     ...Typography.body,
     color: Colors.charcoalMuted,
     textAlign: 'center',
     marginTop: Spacing.md,
   },
+
+  // Export
   exportButton: {
     width: '100%',
     paddingVertical: 18,
@@ -502,11 +506,6 @@ const styles = StyleSheet.create({
   },
   exportButtonDisabled: {
     opacity: 0.6,
-  },
-  exportButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
   },
   exportButtonText: {
     ...Typography.button,

@@ -24,10 +24,6 @@ export default function AuthLayout() {
         options={{ animation: 'fade', gestureEnabled: false }}
       />
       <Stack.Screen
-        name="weekly-checkin"
-        options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
-      />
-      <Stack.Screen
         name="start-novena"
         options={{ animation: 'slide_from_bottom' }}
       />

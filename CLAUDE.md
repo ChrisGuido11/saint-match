@@ -45,11 +45,10 @@ app/
 └── (auth)/                  # Protected group (post-onboarding)
     ├── saint-match.tsx      # View matched saint + accept challenge
     ├── celebration.tsx      # Post-completion celebration
-    ├── weekly-checkin.tsx   # Rate weekly patience score (1-5)
     └── (tabs)/              # Bottom tab navigation
         ├── index.tsx        # Home (main UX: emotion select → match)
         ├── calendar.tsx     # Streak calendar view
-        ├── portfolio.tsx    # Virtue portfolio + completions log
+        ├── portfolio.tsx    # Virtue portfolio: saints collection, stats, challenge history
         └── settings.tsx     # Settings, account linking
 ```
 
@@ -94,8 +93,6 @@ Initialization flow in `AppProvider`:
 - `completions` — challenge completion log (unique per user+date)
 - `streaks` — one row per user with current/longest streak
 - `active_challenges` — today's challenge as JSONB
-- `patience_scores` — weekly self-assessment ratings
-
 RLS enabled on all tables. `handle_new_user()` trigger auto-creates profile + streak rows.
 
 ### Environment Variables
@@ -117,7 +114,7 @@ All design tokens live in `constants/`:
 
 ### Type Definitions
 
-All domain types in `types/index.ts`: `Saint`, `Emotion` (6 values), `MicroAction`, `SaintMatch`, `ActiveChallenge`, `Completion`, `StreakData`, `UsageData`, `PatienceScore`.
+All domain types in `types/index.ts`: `Saint`, `Emotion` (6 values), `MicroAction`, `SaintMatch`, `ActiveChallenge`, `Completion`, `StreakData`, `UsageData`.
 
 ### Database Migrations
 

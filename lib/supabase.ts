@@ -64,7 +64,6 @@ export async function deleteUserAccount() {
     // The profiles table has ON DELETE CASCADE, so deleting the auth user will clean up
     await supabase.from('active_challenges').delete().eq('user_id', user.id);
     await supabase.from('completions').delete().eq('user_id', user.id);
-    await supabase.from('patience_scores').delete().eq('user_id', user.id);
     await supabase.from('usage').delete().eq('user_id', user.id);
     await supabase.from('streaks').delete().eq('user_id', user.id);
     await supabase.from('profiles').delete().eq('id', user.id);
