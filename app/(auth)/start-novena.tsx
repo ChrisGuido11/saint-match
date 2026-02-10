@@ -20,11 +20,13 @@ import { scheduleNovenaReminders } from '../../lib/notifications';
 import { IconClose, IconNavNovenas } from '../../components/icons';
 
 export default function StartNovenaScreen() {
-  const { novenaId, saintId, saintName: saintNameParam, saintBio: saintBioParam } = useLocalSearchParams<{
+  const { novenaId, saintId, saintName: saintNameParam, saintBio: saintBioParam, novenaTitle, novenaDescription } = useLocalSearchParams<{
     novenaId?: string;
     saintId: string;
     saintName?: string;
     saintBio?: string;
+    novenaTitle?: string;
+    novenaDescription?: string;
   }>();
   const { startNovena } = useApp();
 
@@ -57,9 +59,9 @@ export default function StartNovenaScreen() {
     );
   }
 
-  // Title and description: use static novena if available, otherwise generate from saint name
-  const displayTitle = novena?.title ?? `${resolvedSaintName} Novena`;
-  const displayDescription = novena?.description ?? `Nine days of prayer with ${resolvedSaintName}, asking for their intercession and guidance.`;
+  // Title and description: prefer route params (from catalog), then static novena, then generated
+  const displayTitle = novenaTitle ?? novena?.title ?? `${resolvedSaintName} Novena`;
+  const displayDescription = novenaDescription ?? novena?.description ?? `Nine days of prayer with ${resolvedSaintName}, asking for their intercession and guidance.`;
 
   // Intention suggestions: use static novena's if available, otherwise generic ones
   const intentionSuggestions = novena?.intentionSuggestions ?? [

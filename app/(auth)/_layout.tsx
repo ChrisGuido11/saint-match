@@ -32,6 +32,10 @@ export default function AuthLayout() {
         options={{ animation: 'slide_from_right' }}
       />
       <Stack.Screen
+        name="browse-novenas"
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
         name="novena-complete"
         options={{ animation: 'fade', gestureEnabled: false }}
       />

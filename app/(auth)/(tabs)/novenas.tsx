@@ -7,7 +7,6 @@ import { Typography } from '../../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
 import { SAINTS } from '../../../constants/saints';
-import { getNovenaById, NOVENAS } from '../../../constants/novenas';
 import { NovenaProgressDots } from '../../../components/NovenaProgressDots';
 import { NovenaInfoModal } from '../../../components/NovenaInfoModal';
 import { IconNavNovenas } from '../../../components/icons';
@@ -34,12 +33,7 @@ export default function NovenasScreen() {
   };
 
   const handleStartNovena = () => {
-    // Navigate to start-novena with the first available novena
-    const firstNovena = NOVENAS[0];
-    router.push({
-      pathname: '/(auth)/start-novena',
-      params: { novenaId: firstNovena.id, saintId: firstNovena.saintId },
-    });
+    router.push({ pathname: '/(auth)/browse-novenas' });
   };
 
   return (
