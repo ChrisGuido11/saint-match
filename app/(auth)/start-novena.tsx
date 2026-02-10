@@ -20,13 +20,14 @@ import { scheduleNovenaReminders } from '../../lib/notifications';
 import { IconClose, IconNavNovenas } from '../../components/icons';
 
 export default function StartNovenaScreen() {
-  const { novenaId, saintId, saintName: saintNameParam, saintBio: saintBioParam, novenaTitle, novenaDescription } = useLocalSearchParams<{
+  const { novenaId, saintId, saintName: saintNameParam, saintBio: saintBioParam, novenaTitle, novenaDescription, intention: passedIntention } = useLocalSearchParams<{
     novenaId?: string;
     saintId: string;
     saintName?: string;
     saintBio?: string;
     novenaTitle?: string;
     novenaDescription?: string;
+    intention?: string;
   }>();
   const { startNovena } = useApp();
 
@@ -43,8 +44,28 @@ export default function StartNovenaScreen() {
     .slice(0, 2)
     .join('');
 
-  const [selectedIntention, setSelectedIntention] = useState<string | null>(null);
-  const [customIntention, setCustomIntention] = useState('');
+  // Intention suggestions: use static novena's if available, otherwise generic ones
+  const intentionSuggestions = novena?.intentionSuggestions ?? [
+    'Spiritual growth',
+    'Peace and guidance',
+    'Healing and strength',
+    'For a loved one',
+  ];
+
+  // If intention was passed from choose-intention screen, pre-select it
+  const resolvePassedIntention = (): { selected: string | null; custom: string } => {
+    if (!passedIntention) return { selected: null, custom: '' };
+    // Check if it matches a preset suggestion
+    if (intentionSuggestions.includes(passedIntention)) {
+      return { selected: passedIntention, custom: '' };
+    }
+    // Otherwise treat as custom
+    return { selected: '__custom__', custom: passedIntention };
+  };
+  const initialIntention = resolvePassedIntention();
+
+  const [selectedIntention, setSelectedIntention] = useState<string | null>(initialIntention.selected);
+  const [customIntention, setCustomIntention] = useState(initialIntention.custom);
   const [isStarting, setIsStarting] = useState(false);
 
   // For AI-only saints (no static novena), we still need a valid saintId or name
@@ -62,14 +83,6 @@ export default function StartNovenaScreen() {
   // Title and description: prefer route params (from catalog), then static novena, then generated
   const displayTitle = novenaTitle ?? novena?.title ?? `${resolvedSaintName} Novena`;
   const displayDescription = novenaDescription ?? novena?.description ?? `Nine days of prayer with ${resolvedSaintName}, asking for their intercession and guidance.`;
-
-  // Intention suggestions: use static novena's if available, otherwise generic ones
-  const intentionSuggestions = novena?.intentionSuggestions ?? [
-    'Spiritual growth',
-    'Peace and guidance',
-    'Healing and strength',
-    'For a loved one',
-  ];
 
   const intention = selectedIntention === '__custom__' ? customIntention.trim() : (selectedIntention ?? '');
 

@@ -33,7 +33,7 @@ export default function NovenasScreen() {
   };
 
   const handleStartNovena = () => {
-    router.push({ pathname: '/(auth)/browse-novenas' });
+    router.push({ pathname: '/(auth)/choose-intention' });
   };
 
   return (

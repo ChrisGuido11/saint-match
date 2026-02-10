@@ -32,6 +32,10 @@ export default function AuthLayout() {
         options={{ animation: 'slide_from_right' }}
       />
       <Stack.Screen
+        name="choose-intention"
+        options={{ animation: 'slide_from_bottom' }}
+      />
+      <Stack.Screen
         name="browse-novenas"
         options={{ animation: 'slide_from_right' }}
       />
