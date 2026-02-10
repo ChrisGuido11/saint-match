@@ -11,6 +11,7 @@ interface EdgeFunctionResponse {
   virtues?: string[];
   micro_action: string;
   estimated_minutes: number;
+  match_reason?: string;
   source: 'claude' | 'cache' | 'local';
 }
 
@@ -91,6 +92,7 @@ function buildSaintMatch(result: EdgeFunctionResponse, emotion: Emotion): SaintM
       estimatedMinutes: result.estimated_minutes,
     },
     matchedAt: new Date().toISOString(),
+    matchReason: result.match_reason || undefined,
   };
 }
 

@@ -55,6 +55,7 @@ export default function ChooseIntentionScreen() {
           novenaTitle: result.entry.title,
           novenaDescription: `Nine days of prayer — ${result.entry.title}. Praying for: ${intention}.`,
           intention,
+          matchReason: result.matchReason,
         },
       });
     } finally {

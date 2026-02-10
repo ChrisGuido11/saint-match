@@ -20,7 +20,7 @@ import { scheduleNovenaReminders } from '../../lib/notifications';
 import { IconClose, IconNavNovenas } from '../../components/icons';
 
 export default function StartNovenaScreen() {
-  const { novenaId, saintId, saintName: saintNameParam, saintBio: saintBioParam, novenaTitle, novenaDescription, intention: passedIntention } = useLocalSearchParams<{
+  const { novenaId, saintId, saintName: saintNameParam, saintBio: saintBioParam, novenaTitle, novenaDescription, intention: passedIntention, matchReason } = useLocalSearchParams<{
     novenaId?: string;
     saintId: string;
     saintName?: string;
@@ -28,6 +28,7 @@ export default function StartNovenaScreen() {
     novenaTitle?: string;
     novenaDescription?: string;
     intention?: string;
+    matchReason?: string;
   }>();
   const { startNovena } = useApp();
 
@@ -131,6 +132,14 @@ export default function StartNovenaScreen() {
           <Text style={styles.novenaTitle}>{displayTitle}</Text>
           <Text style={styles.novenaDescription}>{displayDescription}</Text>
         </Animated.View>
+
+        {/* Why this saint? */}
+        {matchReason ? (
+          <Animated.View entering={FadeInDown.delay(250).duration(400)} style={styles.reasonSection}>
+            <Text style={styles.reasonLabel}>Why {resolvedSaintName}?</Text>
+            <Text style={styles.reasonText}>{matchReason}</Text>
+          </Animated.View>
+        ) : null}
 
         {/* Intention Selection */}
         <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.intentionSection}>
@@ -286,6 +295,23 @@ const styles = StyleSheet.create({
     color: Colors.charcoalMuted,
     textAlign: 'center',
     maxWidth: 320,
+  },
+  reasonSection: {
+    backgroundColor: Colors.sageMuted,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginBottom: Spacing.lg,
+  },
+  reasonLabel: {
+    ...Typography.cardTitle,
+    color: Colors.sageDark,
+    marginBottom: Spacing.xxs,
+  },
+  reasonText: {
+    ...Typography.body,
+    color: Colors.charcoalMuted,
+    fontStyle: 'italic',
+    lineHeight: 22,
   },
   intentionSection: {
     marginBottom: Spacing.lg,

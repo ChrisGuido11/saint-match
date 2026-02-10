@@ -110,6 +110,7 @@ function matchLocally(emotion: string) {
     bio: saint.bio,
     micro_action: action?.actionText ?? 'Spend 5 minutes in quiet reflection.',
     estimated_minutes: action?.estimatedMinutes ?? 5,
+    match_reason: `Known for ${saint.virtues.join(' and ')}, ${saint.name} understands what it means to feel ${emotion}.`,
   };
 }
 
@@ -120,6 +121,7 @@ interface ClaudeResponse {
   virtues?: string[];
   microAction: string;
   estimatedMinutes: number;
+  matchReason?: string;
 }
 
 function isValidClaudeResponse(obj: unknown): obj is ClaudeResponse {
@@ -143,10 +145,10 @@ function buildPrompt(input: { emotion?: string; customMood?: string }): string {
 First, identify the key emotional themes in their words (e.g., anxiety, loneliness, gratitude, confusion, hope).
 Then recommend ONE saint who specifically addressed those emotional struggles or joys, and ONE concrete 5-15 minute micro-action they can do today.
 Pick a saint that uniquely fits their specific situation — not a generic match.
-Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "", "estimatedMinutes": 10}`;
+Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "", "estimatedMinutes": 10, "matchReason": "1 sentence: why this saint fits their situation"}`;
   }
 
-  return `You are a Catholic spiritual director. The user is feeling ${input.emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Pick a different saint each time — surprise the user with variety from the full calendar of saints. Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "", "estimatedMinutes": 10}`;
+  return `You are a Catholic spiritual director. The user is feeling ${input.emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Pick a different saint each time — surprise the user with variety from the full calendar of saints. Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "", "estimatedMinutes": 10, "matchReason": "1 sentence: why this saint fits their emotion"}`;
 }
 
 async function callClaude(
@@ -168,7 +170,7 @@ async function callClaude(
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 300,
+        max_tokens: 400,
         temperature: 1,
         messages: [
           {
@@ -389,6 +391,7 @@ Deno.serve(async (req) => {
         virtues: claudeResult.virtues ?? [],
         micro_action: claudeResult.microAction,
         estimated_minutes: claudeResult.estimatedMinutes,
+        match_reason: claudeResult.matchReason ?? '',
         source: 'claude',
       }, 200, headers);
     }

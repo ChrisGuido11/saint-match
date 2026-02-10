@@ -73,6 +73,14 @@ export default function SaintMatchScreen() {
         {/* Saint Card */}
         <SaintCard saint={match.saint} microAction={match.microAction} />
 
+        {/* Why this saint? */}
+        {match.matchReason ? (
+          <Animated.View entering={FadeInDown.delay(500).duration(400)} style={styles.reasonSection}>
+            <Text style={styles.reasonLabel}>Why {match.saint.name}?</Text>
+            <Text style={styles.reasonText}>{match.matchReason}</Text>
+          </Animated.View>
+        ) : null}
+
         {/* Novena Suggestion */}
         {!userNovenas.some((n) => n.saintId === match.saint.id && !n.completed) && (
           <NovenaSuggestionCard
@@ -168,6 +176,23 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs,
     maxWidth: 260,
     textAlign: 'center',
+  },
+  reasonSection: {
+    backgroundColor: Colors.sageMuted,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginTop: Spacing.md,
+  },
+  reasonLabel: {
+    ...Typography.cardTitle,
+    color: Colors.sageDark,
+    marginBottom: Spacing.xxs,
+  },
+  reasonText: {
+    ...Typography.body,
+    color: Colors.charcoalMuted,
+    fontStyle: 'italic',
+    lineHeight: 22,
   },
   encouragement: {
     ...Typography.body,

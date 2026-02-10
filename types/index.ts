@@ -42,6 +42,7 @@ export interface SaintMatch {
   saint: Saint;
   microAction: MicroAction;
   matchedAt: string;
+  matchReason?: string;
 }
 
 export interface Completion {
