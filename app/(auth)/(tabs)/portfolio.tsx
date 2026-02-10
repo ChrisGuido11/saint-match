@@ -9,6 +9,7 @@ import { useApp } from '../../../context/AppContext';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { IconChart } from '../../../components/icons';
+import FlippableSaintCard from '../../../components/FlippableSaintCard';
 
 export default function PortfolioScreen() {
   const { completions, streak, discoveredSaints } = useApp();
@@ -194,21 +195,7 @@ export default function PortfolioScreen() {
             {sortedSaints.map((saint) => {
               const count = saintCompletionMap.get(saint.id) ?? 0;
               return (
-                <View key={saint.id} style={styles.saintCard}>
-                  <View style={styles.saintInitials}>
-                    <Text style={styles.saintInitialsText}>
-                      {saint.initials}
-                    </Text>
-                  </View>
-                  <Text style={styles.saintName} numberOfLines={2}>
-                    {saint.name}
-                  </Text>
-                  {count > 0 && (
-                    <View style={styles.saintCountBadge}>
-                      <Text style={styles.saintCountText}>{count}</Text>
-                    </View>
-                  )}
-                </View>
+                <FlippableSaintCard key={saint.id} saint={saint} count={count} />
               );
             })}
           </View>
@@ -359,51 +346,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: Spacing.sm,
     marginBottom: Spacing.xl,
-  },
-  saintCard: {
-    width: '30%',
-    backgroundColor: Colors.white,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.sm,
-    alignItems: 'center',
-    ...Shadows.card,
-  },
-  saintInitials: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.sageMuted,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.xs,
-  },
-  saintInitialsText: {
-    fontFamily: FontFamily.sansSemiBold,
-    fontSize: 16,
-    color: Colors.sage,
-  },
-  saintName: {
-    ...Typography.caption,
-    color: Colors.charcoal,
-    textAlign: 'center',
-    fontFamily: FontFamily.sansMedium,
-  },
-  saintCountBadge: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    backgroundColor: Colors.terracotta,
-    borderRadius: BorderRadius.round,
-    minWidth: 20,
-    height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 6,
-  },
-  saintCountText: {
-    fontFamily: FontFamily.sansBold,
-    fontSize: 11,
-    color: Colors.white,
   },
 
   // Journey Stats
