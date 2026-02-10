@@ -134,8 +134,23 @@ function isValidClaudeResponse(obj: unknown): obj is ClaudeResponse {
   );
 }
 
+function buildPrompt(input: { emotion?: string; customMood?: string }): string {
+  if (input.customMood) {
+    return `You are a Catholic spiritual director. The user describes how they feel in their own words:
+
+"${input.customMood}"
+
+First, identify the key emotional themes in their words (e.g., anxiety, loneliness, gratitude, confusion, hope).
+Then recommend ONE saint who specifically addressed those emotional struggles or joys, and ONE concrete 5-15 minute micro-action they can do today.
+Pick a saint that uniquely fits their specific situation — not a generic match.
+Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "", "estimatedMinutes": 10}`;
+  }
+
+  return `You are a Catholic spiritual director. The user is feeling ${input.emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Pick a different saint each time — surprise the user with variety from the full calendar of saints. Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "", "estimatedMinutes": 10}`;
+}
+
 async function callClaude(
-  emotion: string
+  input: { emotion?: string; customMood?: string }
 ): Promise<ClaudeResponse | null> {
   if (!ANTHROPIC_API_KEY) {
     console.error('ANTHROPIC_API_KEY is not set');
@@ -158,7 +173,7 @@ async function callClaude(
         messages: [
           {
             role: 'user',
-            content: `You are a Catholic spiritual director. The user is feeling ${emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Pick a different saint each time — surprise the user with variety from the full calendar of saints. Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "", "estimatedMinutes": 10}`,
+            content: buildPrompt(input),
           },
         ],
       }),
@@ -295,10 +310,12 @@ Deno.serve(async (req) => {
     }
 
     // 2. Validate input — wrap in try/catch for malformed body
-    let emotion: string;
+    let emotion: string | undefined;
+    let customMood: string | undefined;
     try {
       const body = await req.json();
       emotion = body.emotion;
+      customMood = body.customMood;
     } catch {
       return jsonResponse(
         { error: 'Invalid request body', code: 'BAD_REQUEST' },
@@ -307,12 +324,20 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (!VALID_EMOTIONS.includes(emotion as typeof VALID_EMOTIONS[number])) {
+    // Validate: must have either a valid emotion or a custom mood string
+    const hasValidEmotion = emotion && VALID_EMOTIONS.includes(emotion as typeof VALID_EMOTIONS[number]);
+    const hasValidCustomMood = typeof customMood === 'string' && customMood.trim().length > 0 && customMood.trim().length <= 120;
+
+    if (!hasValidEmotion && !hasValidCustomMood) {
       return jsonResponse(
-        { error: 'Invalid emotion', code: 'INVALID_EMOTION' },
+        { error: 'Invalid emotion or customMood', code: 'BAD_REQUEST' },
         400,
         headers
       );
+    }
+
+    if (hasValidCustomMood) {
+      customMood = customMood!.trim();
     }
 
     // 3. Usage limits disabled for free beta — all users get unlimited matches
@@ -335,16 +360,19 @@ Deno.serve(async (req) => {
     // }
 
     // 4. Call Claude API (skip cache for dynamic variety)
-    const claudeResult = await callClaude(emotion);
+    const claudeInput = hasValidCustomMood
+      ? { customMood: customMood! }
+      : { emotion: emotion! };
+    const claudeResult = await callClaude(claudeInput);
 
     if (claudeResult) {
       const expiresAt = new Date(
         Date.now() + CACHE_DURATION_HOURS * 60 * 60 * 1000
       ).toISOString();
 
-      // Store in cache
+      // Store in cache (use customMood as emotion field for analytics)
       await supabaseAdmin.from('match_cache').insert({
-        emotion,
+        emotion: emotion ?? customMood,
         saint_name: claudeResult.saintName,
         feast_day: claudeResult.feastDay,
         bio: claudeResult.bio,
@@ -366,7 +394,8 @@ Deno.serve(async (req) => {
     }
 
     // 6. Local fallback
-    const localMatch = matchLocally(emotion);
+    const fallbackEmotion = emotion ?? VALID_EMOTIONS[Math.floor(Math.random() * VALID_EMOTIONS.length)];
+    const localMatch = matchLocally(fallbackEmotion);
     return jsonResponse({ ...localMatch, source: 'local' }, 200, headers);
   } catch (error) {
     console.error('saint-match error:', error);

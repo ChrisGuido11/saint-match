@@ -12,7 +12,7 @@ import { StreakCounter } from '../../../components/StreakCounter';
 import { ChallengeCard } from '../../../components/ChallengeCard';
 
 import { Mood } from '../../../types';
-import { getSaintMatch } from '../../../lib/claude';
+import { getSaintMatch, getSaintMatchCustom } from '../../../lib/claude';
 import { getEmotionFromMood } from '../../../constants/saints';
 import { IconCompleted, IconMatching } from '../../../components/icons';
 import { ActiveNovenaCard } from '../../../components/ActiveNovenaCard';
@@ -51,6 +51,26 @@ export default function HomeScreen() {
         params: {
           matchData: JSON.stringify(match),
           selectedMood: mood,
+        },
+      });
+    } catch {
+      // Match failed — user can retry
+    } finally {
+      setIsMatching(false);
+    }
+  };
+
+  const handleCustomMoodSubmit = async (text: string) => {
+    await consumeMatch();
+
+    setIsMatching(true);
+    try {
+      const match = await getSaintMatchCustom(text);
+      router.push({
+        pathname: '/(auth)/saint-match',
+        params: {
+          matchData: JSON.stringify(match),
+          customMoodText: text,
         },
       });
     } catch {
@@ -109,7 +129,7 @@ export default function HomeScreen() {
           </Animated.View>
         ) : (
           <Animated.View entering={FadeInDown.delay(100).duration(500)}>
-            <MoodSelector onSelect={handleMoodSelect} />
+            <MoodSelector onSelect={handleMoodSelect} onCustomSubmit={handleCustomMoodSubmit} />
           </Animated.View>
         )}
       </View>

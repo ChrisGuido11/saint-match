@@ -14,9 +14,13 @@ import { IconClose } from '../../components/icons';
 import { NovenaSuggestionCard } from '../../components/NovenaSuggestionCard';
 
 export default function SaintMatchScreen() {
-  const { matchData, selectedMood } = useLocalSearchParams<{ matchData: string; selectedMood: Mood }>();
+  const { matchData, selectedMood, customMoodText } = useLocalSearchParams<{
+    matchData: string;
+    selectedMood?: Mood;
+    customMoodText?: string;
+  }>();
   const { acceptChallenge, userNovenas } = useApp();
-  
+
   const selectedMoodData = selectedMood ? getMoodById(selectedMood) : null;
 
   const match: SaintMatchType = matchData ? JSON.parse(matchData) : null;
@@ -59,6 +63,11 @@ export default function SaintMatchScreen() {
               {selectedMoodData.label}
             </Text>
           )}
+          {customMoodText && (
+            <Text style={styles.customMoodLabel} numberOfLines={1}>
+              {customMoodText.length > 50 ? customMoodText.slice(0, 50) + '...' : customMoodText}
+            </Text>
+          )}
         </Animated.View>
 
         {/* Saint Card */}
@@ -88,7 +97,7 @@ export default function SaintMatchScreen() {
           entering={FadeInDown.delay(600).duration(400)}
           style={styles.encouragement}
         >
-          {getEncouragementText(selectedMoodData?.category)}
+          {getEncouragementText(customMoodText ? 'support' : selectedMoodData?.category)}
         </Animated.Text>
       </ScrollView>
 
@@ -151,6 +160,14 @@ const styles = StyleSheet.create({
     ...Typography.caption,
     color: Colors.charcoalMuted,
     marginTop: Spacing.xs,
+  },
+  customMoodLabel: {
+    ...Typography.bodySmall,
+    color: Colors.charcoalMuted,
+    fontStyle: 'italic',
+    marginTop: Spacing.xs,
+    maxWidth: 260,
+    textAlign: 'center',
   },
   encouragement: {
     ...Typography.body,

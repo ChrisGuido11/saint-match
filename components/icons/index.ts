@@ -14,6 +14,7 @@ export { IconLogo } from './IconLogo';
 export { IconCompleted } from './IconCompleted';
 export { IconMatching } from './IconMatching';
 export { IconMilestone } from './IconMilestone';
+export { IconHeart } from './IconHeart';
 export {
   IconNavHome,
   IconNavCalendar,
