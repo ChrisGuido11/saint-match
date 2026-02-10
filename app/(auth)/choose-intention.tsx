@@ -42,20 +42,18 @@ export default function ChooseIntentionScreen() {
     try {
       // Ensure we have the freshest catalog
       const freshCatalog = catalog.length > 0 ? catalog : await getCachedCatalog();
-      const matched = matchNovenaToIntention(intention, freshCatalog);
+      const result = matchNovenaToIntention(intention, freshCatalog);
 
-      // Derive a saintId from the slug (e.g. "st-jude-novena" → "st-jude-novena")
-      const saintId = matched.slug;
-      // Derive saint name from novena title (strip " Novena" suffix)
-      const saintName = matched.title.replace(/ Novena$/i, '');
+      const saintId = result.entry.slug;
+      const saintName = result.patronSaint;
 
       router.push({
         pathname: '/(auth)/start-novena',
         params: {
           saintId,
           saintName,
-          novenaTitle: matched.title,
-          novenaDescription: `Nine days of prayer — ${matched.title}. Praying for: ${intention}.`,
+          novenaTitle: result.entry.title,
+          novenaDescription: `Nine days of prayer — ${result.entry.title}. Praying for: ${intention}.`,
           intention,
         },
       });

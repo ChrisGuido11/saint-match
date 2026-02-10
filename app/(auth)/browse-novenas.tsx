@@ -15,6 +15,7 @@ import { Colors } from '../../constants/colors';
 import { Typography, FontFamily } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { fetchNovenaCatalog, getCachedCatalog, NovenaEntry } from '../../lib/novenaCatalog';
+import { resolveSaintName } from '../../lib/novenaMatch';
 import { IconChevronLeft } from '../../components/icons';
 
 type CategoryFilter = 'all' | 'saints' | 'marian' | 'holy-days' | 'intentions';
@@ -35,12 +36,8 @@ const CATEGORY_COLORS: Record<string, string> = {
   other: Colors.charcoalSubtle,
 };
 
-function deriveSaintName(title: string): string {
-  // Strip "Novena" suffix/prefix to get the core name
-  return title
-    .replace(/\s*novena\s*/i, '')
-    .replace(/^\s+|\s+$/g, '')
-    || title;
+function deriveSaintName(entry: NovenaEntry): string {
+  return resolveSaintName(entry);
 }
 
 function deriveSaintId(slug: string): string {
@@ -92,7 +89,7 @@ export default function BrowseNovenasScreen() {
 
   const handleSelect = useCallback((entry: NovenaEntry) => {
     Haptics.selectionAsync();
-    const saintName = deriveSaintName(entry.title);
+    const saintName = deriveSaintName(entry);
     router.push({
       pathname: '/(auth)/start-novena',
       params: {
