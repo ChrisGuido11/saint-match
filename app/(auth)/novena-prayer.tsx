@@ -76,7 +76,15 @@ export default function NovenaPrayerScreen() {
           params: { userNovenaId: userNovena.id },
         });
       } else {
-        router.back();
+        router.replace({
+          pathname: '/(auth)/novena-celebration',
+          params: {
+            saintName,
+            dayCompleted: userNovena.currentDay.toString(),
+            completedDays: JSON.stringify(userNovena.completedDays.map((v, i) => v || i === userNovena.currentDay - 1)),
+            ...(userNovena.personalIntention ? { intention: userNovena.personalIntention } : {}),
+          },
+        });
       }
     } finally {
       setIsMarking(false);
