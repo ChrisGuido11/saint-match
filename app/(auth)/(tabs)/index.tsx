@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, RefreshControl, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../../constants/colors';
@@ -25,9 +26,28 @@ export default function HomeScreen() {
     completeChallenge,
     refreshAll,
     userNovenas,
+    abandonNovena,
   } = useApp();
 
   const activeNovenas = userNovenas.filter((n) => !n.completed);
+
+  const handleDeleteNovena = (userNovenaId: string, saintName: string) => {
+    Alert.alert(
+      'Remove Novena',
+      `Are you sure you want to remove the ${saintName} novena? Your progress will be lost.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            await abandonNovena(userNovenaId);
+          },
+        },
+      ],
+    );
+  };
 
   const [isMatching, setIsMatching] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -146,6 +166,10 @@ export default function HomeScreen() {
                     pathname: '/(auth)/novena-prayer',
                     params: { userNovenaId: userNovena.id },
                   });
+                }}
+                onLongPress={() => {
+                  const saint = userNovena.saintName ?? 'Saint';
+                  handleDeleteNovena(userNovena.id, saint);
                 }}
               />
             </Animated.View>

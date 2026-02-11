@@ -10,9 +10,10 @@ import { NovenaProgressDots } from './NovenaProgressDots';
 interface ActiveNovenaCardProps {
   userNovena: UserNovena;
   onPrayNow: () => void;
+  onLongPress?: () => void;
 }
 
-export function ActiveNovenaCard({ userNovena, onPrayNow }: ActiveNovenaCardProps) {
+export function ActiveNovenaCard({ userNovena, onPrayNow, onLongPress }: ActiveNovenaCardProps) {
   const saint = SAINTS.find((s) => s.id === userNovena.saintId);
   const saintName = saint?.name ?? userNovena.saintName ?? 'Saint';
   const saintInitials = saint?.initials ?? (saintName
@@ -23,7 +24,12 @@ export function ActiveNovenaCard({ userNovena, onPrayNow }: ActiveNovenaCardProp
     .join('') || '?');
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      onLongPress={onLongPress}
+      activeOpacity={onLongPress ? 0.85 : 1}
+      disabled={!onLongPress}
+    >
       <View style={styles.header}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{saintInitials}</Text>
@@ -54,7 +60,7 @@ export function ActiveNovenaCard({ userNovena, onPrayNow }: ActiveNovenaCardProp
       >
         <Text style={styles.prayButtonText}>Pray Now</Text>
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, RefreshControl, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../../constants/colors';
@@ -12,7 +13,7 @@ import { NovenaInfoModal } from '../../../components/NovenaInfoModal';
 import { IconNavNovenas } from '../../../components/icons';
 
 export default function NovenasScreen() {
-  const { userNovenas, refreshAll } = useApp();
+  const { userNovenas, refreshAll, abandonNovena } = useApp();
   const [refreshing, setRefreshing] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
 
@@ -30,6 +31,24 @@ export default function NovenasScreen() {
       pathname: '/(auth)/novena-prayer',
       params: { userNovenaId },
     });
+  };
+
+  const handleDelete = (userNovenaId: string, saintName: string) => {
+    Alert.alert(
+      'Remove Novena',
+      `Are you sure you want to remove the ${saintName} novena? Your progress will be lost.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            await abandonNovena(userNovenaId);
+          },
+        },
+      ],
+    );
   };
 
   const handleStartNovena = () => {
@@ -92,6 +111,7 @@ export default function NovenasScreen() {
                     <TouchableOpacity
                       style={styles.novenaCard}
                       onPress={() => handleContinue(userNovena.id)}
+                      onLongPress={() => handleDelete(userNovena.id, displayName)}
                       activeOpacity={0.85}
                       accessibilityRole="button"
                       accessibilityLabel={`Continue ${displayName} day ${userNovena.currentDay}`}
