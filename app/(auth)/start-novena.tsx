@@ -101,7 +101,10 @@ export default function StartNovenaScreen() {
         intention
       );
       scheduleNovenaReminders(userNovena, resolvedSaintName).catch(() => {});
-      router.replace('/(auth)/(tabs)');
+      router.replace({
+        pathname: '/(auth)/novena-prayer',
+        params: { userNovenaId: userNovena.id },
+      });
     } catch {
       // Failed to start
     } finally {

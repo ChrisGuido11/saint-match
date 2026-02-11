@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, RefreshControl, Alert } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { router } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../../constants/colors';
@@ -16,8 +15,6 @@ import { Mood } from '../../../types';
 import { getSaintMatch, getSaintMatchCustom } from '../../../lib/claude';
 import { getEmotionFromMood } from '../../../constants/saints';
 import { IconCompleted, IconMatching } from '../../../components/icons';
-import { ActiveNovenaCard } from '../../../components/ActiveNovenaCard';
-
 export default function HomeScreen() {
   const {
     streak,
@@ -25,29 +22,7 @@ export default function HomeScreen() {
     consumeMatch,
     completeChallenge,
     refreshAll,
-    userNovenas,
-    abandonNovena,
   } = useApp();
-
-  const activeNovenas = userNovenas.filter((n) => !n.completed);
-
-  const handleDeleteNovena = (userNovenaId: string, saintName: string) => {
-    Alert.alert(
-      'Remove Novena',
-      `Are you sure you want to remove the ${saintName} novena? Your progress will be lost.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            await abandonNovena(userNovenaId);
-          },
-        },
-      ],
-    );
-  };
 
   const [isMatching, setIsMatching] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -154,29 +129,6 @@ export default function HomeScreen() {
         )}
       </View>
 
-      {/* Active Novenas */}
-      {activeNovenas.length > 0 && (
-        <View style={styles.novenasSection}>
-          {activeNovenas.map((userNovena) => (
-            <Animated.View key={userNovena.id} entering={FadeInDown.delay(200).duration(400)} style={styles.novenaCardWrapper}>
-              <ActiveNovenaCard
-                userNovena={userNovena}
-                onPrayNow={() => {
-                  router.push({
-                    pathname: '/(auth)/novena-prayer',
-                    params: { userNovenaId: userNovena.id },
-                  });
-                }}
-                onLongPress={() => {
-                  const saint = userNovena.saintName ?? 'Saint';
-                  handleDeleteNovena(userNovena.id, saint);
-                }}
-              />
-            </Animated.View>
-          ))}
-        </View>
-      )}
-
     </ScrollView>
   );
 }
@@ -243,11 +195,5 @@ const styles = StyleSheet.create({
     ...Typography.bodyLarge,
     color: Colors.charcoalMuted,
     marginTop: Spacing.md,
-  },
-  novenasSection: {
-    marginTop: Spacing.xl,
-  },
-  novenaCardWrapper: {
-    marginBottom: Spacing.sm,
   },
 });
