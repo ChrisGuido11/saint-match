@@ -19,7 +19,16 @@
       "Bash(git push:*)",
       "Bash(git -C \"C:\\\\Users\\\\cguid\\\\saint-match\" status --short)",
       "WebFetch(domain:www.revenuecat.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(python:*)",
+      "Bash(npm start)",
+      "WebFetch(domain:www.praymorenovenas.com)",
+      "Bash(supabase:*)",
+      "Bash(npm start:*)",
+      "Bash(timeout:*)",
+      "Bash(more:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
     ],
     "deny": [],
     "ask": []
