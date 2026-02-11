@@ -141,72 +141,83 @@ export default function StartNovenaScreen() {
           </Animated.View>
         ) : null}
 
-        {/* Intention Selection */}
-        <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.intentionSection}>
-          <Text style={styles.sectionTitle}>Set Your Intention</Text>
-          <Text style={styles.sectionSubtitle}>What would you like to pray for?</Text>
+        {/* Intention Selection — skip if intention was already chosen in previous step */}
+        {passedIntention ? (
+          <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.intentionSection}>
+            <Text style={styles.sectionTitle}>Praying for</Text>
+            <View style={[styles.intentionChip, styles.intentionChipSelected]}>
+              <Text style={[styles.intentionChipText, styles.intentionChipTextSelected]}>
+                {passedIntention}
+              </Text>
+            </View>
+          </Animated.View>
+        ) : (
+          <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.intentionSection}>
+            <Text style={styles.sectionTitle}>Set Your Intention</Text>
+            <Text style={styles.sectionSubtitle}>What would you like to pray for?</Text>
 
-          {intentionSuggestions.map((suggestion) => (
+            {intentionSuggestions.map((suggestion) => (
+              <TouchableOpacity
+                key={suggestion}
+                style={[
+                  styles.intentionChip,
+                  selectedIntention === suggestion && styles.intentionChipSelected,
+                ]}
+                onPress={() => {
+                  setSelectedIntention(suggestion);
+                  Haptics.selectionAsync();
+                }}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityState={{ selected: selectedIntention === suggestion }}
+              >
+                <Text
+                  style={[
+                    styles.intentionChipText,
+                    selectedIntention === suggestion && styles.intentionChipTextSelected,
+                  ]}
+                >
+                  {suggestion}
+                </Text>
+              </TouchableOpacity>
+            ))}
+
             <TouchableOpacity
-              key={suggestion}
               style={[
                 styles.intentionChip,
-                selectedIntention === suggestion && styles.intentionChipSelected,
+                selectedIntention === '__custom__' && styles.intentionChipSelected,
               ]}
               onPress={() => {
-                setSelectedIntention(suggestion);
+                setSelectedIntention('__custom__');
                 Haptics.selectionAsync();
               }}
               activeOpacity={0.7}
               accessibilityRole="button"
-              accessibilityState={{ selected: selectedIntention === suggestion }}
             >
               <Text
                 style={[
                   styles.intentionChipText,
-                  selectedIntention === suggestion && styles.intentionChipTextSelected,
+                  selectedIntention === '__custom__' && styles.intentionChipTextSelected,
                 ]}
               >
-                {suggestion}
+                Write my own...
               </Text>
             </TouchableOpacity>
-          ))}
 
-          <TouchableOpacity
-            style={[
-              styles.intentionChip,
-              selectedIntention === '__custom__' && styles.intentionChipSelected,
-            ]}
-            onPress={() => {
-              setSelectedIntention('__custom__');
-              Haptics.selectionAsync();
-            }}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-          >
-            <Text
-              style={[
-                styles.intentionChipText,
-                selectedIntention === '__custom__' && styles.intentionChipTextSelected,
-              ]}
-            >
-              Write my own...
-            </Text>
-          </TouchableOpacity>
-
-          {selectedIntention === '__custom__' && (
-            <TextInput
-              style={styles.customInput}
-              placeholder="My prayer intention..."
-              placeholderTextColor={Colors.charcoalSubtle}
-              value={customIntention}
-              onChangeText={setCustomIntention}
-              multiline
-              maxLength={200}
-              accessibilityLabel="Custom prayer intention"
-            />
-          )}
-        </Animated.View>
+            {selectedIntention === '__custom__' && (
+              <TextInput
+                style={styles.customInput}
+                placeholder="My prayer intention..."
+                placeholderTextColor={Colors.charcoalSubtle}
+                value={customIntention}
+                onChangeText={setCustomIntention}
+                multiline
+                maxLength={200}
+                accessibilityLabel="Custom prayer intention"
+              />
+            )}
+          </Animated.View>
+        )}
 
         {/* Helper text */}
         <Animated.View entering={FadeInDown.delay(400).duration(400)}>
