@@ -180,7 +180,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     maxWidth: 320,
     width: '85%',
-    ...Shadows.cardHover,
   },
   expandedAvatar: {
     width: 60,
