@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -113,10 +115,14 @@ export default function StartNovenaScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
         <Animated.View entering={FadeIn.delay(100).duration(500)} style={styles.header}>
@@ -245,7 +251,7 @@ export default function StartNovenaScreen() {
           </Text>
         </TouchableOpacity>
       </Animated.View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, RefreshControl, KeyboardAvoidingView, Platform } from 'react-native';
 import { router } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../../constants/colors';
@@ -84,10 +84,15 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView
+    <KeyboardAvoidingView
       style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+    <ScrollView
+      style={styles.scrollView}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.sage} />
       }
@@ -130,6 +135,7 @@ export default function HomeScreen() {
       </View>
 
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -144,6 +150,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.cream,
+  },
+  scrollView: {
+    flex: 1,
   },
   contentContainer: {
     paddingHorizontal: Spacing.lg,

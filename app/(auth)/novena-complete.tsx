@@ -5,6 +5,9 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -75,10 +78,17 @@ export default function NovenaCompleteScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       {showConfetti && <ConfettiAnimation count={50} onFinish={() => setShowConfetti(false)} />}
 
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <Animated.View style={[styles.iconContainer, iconStyle]}>
           <IconNavNovenas size={80} color={Colors.sage} />
         </Animated.View>
@@ -121,7 +131,7 @@ export default function NovenaCompleteScreen() {
             <Text style={styles.savedText}>Reflection saved</Text>
           )}
         </Animated.View>
-      </View>
+      </ScrollView>
 
       <Animated.View entering={FadeInUp.delay(800).duration(500)} style={styles.bottomSection}>
         <TouchableOpacity
@@ -143,7 +153,7 @@ export default function NovenaCompleteScreen() {
           <Text style={styles.homeButtonText}>Back to Home</Text>
         </TouchableOpacity>
       </Animated.View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

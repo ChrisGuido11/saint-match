@@ -7,6 +7,8 @@ import {
   TextInput,
   StyleSheet,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -123,7 +125,10 @@ export default function BrowseNovenasScreen() {
   ), [handleSelect]);
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       {/* Header */}
       <Animated.View entering={FadeIn.duration(400)} style={styles.header}>
         <TouchableOpacity
@@ -217,7 +222,7 @@ export default function BrowseNovenasScreen() {
           maxToRenderPerBatch={15}
         />
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

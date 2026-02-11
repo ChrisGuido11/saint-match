@@ -7,6 +7,8 @@ import {
   TextInput,
   StyleSheet,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -68,7 +70,10 @@ export default function ChooseIntentionScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -193,7 +198,7 @@ export default function ChooseIntentionScreen() {
           <Text style={styles.catalogLinkText}>View Full Catalog</Text>
         </TouchableOpacity>
       </Animated.View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
