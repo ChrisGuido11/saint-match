@@ -166,38 +166,38 @@ export default function ChooseIntentionScreen() {
             />
           )}
         </Animated.View>
+
+        {/* Bottom Section */}
+        <Animated.View entering={FadeInDown.delay(400).duration(500)} style={styles.bottomSection}>
+          <TouchableOpacity
+            style={[styles.findButton, (!canSearch || isMatching) && styles.findButtonDisabled]}
+            onPress={handleFindNovena}
+            disabled={!canSearch || isMatching}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Find my novena"
+          >
+            {isMatching ? (
+              <View style={styles.loadingRow}>
+                <ActivityIndicator size="small" color={Colors.white} />
+                <Text style={styles.findButtonText}>  Finding your novena...</Text>
+              </View>
+            ) : (
+              <Text style={styles.findButtonText}>Find My Novena</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.catalogLink}
+            onPress={handleViewCatalog}
+            activeOpacity={0.7}
+            accessibilityRole="link"
+            accessibilityLabel="View full novena catalog"
+          >
+            <Text style={styles.catalogLinkText}>View Full Catalog</Text>
+          </TouchableOpacity>
+        </Animated.View>
       </ScrollView>
-
-      {/* Bottom Section */}
-      <Animated.View entering={FadeInDown.delay(400).duration(500)} style={styles.bottomSection}>
-        <TouchableOpacity
-          style={[styles.findButton, (!canSearch || isMatching) && styles.findButtonDisabled]}
-          onPress={handleFindNovena}
-          disabled={!canSearch || isMatching}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel="Find my novena"
-        >
-          {isMatching ? (
-            <View style={styles.loadingRow}>
-              <ActivityIndicator size="small" color={Colors.white} />
-              <Text style={styles.findButtonText}>  Finding your novena...</Text>
-            </View>
-          ) : (
-            <Text style={styles.findButtonText}>Find My Novena</Text>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.catalogLink}
-          onPress={handleViewCatalog}
-          activeOpacity={0.7}
-          accessibilityRole="link"
-          accessibilityLabel="View full novena catalog"
-        >
-          <Text style={styles.catalogLinkText}>View Full Catalog</Text>
-        </TouchableOpacity>
-      </Animated.View>
     </KeyboardAvoidingView>
   );
 }

@@ -234,23 +234,23 @@ export default function StartNovenaScreen() {
             You'll receive a daily reminder at noon to pray. Each day takes about 5 minutes.
           </Text>
         </Animated.View>
-      </ScrollView>
 
-      {/* Start Button */}
-      <Animated.View entering={FadeInDown.delay(500).duration(500)} style={styles.bottomSection}>
-        <TouchableOpacity
-          style={[styles.startButton, (!intention || isStarting) && styles.startButtonDisabled]}
-          onPress={handleStart}
-          disabled={!intention || isStarting}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel="Start 9-day novena"
-        >
-          <Text style={styles.startButtonText}>
-            {isStarting ? 'Generating your novena...' : 'Start 9-Day Novena'}
-          </Text>
-        </TouchableOpacity>
-      </Animated.View>
+        {/* Start Button */}
+        <Animated.View entering={FadeInDown.delay(500).duration(500)} style={styles.bottomSection}>
+          <TouchableOpacity
+            style={[styles.startButton, (!intention || isStarting) && styles.startButtonDisabled]}
+            onPress={handleStart}
+            disabled={!intention || isStarting}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Start 9-day novena"
+          >
+            <Text style={styles.startButtonText}>
+              {isStarting ? 'Generating your novena...' : 'Start 9-Day Novena'}
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

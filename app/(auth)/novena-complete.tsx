@@ -131,28 +131,28 @@ export default function NovenaCompleteScreen() {
             <Text style={styles.savedText}>Reflection saved</Text>
           )}
         </Animated.View>
-      </ScrollView>
 
-      <Animated.View entering={FadeInUp.delay(800).duration(500)} style={styles.bottomSection}>
-        <TouchableOpacity
-          style={styles.anotherButton}
-          onPress={handleStartAnother}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel="Start another novena"
-        >
-          <Text style={styles.anotherButtonText}>Start Another Novena</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.homeButton}
-          onPress={handleGoHome}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel="Back to home"
-        >
-          <Text style={styles.homeButtonText}>Back to Home</Text>
-        </TouchableOpacity>
-      </Animated.View>
+        <Animated.View entering={FadeInUp.delay(800).duration(500)} style={styles.bottomSection}>
+          <TouchableOpacity
+            style={styles.anotherButton}
+            onPress={handleStartAnother}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Start another novena"
+          >
+            <Text style={styles.anotherButtonText}>Start Another Novena</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.homeButton}
+            onPress={handleGoHome}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Back to home"
+          >
+            <Text style={styles.homeButtonText}>Back to Home</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -163,10 +163,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.cream,
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.xl,
+    paddingTop: 60,
+    paddingBottom: Spacing.xl,
   },
   iconContainer: {
     marginBottom: Spacing.lg,
