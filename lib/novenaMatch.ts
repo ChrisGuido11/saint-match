@@ -127,34 +127,91 @@ const PATRON_SAINT_MAP: Array<{
   },
 ];
 
+// Comprehensive saint reason lookup — covers every saint that can appear in the system
+const SAINT_REASON_MAP: Record<string, string> = {
+  // NOVENA_SAINT_MAP thematic saints
+  'Our Lady of Lourdes': 'At Lourdes, Our Lady revealed a spring of healing waters, drawing millions who seek restoration of body and soul.',
+  'St. Rita of Cascia': 'Patron of impossible causes, St. Rita received miraculous answers to prayers the world deemed hopeless.',
+  'Divine Mercy (St. Faustina)': 'Through St. Faustina, Jesus revealed His infinite mercy, promising grace to all who trust in Him.',
+  'The Holy Spirit': 'The Holy Spirit guides, strengthens, and illuminates — the original novena was prayed awaiting His descent at Pentecost.',
+  'The Sacred Heart of Jesus': 'Devotion to the Sacred Heart honors Christ\'s boundless love and mercy for all humanity.',
+  'The Christ Child': 'The Christ Child novena prepares hearts for the wonder of the Incarnation during the Advent season.',
+  'The Blessed Virgin Mary': 'Conceived without sin, the Blessed Virgin Mary intercedes as the most powerful advocate before her Son.',
+
+  // Existing FALLBACK_CATALOG saints (title-stripped names)
+  'St. Jude': 'Patron of desperate cases, St. Jude intercedes when all other hope seems lost.',
+  'St. Therese': 'The Little Flower taught total surrender to God through small acts of trust and her "Little Way."',
+  'St. Joseph': 'Guardian of the Holy Family, St. Joseph is patron of workers, fathers, and the universal Church.',
+  'St. Anthony': 'Known worldwide as the patron of lost things, St. Anthony intercedes for all who seek what is missing.',
+  'St. Francis of Assisi': 'St. Francis prayed "Lord, make me an instrument of your peace," becoming patron of peacemakers and nature.',
+  'St. Michael': 'St. Michael the Archangel defends against evil and protects those who call on his powerful intercession.',
+  'St. Benedict': 'Father of Western monasticism, St. Benedict guides those seeking spiritual discipline and growth.',
+  'St. Rita': 'Patron of impossible causes, St. Rita received miraculous answers to prayers the world deemed hopeless.',
+  'St. Padre Pio': 'St. Padre Pio bore the wounds of Christ and was gifted with healing, interceding for countless sick.',
+  'St. Patrick': 'Apostle of Ireland, St. Patrick drove out spiritual darkness and brings the light of faith.',
+
+  // Marian novena saints (title-stripped)
+  'Our Lady of Guadalupe': 'Patroness of the Americas, Our Lady of Guadalupe appeared to St. Juan Diego as a sign of God\'s love for all peoples.',
+  'Our Lady of Fatima': 'At Fatima, Our Lady called the world to prayer, penance, and consecration to her Immaculate Heart.',
+  'Our Lady of Sorrows': 'Our Lady stood at the foot of the Cross; she understands grief and holds the brokenhearted close.',
+
+  // New FALLBACK_CATALOG saints
+  'St. Raphael': 'Patron of happy meetings, St. Raphael guided Tobias to his future spouse in the Book of Tobit.',
+  'St. Valentine': 'St. Valentine blessed marriages in secret and is invoked for faithful, loving relationships.',
+  'St. Dymphna': 'Patron of those suffering from mental and emotional distress, St. Dymphna brings comfort to anxious hearts.',
+  'St. Cajetan': 'Patron of the unemployed and job seekers, St. Cajetan trusted Divine Providence in times of need.',
+  'St. Thomas Aquinas': 'The greatest theologian of the Church, St. Thomas Aquinas is patron of students and scholars.',
+  'St. Christopher': 'Patron of travelers, St. Christopher carried the Christ Child across a river and protects all journeys.',
+  'St. Maximilian Kolbe': 'St. Maximilian Kolbe chose sacrificial love over despair, offering hope to those struggling with addiction.',
+  'St. Monica': 'St. Monica prayed for 17 years for her son Augustine\'s conversion, never losing faith in God\'s timing.',
+  'St. Matthew': 'A former tax collector called by Christ, St. Matthew understands financial burdens and the freedom of grace.',
+
+  // Full-name variants from PATRON_SAINT_MAP
+  'St. Raphael the Archangel': 'Patron of happy meetings, St. Raphael guided Tobias to his future spouse in the Book of Tobit.',
+  'St. Anthony of Padua': 'Known worldwide as the patron of lost things, St. Anthony intercedes for all who seek what is missing.',
+  'St. Thérèse of Lisieux': 'The Little Flower taught total surrender to God through small acts of trust and her "Little Way."',
+};
+
 // Preferred slugs and category filters for each preset intention
 const INTENTION_CONFIG: Record<
   PresetIntention,
-  { preferredSlugs: string[]; categories: NovenaEntry['category'][]; patronSaint?: string }
+  { preferredSlugs: string[]; categories: NovenaEntry['category'][]; patronSaint: string; reason: string }
 > = {
   'Spiritual growth': {
     preferredSlugs: ['st-therese-novena', 'st-benedict-novena'],
     categories: ['saints'],
+    patronSaint: 'St. Thérèse of Lisieux',
+    reason: 'The Little Flower taught that holiness grows through small, faithful acts of love — her "Little Way" transforms daily life into spiritual progress.',
   },
   'Peace and guidance': {
     preferredSlugs: ['holy-spirit-novena', 'sacred-heart-novena'],
     categories: ['holy-days'],
+    patronSaint: 'The Holy Spirit',
+    reason: 'The Holy Spirit is the Counselor promised by Christ, guiding hearts toward peace and illuminating the path forward.',
   },
   'Healing and strength': {
     preferredSlugs: ['novena-for-healing', 'novena-for-the-impossible'],
     categories: ['intentions'],
+    patronSaint: 'Our Lady of Lourdes',
+    reason: 'At Lourdes, Our Lady revealed a spring of healing waters, drawing millions who seek restoration of body and soul.',
   },
   'For a loved one': {
     preferredSlugs: ['st-jude-novena', 'st-monica-novena'],
     categories: ['saints', 'intentions'],
+    patronSaint: 'St. Jude',
+    reason: 'Patron of desperate cases, St. Jude intercedes powerfully for those we love when all other hope seems lost.',
   },
   "Mary's intercession": {
     preferredSlugs: ['our-lady-of-guadalupe-novena', 'our-lady-of-fatima-novena'],
     categories: ['marian'],
+    patronSaint: 'Our Lady of Guadalupe',
+    reason: 'Patroness of the Americas, Our Lady of Guadalupe appeared to St. Juan Diego as a sign of God\'s love for all peoples.',
   },
   'Gratitude and praise': {
     preferredSlugs: ['divine-mercy-novena', 'christmas-novena'],
     categories: ['holy-days'],
+    patronSaint: 'Divine Mercy (St. Faustina)',
+    reason: 'Through St. Faustina, Jesus revealed His infinite mercy — gratitude flows from recognizing how deeply we are loved.',
   },
 };
 
@@ -199,14 +256,23 @@ function findPreferredEntry(
 }
 
 /**
- * Look up a reason for a saint from the PATRON_SAINT_MAP, or return a generic fallback.
+ * Look up a reason for a saint. Checks comprehensive SAINT_REASON_MAP first,
+ * then falls back to scanning PATRON_SAINT_MAP by patronSaint field.
  */
 function getReasonForSaint(saintName: string): string {
+  // 1. Direct lookup in comprehensive map
+  if (SAINT_REASON_MAP[saintName]) {
+    return SAINT_REASON_MAP[saintName];
+  }
+
+  // 2. Safety net: scan PATRON_SAINT_MAP by patronSaint field
   for (const group of PATRON_SAINT_MAP) {
     if (group.patronSaint === saintName) {
       return group.reason;
     }
   }
+
+  // 3. Last resort (should never fire if maps are complete)
   return `${saintName} intercedes for those who seek their guidance through this novena.`;
 }
 
@@ -233,15 +299,14 @@ export function matchNovenaToIntention(
     const preferred = findPreferredEntry(config.preferredSlugs, catalog);
     if (preferred) {
       const saint = resolveSaintName(preferred);
-      return { entry: preferred, patronSaint: saint, matchReason: getReasonForSaint(saint) };
+      return { entry: preferred, patronSaint: saint, matchReason: config.reason };
     }
 
-    // Fall back to category filter
+    // Fall back to category filter — still use the preset's explicit reason and saint
     const categoryMatches = catalog.filter((n) => config.categories.includes(n.category));
     if (categoryMatches.length > 0) {
       const picked = categoryMatches[Math.floor(Math.random() * categoryMatches.length)];
-      const saint = resolveSaintName(picked);
-      return { entry: picked, patronSaint: saint, matchReason: getReasonForSaint(saint) };
+      return { entry: picked, patronSaint: config.patronSaint, matchReason: config.reason };
     }
   } else {
     // Custom text — patron saint keyword matching
