@@ -1,9 +1,12 @@
-import React from 'react';
-import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, interpolate } from 'react-native-reanimated';
+import React, { useState } from 'react';
+import { Text, StyleSheet, TouchableOpacity, View, Modal, Pressable } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, runOnJS, interpolate } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
+import { Springs, Durations } from '../constants/animations';
 import { Saint } from '../types';
 
 interface FlippableSaintCardProps {
@@ -12,53 +15,104 @@ interface FlippableSaintCardProps {
 }
 
 export default function FlippableSaintCard({ saint, count }: FlippableSaintCardProps) {
-  const rotation = useSharedValue(0);
+  const [expanded, setExpanded] = useState(false);
+  const flipProgress = useSharedValue(0);
 
-  const handleFlip = () => {
-    rotation.value = withTiming(rotation.value === 0 ? 180 : 0, { duration: 300 });
+  const openCard = () => {
+    setExpanded(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    flipProgress.value = withSpring(1, Springs.cardEntrance);
   };
 
-  const frontStyle = useAnimatedStyle(() => ({
-    transform: [{ perspective: 800 }, { rotateY: `${interpolate(rotation.value, [0, 180], [0, 180])}deg` }],
-    backfaceVisibility: 'hidden' as const,
+  const closeCard = () => {
+    flipProgress.value = withTiming(0, { duration: Durations.fast }, (finished) => {
+      if (finished) {
+        runOnJS(setExpanded)(false);
+      }
+    });
+  };
+
+  const overlayStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(flipProgress.value, [0, 1], [0, 1]),
   }));
 
-  const backStyle = useAnimatedStyle(() => ({
-    transform: [{ perspective: 800 }, { rotateY: `${interpolate(rotation.value, [0, 180], [180, 360])}deg` }],
-    backfaceVisibility: 'hidden' as const,
+  const expandedCardStyle = useAnimatedStyle(() => ({
+    transform: [
+      { perspective: 1200 },
+      { rotateY: `${interpolate(flipProgress.value, [0, 1], [90, 0])}deg` },
+      { scale: interpolate(flipProgress.value, [0, 1], [0.5, 1]) },
+    ],
+    opacity: interpolate(flipProgress.value, [0, 0.3], [0, 1]),
   }));
-
-  const truncatedBio = saint.bio && saint.bio.length > 80
-    ? saint.bio.slice(0, 80).trimEnd() + '…'
-    : saint.bio || '';
 
   return (
-    <TouchableOpacity activeOpacity={0.9} onPress={handleFlip} style={styles.wrapper}>
-      {/* Front face */}
-      <Animated.View style={[styles.card, frontStyle]}>
-        <View style={styles.initialsCircle}>
-          <Text style={styles.initialsText}>{saint.initials}</Text>
-        </View>
-        <Text style={styles.name} numberOfLines={2}>{saint.name}</Text>
-        {count > 0 && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{count}</Text>
+    <>
+      {/* Grid card (front face) */}
+      <TouchableOpacity activeOpacity={0.9} onPress={openCard} style={styles.wrapper}>
+        <View style={styles.card}>
+          <View style={styles.initialsCircle}>
+            <Text style={styles.initialsText}>{saint.initials}</Text>
           </View>
-        )}
-      </Animated.View>
+          <Text style={styles.name} numberOfLines={2}>{saint.name}</Text>
+          {count > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{count}</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
 
-      {/* Back face */}
-      <Animated.View style={[styles.card, styles.cardBack, backStyle]}>
-        <Text style={styles.feastDay}>{saint.feastDay}</Text>
-        <View style={styles.divider} />
-        <Text style={styles.bio} numberOfLines={3}>{truncatedBio}</Text>
-        <Text style={styles.hint}>tap to flip</Text>
-      </Animated.View>
-    </TouchableOpacity>
+      {/* Expanded modal overlay */}
+      <Modal visible={expanded} transparent animationType="none">
+        <Animated.View style={[styles.overlay, overlayStyle]}>
+          <Pressable style={styles.backdrop} onPress={closeCard} />
+          <Animated.View style={[styles.expandedCard, expandedCardStyle]}>
+            {/* Avatar */}
+            <LinearGradient
+              colors={[Colors.sage, Colors.sageDark]}
+              style={styles.expandedAvatar}
+            >
+              <Text style={styles.expandedAvatarText}>{saint.initials}</Text>
+            </LinearGradient>
+
+            {/* Saint name */}
+            <Text style={styles.expandedName}>{saint.name}</Text>
+
+            {/* Feast day */}
+            <Text style={styles.expandedFeastDay}>{saint.feastDay}</Text>
+
+            {/* Divider */}
+            <View style={styles.expandedDivider} />
+
+            {/* Bio */}
+            <Text style={styles.expandedBio}>{saint.bio}</Text>
+
+            {/* Virtues */}
+            {saint.virtues && saint.virtues.length > 0 && (
+              <View style={styles.virtuesContainer}>
+                {saint.virtues.map((virtue) => (
+                  <View key={virtue} style={styles.virtueTag}>
+                    <Text style={styles.virtueText}>{virtue}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Completion count */}
+            {count > 0 && (
+              <Text style={styles.completionText}>
+                {count} {count === 1 ? 'challenge' : 'challenges'} completed
+              </Text>
+            )}
+          </Animated.View>
+        </Animated.View>
+      </Modal>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  // Grid card styles (unchanged)
   wrapper: {
     width: '30%',
   },
@@ -68,15 +122,6 @@ const styles = StyleSheet.create({
     padding: Spacing.sm,
     alignItems: 'center',
     ...Shadows.card,
-  },
-  cardBack: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: Colors.creamWarm,
-    justifyContent: 'center',
   },
   initialsCircle: {
     width: 44,
@@ -115,33 +160,85 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.white,
   },
-  feastDay: {
-    fontFamily: FontFamily.serif,
-    fontSize: 14,
-    lineHeight: 18,
+
+  // Modal overlay
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.overlay,
+  },
+
+  // Expanded card
+  expandedCard: {
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    alignItems: 'center',
+    maxWidth: 320,
+    width: '85%',
+    ...Shadows.cardHover,
+  },
+  expandedAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
+  },
+  expandedAvatarText: {
+    fontFamily: FontFamily.serifBold,
+    fontSize: 20,
+    color: Colors.white,
+    letterSpacing: 1,
+  },
+  expandedName: {
+    ...Typography.saintName,
     color: Colors.charcoal,
     textAlign: 'center',
-    marginBottom: Spacing.xs,
   },
-  divider: {
-    width: 24,
+  expandedFeastDay: {
+    ...Typography.bodySmall,
+    color: Colors.charcoalMuted,
+    marginTop: Spacing.xxs,
+  },
+  expandedDivider: {
+    width: 40,
     height: 1,
     backgroundColor: Colors.creamDark,
-    marginBottom: Spacing.xs,
+    marginVertical: Spacing.md,
   },
-  bio: {
-    ...Typography.caption,
-    color: Colors.charcoalMuted,
+  expandedBio: {
+    ...Typography.body,
+    color: Colors.charcoalLight,
     textAlign: 'center',
-    fontSize: 11,
-    lineHeight: 15,
+    lineHeight: 24,
   },
-  hint: {
-    fontFamily: FontFamily.sans,
-    fontSize: 9,
-    color: Colors.charcoalSubtle,
-    marginTop: Spacing.xs,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+  virtuesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    marginTop: Spacing.md,
+  },
+  virtueTag: {
+    backgroundColor: Colors.sageMuted,
+    borderRadius: BorderRadius.round,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xxs,
+  },
+  virtueText: {
+    ...Typography.caption,
+    color: Colors.sage,
+    fontFamily: FontFamily.sansMedium,
+  },
+  completionText: {
+    ...Typography.bodySmall,
+    color: Colors.charcoalMuted,
+    marginTop: Spacing.md,
   },
 });
