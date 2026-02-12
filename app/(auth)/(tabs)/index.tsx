@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, RefreshControl, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, RefreshControl, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { router } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../../constants/colors';
@@ -36,11 +36,10 @@ export default function HomeScreen() {
   const handleMoodSelect = async (mood: Mood) => {
     const emotion = getEmotionFromMood(mood);
 
-    await consumeMatch();
-
     setIsMatching(true);
     try {
       const match = await getSaintMatch(emotion);
+      await consumeMatch();
       router.push({
         pathname: '/(auth)/saint-match',
         params: {
@@ -49,18 +48,17 @@ export default function HomeScreen() {
         },
       });
     } catch {
-      // Match failed — user can retry
+      Alert.alert('Matching failed', 'Could not find a saint right now. Please try again.');
     } finally {
       setIsMatching(false);
     }
   };
 
   const handleCustomMoodSubmit = async (text: string) => {
-    await consumeMatch();
-
     setIsMatching(true);
     try {
       const match = await getSaintMatchCustom(text);
+      await consumeMatch();
       router.push({
         pathname: '/(auth)/saint-match',
         params: {
@@ -69,7 +67,7 @@ export default function HomeScreen() {
         },
       });
     } catch {
-      // Match failed — user can retry
+      Alert.alert('Matching failed', 'Could not find a saint right now. Please try again.');
     } finally {
       setIsMatching(false);
     }

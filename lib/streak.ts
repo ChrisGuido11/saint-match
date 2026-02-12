@@ -25,10 +25,11 @@ export async function getStreakData(): Promise<StreakData> {
       const daysDiff = differenceInCalendarDays(today, lastDate);
 
       if (daysDiff > 1) {
-        // Streak broken - reset
+        // Streak broken - reset streak and weekly freeze counter
         const resetData: StreakData = {
           ...data,
           currentStreak: 0,
+          streakFreezesUsedThisWeek: 0,
         };
         await AsyncStorage.setItem(STREAK_KEY, JSON.stringify(resetData));
         return resetData;

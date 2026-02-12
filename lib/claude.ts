@@ -1,6 +1,7 @@
 import { Emotion, Saint, SaintMatch } from '../types';
 import { SAINTS, getMicroActionsForEmotion } from '../constants/saints';
 import { supabase, isSupabaseConfigured } from './supabase';
+import { getMatchHistory, addToMatchHistory } from './storage';
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
@@ -16,7 +17,7 @@ interface EdgeFunctionResponse {
 }
 
 // Call the Supabase Edge Function (handles cache, Claude API, and usage server-side)
-async function fetchFromEdgeFunction(payload: { emotion: Emotion } | { customMood: string }): Promise<EdgeFunctionResponse | null> {
+async function fetchFromEdgeFunction(payload: { emotion: Emotion; excludeSaints?: string[] } | { customMood: string; excludeSaints?: string[] }): Promise<EdgeFunctionResponse | null> {
   if (!isSupabaseConfigured() || !SUPABASE_URL) return null;
 
   try {
@@ -49,8 +50,15 @@ async function fetchFromEdgeFunction(payload: { emotion: Emotion } | { customMoo
 }
 
 // Fallback: local saint matching using curated data
-function matchLocally(emotion: Emotion): SaintMatch {
-  const matchingSaints = SAINTS.filter((s) => s.emotions.includes(emotion));
+function matchLocally(emotion: Emotion, excludeSaints: string[] = []): SaintMatch {
+  let matchingSaints = SAINTS.filter((s) => s.emotions.includes(emotion));
+
+  if (excludeSaints.length > 0) {
+    const excludeSet = new Set(excludeSaints.map((n) => n.toLowerCase()));
+    const filtered = matchingSaints.filter((s) => !excludeSet.has(s.name.toLowerCase()));
+    if (filtered.length > 0) matchingSaints = filtered;
+  }
+
   const saint = matchingSaints[Math.floor(Math.random() * matchingSaints.length)] ?? SAINTS[0];
   const actions = getMicroActionsForEmotion(saint.id, emotion);
   const microAction = actions[Math.floor(Math.random() * actions.length)] ?? actions[0];
@@ -76,7 +84,7 @@ function buildSaintMatch(result: EdgeFunctionResponse, emotion: Emotion): SaintM
     emotions: [emotion],
     initials: result.saint_name
       .split(' ')
-      .filter((w) => w[0] === w[0].toUpperCase())
+      .filter((w) => w.length > 0 && w[0] === w[0].toUpperCase())
       .map((w) => w[0])
       .slice(0, 2)
       .join(''),
@@ -97,28 +105,42 @@ function buildSaintMatch(result: EdgeFunctionResponse, emotion: Emotion): SaintM
 }
 
 export async function getSaintMatch(emotion: Emotion): Promise<SaintMatch> {
+  const history = await getMatchHistory();
+  const excludeSaints = history.slice(0, 30);
+
   // Try Edge Function first (handles cache + Claude + usage)
-  const result = await fetchFromEdgeFunction({ emotion });
+  const result = await fetchFromEdgeFunction({ emotion, excludeSaints });
 
   if (result) {
-    return buildSaintMatch(result, emotion);
+    const match = buildSaintMatch(result, emotion);
+    addToMatchHistory(match.saint.name).catch(() => {});
+    return match;
   }
 
   // Fallback to local matching (offline or unknown saint name)
-  return matchLocally(emotion);
+  const match = matchLocally(emotion, excludeSaints);
+  addToMatchHistory(match.saint.name).catch(() => {});
+  return match;
 }
 
 export async function getSaintMatchCustom(moodText: string): Promise<SaintMatch> {
-  const result = await fetchFromEdgeFunction({ customMood: moodText });
+  const history = await getMatchHistory();
+  const excludeSaints = history.slice(0, 30);
+
+  const result = await fetchFromEdgeFunction({ customMood: moodText, excludeSaints });
 
   if (result) {
     // Use a generic emotion for the MicroAction field since custom moods don't map to one
     const fallbackEmotion: Emotion = 'peaceful';
-    return buildSaintMatch(result, fallbackEmotion);
+    const match = buildSaintMatch(result, fallbackEmotion);
+    addToMatchHistory(match.saint.name).catch(() => {});
+    return match;
   }
 
   // Local fallback: pick a random emotion and match locally
   const emotions: Emotion[] = ['anxious', 'overwhelmed', 'scattered', 'grateful', 'joyful', 'peaceful'];
   const randomEmotion = emotions[Math.floor(Math.random() * emotions.length)];
-  return matchLocally(randomEmotion);
+  const match = matchLocally(randomEmotion, excludeSaints);
+  addToMatchHistory(match.saint.name).catch(() => {});
+  return match;
 }

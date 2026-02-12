@@ -42,7 +42,7 @@ export default function StartNovenaScreen() {
   const resolvedSaintBio = saint?.bio ?? saintBioParam ?? '';
   const resolvedInitials = saint?.initials ?? resolvedSaintName
     .split(' ')
-    .filter((w) => w[0] === w[0].toUpperCase())
+    .filter((w) => w.length > 0 && w[0] === w[0].toUpperCase())
     .map((w) => w[0])
     .slice(0, 2)
     .join('');

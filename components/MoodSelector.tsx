@@ -254,10 +254,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
     ...Shadows.card,
   },
   moodButtonActive: {
-    borderWidth: 1.5,
     borderColor: Colors.terracottaLight,
   },
   iconContainer: {

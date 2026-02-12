@@ -3,10 +3,8 @@ import { Saint, StreakData, UsageData, ActiveChallenge, Completion, UserNovena }
 import { getStreakData, incrementStreak as incrementStreakData } from '../lib/streak';
 import {
   getUsageData,
-  incrementUsage,
   getActiveChallenge,
   setActiveChallenge as storeChallenge,
-  clearActiveChallenge,
   addCompletion,
   getCompletions,
   hasCompletedOnboarding,

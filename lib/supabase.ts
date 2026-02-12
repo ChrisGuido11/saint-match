@@ -60,10 +60,10 @@ export async function deleteUserAccount() {
   const { data: { user } } = await supabase.auth.getUser();
   
   if (user) {
-    // Delete user data from all tables (cascade will handle related data)
-    // The profiles table has ON DELETE CASCADE, so deleting the auth user will clean up
+    // Delete user data from all tables
     await supabase.from('active_challenges').delete().eq('user_id', user.id);
     await supabase.from('completions').delete().eq('user_id', user.id);
+    await supabase.from('user_novenas').delete().eq('user_id', user.id);
     await supabase.from('usage').delete().eq('user_id', user.id);
     await supabase.from('streaks').delete().eq('user_id', user.id);
     await supabase.from('profiles').delete().eq('id', user.id);

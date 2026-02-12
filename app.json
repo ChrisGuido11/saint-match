@@ -15,7 +15,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.saintmatch.app"
+      "bundleIdentifier": "com.saintmatch.app",
+      "infoPlist": {
+        "NSUserNotificationsUsageDescription": "Saint Match sends daily reminders and novena prayer notifications to support your spiritual journey."
+      }
     },
     "android": {
       "adaptiveIcon": {

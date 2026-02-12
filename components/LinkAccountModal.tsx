@@ -13,7 +13,7 @@ import {
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
-import { linkEmailToAccount, ensureAnonymousSession, supabase } from '../lib/supabase';
+import { linkEmailToAccount, supabase } from '../lib/supabase';
 
 interface LinkAccountModalProps {
   visible: boolean;
@@ -53,7 +53,6 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
           email: email.trim(),
           password,
         });
-        console.log('SignUp response:', { data, error });
         if (error) throw error;
         
         // If no session after signup, try signing in

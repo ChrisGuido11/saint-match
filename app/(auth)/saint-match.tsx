@@ -23,7 +23,12 @@ export default function SaintMatchScreen() {
 
   const selectedMoodData = selectedMood ? getMoodById(selectedMood) : null;
 
-  const match: SaintMatchType = matchData ? JSON.parse(matchData) : null;
+  let match: SaintMatchType | null = null;
+  try {
+    match = matchData ? JSON.parse(matchData) : null;
+  } catch {
+    // Invalid JSON — fall through to error UI
+  }
 
   if (!match) {
     return (

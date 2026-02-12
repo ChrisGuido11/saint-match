@@ -16,10 +16,6 @@ export default function AuthLayout() {
         options={{ animation: 'slide_from_bottom', gestureEnabled: true }}
       />
       <Stack.Screen
-        name="active-challenge"
-        options={{ animation: 'slide_from_right' }}
-      />
-      <Stack.Screen
         name="celebration"
         options={{ animation: 'fade', gestureEnabled: false }}
       />
@@ -38,6 +34,10 @@ export default function AuthLayout() {
       <Stack.Screen
         name="browse-novenas"
         options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
+        name="novena-celebration"
+        options={{ animation: 'fade', gestureEnabled: false }}
       />
       <Stack.Screen
         name="novena-complete"

@@ -18,7 +18,7 @@ export function ActiveNovenaCard({ userNovena, onPrayNow, onLongPress }: ActiveN
   const saintName = saint?.name ?? userNovena.saintName ?? 'Saint';
   const saintInitials = saint?.initials ?? (saintName
     .split(' ')
-    .filter((w) => w[0] === w[0].toUpperCase())
+    .filter((w) => w.length > 0 && w[0] === w[0].toUpperCase())
     .map((w) => w[0])
     .slice(0, 2)
     .join('') || '?');

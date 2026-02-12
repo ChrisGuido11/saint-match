@@ -61,7 +61,7 @@ export default function FlippableSaintCard({ saint, count }: FlippableSaintCardP
       </TouchableOpacity>
 
       {/* Expanded modal overlay */}
-      <Modal visible={expanded} transparent animationType="none">
+      <Modal visible={expanded} transparent animationType="none" onRequestClose={closeCard}>
         <Animated.View style={[styles.overlay, overlayStyle]}>
           <Pressable style={styles.backdrop} onPress={closeCard} />
           <Animated.View style={[styles.expandedCard, expandedCardStyle]}>

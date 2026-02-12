@@ -14,6 +14,16 @@ const KEYS = {
   matchHistory: '@saint_match_match_history',
   notificationPrefs: '@saint_match_notification_prefs',
   hapticEnabled: '@saint_match_haptic_enabled',
+  // Keys from other modules — included so clearAllData() wipes everything
+  streak: '@saint_match_streak',
+  completionDates: '@saint_match_completions',
+  supabaseMigrated: '@saint_match_supabase_migrated',
+  syncQueue: '@saint_match_sync_queue',
+  proCacheTs: '@saint_match_pro_cache_ts',
+  novenaCatalog: '@saint_match_novena_catalog',
+  migratedOnboarding: '@saint_match_migrated_onboarding',
+  migratedCompletions: '@saint_match_migrated_completions',
+  migratedStreaks: '@saint_match_migrated_streaks',
 } as const;
 
 // Onboarding
@@ -189,7 +199,7 @@ export async function migrateDiscoveredSaintsFromCompletions(completions: Comple
         emotions: [comp.emotionSelected],
         initials: comp.saintName
           .split(' ')
-          .filter((w) => w[0] === w[0].toUpperCase())
+          .filter((w) => w.length > 0 && w[0] === w[0].toUpperCase())
           .map((w) => w[0])
           .slice(0, 2)
           .join(''),

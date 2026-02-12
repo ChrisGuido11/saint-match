@@ -7,15 +7,15 @@ import Animated, {
   withSequence,
   withDelay,
   withRepeat,
+  cancelAnimation,
   FadeIn,
   FadeInUp,
-  Easing,
 } from 'react-native-reanimated';
 import { hapticNotification, NotificationFeedbackType } from '@/lib/haptics';
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
-import { MILESTONES, getMilestoneForStreak } from '../constants/saints';
+import { getMilestoneForStreak } from '../constants/saints';
 
 interface MilestoneBadgeProps {
   streakCount: number;
@@ -70,6 +70,11 @@ export function MilestoneBadge({ streakCount, isNewMilestone = false }: Mileston
     } else {
       badgeScale.value = withSpring(1);
     }
+    return () => {
+      cancelAnimation(badgeScale);
+      cancelAnimation(glowOpacity);
+      cancelAnimation(floatY);
+    };
   }, [isNewMilestone]);
 
   const badgeAnimatedStyle = useAnimatedStyle(() => ({
