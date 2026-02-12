@@ -119,6 +119,19 @@ export default function NovenaPrayerScreen() {
           </Animated.View>
         ) : null}
 
+        {/* Fallback when no prayers are available */}
+        {!openingPrayer && !dailyPrayer && !closingPrayer ? (
+          <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.missingPrayersCard}>
+            <Text style={styles.missingPrayersTitle}>Prayers Unavailable</Text>
+            <Text style={styles.missingPrayersText}>
+              The prayers for this novena could not be generated. This can happen if the app was offline or the server was temporarily unavailable when you started the novena.
+            </Text>
+            <Text style={styles.missingPrayersText}>
+              To get your prayers, try abandoning this novena from the portfolio screen and starting it again.
+            </Text>
+          </Animated.View>
+        ) : null}
+
         {/* Prayer Sections */}
         <Animated.View entering={FadeInDown.delay(300).duration(400)}>
           {/* Opening Prayer */}
@@ -306,6 +319,23 @@ const styles = StyleSheet.create({
   prayedButtonText: {
     ...Typography.buttonLarge,
     color: Colors.white,
+  },
+  missingPrayersCard: {
+    backgroundColor: Colors.sageMuted,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
+  },
+  missingPrayersTitle: {
+    ...Typography.h3,
+    color: Colors.charcoal,
+    marginBottom: Spacing.sm,
+  },
+  missingPrayersText: {
+    ...Typography.body,
+    color: Colors.charcoalMuted,
+    lineHeight: 22,
+    marginBottom: Spacing.sm,
   },
   errorContainer: {
     flex: 1,

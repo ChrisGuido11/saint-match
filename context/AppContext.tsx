@@ -242,7 +242,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const startNovena = useCallback(async (novenaId: string, saintId: string, saintName: string, saintBio: string, personalIntention: string): Promise<UserNovena> => {
-    // Try to generate AI prayers
+    // Generate AI prayers — null means offline (ok), thrown error means API failure (propagates to UI)
     const generatedPrayers = await generateNovenaPrayers(saintName, saintBio, personalIntention);
 
     const newNovena: UserNovena = {

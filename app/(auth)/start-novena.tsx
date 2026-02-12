@@ -8,6 +8,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { hapticImpact, hapticSelection, ImpactFeedbackStyle } from '@/lib/haptics';
@@ -108,7 +109,10 @@ export default function StartNovenaScreen() {
         params: { userNovenaId: userNovena.id },
       });
     } catch {
-      // Failed to start
+      Alert.alert(
+        'Could not generate prayers',
+        'Please check your connection and try again.',
+      );
     } finally {
       setIsStarting(false);
     }

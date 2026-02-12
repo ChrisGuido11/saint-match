@@ -29,7 +29,10 @@ export async function generateNovenaPrayers(
       body: JSON.stringify({ saintName, saintBio, personalIntention }),
     });
 
-    if (!response.ok) return null;
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => 'Unknown error');
+      throw new Error(`Prayer generation failed (${response.status}): ${errorBody}`);
+    }
 
     const data = await response.json();
 
@@ -46,8 +49,11 @@ export async function generateNovenaPrayers(
       };
     }
 
-    return null;
-  } catch {
-    return null;
+    throw new Error('Invalid response: missing or malformed prayer data');
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith('Prayer generation failed')) throw error;
+    if (error instanceof Error && error.message.startsWith('Invalid response')) throw error;
+    // Network errors or other unexpected failures
+    throw new Error(`Prayer generation error: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
