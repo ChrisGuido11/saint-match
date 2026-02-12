@@ -8,6 +8,7 @@ import {
   Alert,
   ToastAndroid,
   Platform,
+  Linking,
 } from 'react-native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { router } from 'expo-router';
@@ -65,15 +66,15 @@ export default function SettingsScreen() {
   const userEmail = session?.user?.email;
 
   const handlePrivacyPolicy = () => {
-    showToast('Link not configured');
+    Linking.openURL('https://saint-match.lovable.app/privacy');
   };
 
   const handleTerms = () => {
-    showToast('Link not configured');
+    Linking.openURL('https://saint-match.lovable.app/terms');
   };
 
   const handleSupport = () => {
-    showToast('Link not configured');
+    Linking.openURL('https://saint-match.lovable.app/support');
   };
 
   const handleExportData = async () => {
