@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
-import { format } from 'date-fns';
+import { format, subDays, startOfDay } from 'date-fns';
 import { Colors } from '../../../constants/colors';
 import { Typography, FontFamily } from '../../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
@@ -10,10 +10,14 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { IconChart } from '../../../components/icons';
 import FlippableSaintCard from '../../../components/FlippableSaintCard';
+import { WeeklyMiniCalendar } from '../../../components/WeeklyMiniCalendar';
+import { DayDetailBottomSheet } from '../../../components/DayDetailBottomSheet';
 
 export default function PortfolioScreen() {
-  const { completions, streak, discoveredSaints } = useApp();
+  const { completions, streak, discoveredSaints, activeChallenge } = useApp();
   const [isExporting, setIsExporting] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [sheetVisible, setSheetVisible] = useState(false);
 
   const saintCompletionMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -30,6 +34,37 @@ export default function PortfolioScreen() {
       return countB - countA;
     });
   }, [discoveredSaints, saintCompletionMap]);
+
+  const weekDays = useMemo(() => {
+    const today = startOfDay(new Date());
+    const todayStr = format(today, 'yyyy-MM-dd');
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = subDays(today, 6 - i);
+      const dateStr = format(date, 'yyyy-MM-dd');
+      const isToday = dateStr === todayStr;
+      return {
+        date,
+        dateStr,
+        hasCompletions: completions.some((c) => c.dateCompleted === dateStr),
+        isToday,
+        hasPending: isToday && !!activeChallenge && !activeChallenge.completed,
+      };
+    });
+  }, [completions, activeChallenge]);
+
+  const selectedCompletions = useMemo(() => {
+    if (!selectedDate) return [];
+    return completions.filter((c) => c.dateCompleted === selectedDate);
+  }, [completions, selectedDate]);
+
+  const onSelectDate = (dateStr: string) => {
+    setSelectedDate(dateStr);
+    setSheetVisible(true);
+  };
+
+  const onCloseSheet = () => {
+    setSheetVisible(false);
+  };
 
   const totalChallenges = completions.length;
 
@@ -243,42 +278,27 @@ export default function PortfolioScreen() {
         )}
       </Animated.View>
 
-      {/* Challenge History */}
-      <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.historySection}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>CHALLENGE HISTORY</Text>
-          {completions.length > 0 && (
-            <View style={styles.countBadge}>
-              <Text style={styles.countBadgeText}>{completions.length}</Text>
-            </View>
-          )}
-        </View>
-
-        {completions.length > 0 ? (
-          completions.slice(0, 20).map((completion, index) => (
-            <Animated.View
-              key={completion.id}
-              entering={FadeInDown.delay(400 + index * 50).duration(300)}
-              style={styles.historyCard}
-            >
-              <Text style={styles.historyDate}>
-                {format(new Date(completion.completedAt), 'MMM d, yyyy')}
-              </Text>
-              <Text style={styles.historyAction}>{completion.actionText}</Text>
-              <Text style={styles.historySaint}>
-                Inspired by {completion.saintName}
-              </Text>
-            </Animated.View>
-          ))
-        ) : (
-          <View style={styles.emptyCard}>
-            <IconChart size={48} color={Colors.sage} />
-            <Text style={styles.emptyText}>
-              Your challenge history will appear here after you complete your first challenge.
-            </Text>
-          </View>
-        )}
+      {/* This Week */}
+      <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.weekSection}>
+        <Text style={styles.sectionTitle}>THIS WEEK</Text>
+        <WeeklyMiniCalendar
+          weekDays={weekDays}
+          selectedDate={selectedDate}
+          onSelectDate={onSelectDate}
+        />
       </Animated.View>
+
+      <DayDetailBottomSheet
+        visible={sheetVisible}
+        onClose={onCloseSheet}
+        date={selectedDate ?? format(new Date(), 'yyyy-MM-dd')}
+        completions={selectedCompletions}
+        activeChallenge={
+          selectedDate === format(startOfDay(new Date()), 'yyyy-MM-dd')
+            ? activeChallenge
+            : null
+        }
+      />
 
       {/* Export PDF */}
       <Animated.View entering={FadeInDown.delay(500).duration(500)}>
@@ -376,44 +396,9 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  // Challenge History
-  historySection: {
+  // This Week
+  weekSection: {
     marginBottom: Spacing.lg,
-  },
-  countBadge: {
-    backgroundColor: Colors.sageMuted,
-    borderRadius: BorderRadius.round,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginBottom: Spacing.sm,
-  },
-  countBadgeText: {
-    fontFamily: FontFamily.sansSemiBold,
-    fontSize: 12,
-    color: Colors.sage,
-  },
-  historyCard: {
-    backgroundColor: Colors.white,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    marginBottom: Spacing.sm,
-    ...Shadows.card,
-  },
-  historyDate: {
-    ...Typography.caption,
-    color: Colors.charcoalSubtle,
-    marginBottom: 4,
-  },
-  historyAction: {
-    ...Typography.body,
-    color: Colors.charcoalLight,
-    lineHeight: 22,
-  },
-  historySaint: {
-    ...Typography.bodySmall,
-    color: Colors.sage,
-    marginTop: Spacing.xs,
-    fontFamily: FontFamily.sansMedium,
   },
 
   // Empty states
