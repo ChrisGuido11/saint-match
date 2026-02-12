@@ -112,8 +112,8 @@ export async function scheduleNovenaReminders(
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: `Day ${day} of your novena`,
-        body: `Time to pray with ${saintName}`,
+        title: `Day ${day} of 9 — ${saintName}`,
+        body: day === 9 ? 'Your final day awaits' : `${saintName} intercedes for you today`,
         data: { type: 'novena_reminder', userNovenaId: userNovena.id, day },
       },
       trigger: {
