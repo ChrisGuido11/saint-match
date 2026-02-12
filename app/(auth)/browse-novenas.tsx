@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { router } from 'expo-router';
-import * as Haptics from 'expo-haptics';
+import { hapticSelection } from '@/lib/haptics';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Colors } from '../../constants/colors';
 import { Typography, FontFamily } from '../../constants/typography';
@@ -90,7 +90,7 @@ export default function BrowseNovenasScreen() {
   }, [catalog, activeCategory, search]);
 
   const handleSelect = useCallback((entry: NovenaEntry) => {
-    Haptics.selectionAsync();
+    hapticSelection();
     const saintName = deriveSaintName(entry);
     router.push({
       pathname: '/(auth)/start-novena',
@@ -173,7 +173,7 @@ export default function BrowseNovenasScreen() {
               ]}
               onPress={() => {
                 setActiveCategory(item.key);
-                Haptics.selectionAsync();
+                hapticSelection();
               }}
               activeOpacity={0.7}
               accessibilityRole="button"

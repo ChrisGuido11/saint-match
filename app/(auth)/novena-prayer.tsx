@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import * as Haptics from 'expo-haptics';
+import { hapticImpact, hapticSelection, ImpactFeedbackStyle } from '@/lib/haptics';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../constants/colors';
 import { Typography, FontFamily } from '../../constants/typography';
@@ -51,12 +51,12 @@ export default function NovenaPrayerScreen() {
 
   const toggleSection = (section: 'opening' | 'daily' | 'closing') => {
     setExpandedSection((prev) => (prev === section ? null : section));
-    Haptics.selectionAsync();
+    hapticSelection();
   };
 
   const handlePrayed = async () => {
     setIsMarking(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    hapticImpact(ImpactFeedbackStyle.Medium);
 
     try {
       const result = await markNovenaDayPrayed(userNovena.id);

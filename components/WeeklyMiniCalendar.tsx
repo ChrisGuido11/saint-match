@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { hapticSelection } from '@/lib/haptics';
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing } from '../constants/spacing';
@@ -44,7 +44,7 @@ export function WeeklyMiniCalendar({ weekDays, selectedDate, onSelectDate }: Wee
             key={day.dateStr}
             style={styles.cell}
             onPress={() => {
-              Haptics.selectionAsync();
+              hapticSelection();
               onSelectDate(day.dateStr);
             }}
             accessibilityRole="button"

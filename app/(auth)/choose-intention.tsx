@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { router } from 'expo-router';
-import * as Haptics from 'expo-haptics';
+import { hapticImpact, hapticSelection, ImpactFeedbackStyle } from '@/lib/haptics';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../constants/colors';
 import { Typography, FontFamily } from '../../constants/typography';
@@ -39,7 +39,7 @@ export default function ChooseIntentionScreen() {
   const handleFindNovena = async () => {
     if (!canSearch) return;
     setIsMatching(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    hapticImpact(ImpactFeedbackStyle.Medium);
 
     try {
       // Ensure we have the freshest catalog
@@ -112,7 +112,7 @@ export default function ChooseIntentionScreen() {
               ]}
               onPress={() => {
                 setSelectedIntention(preset);
-                Haptics.selectionAsync();
+                hapticSelection();
               }}
               activeOpacity={0.7}
               accessibilityRole="button"
@@ -137,7 +137,7 @@ export default function ChooseIntentionScreen() {
             ]}
             onPress={() => {
               setSelectedIntention('__custom__');
-              Haptics.selectionAsync();
+              hapticSelection();
             }}
             activeOpacity={0.7}
             accessibilityRole="button"

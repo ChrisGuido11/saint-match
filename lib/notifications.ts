@@ -46,8 +46,8 @@ export async function scheduleDailyReminder(hour: number = 8, minute: number = 3
 
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'Your saint match is ready',
-      body: 'Start your day with virtue',
+      title: 'Time for today\'s challenge',
+      body: 'A saint is waiting to walk with you today',
       data: { type: 'daily_reminder' },
     },
     trigger: {

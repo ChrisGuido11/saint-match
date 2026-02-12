@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { hapticNotification, NotificationFeedbackType } from '@/lib/haptics';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -36,7 +36,7 @@ export function ChallengeCard({ challenge, onComplete }: ChallengeCardProps) {
   };
 
   const handleComplete = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    hapticNotification(NotificationFeedbackType.Success);
     onComplete();
   };
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { hapticImpact, ImpactFeedbackStyle } from '@/lib/haptics';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -71,7 +71,7 @@ function MoodButton({ mood, label, subtitle, index, onPress }: MoodButtonProps) 
   };
 
   const handlePress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    hapticImpact(ImpactFeedbackStyle.Light);
     onPress();
   };
 
@@ -125,14 +125,14 @@ export function MoodSelector({ onSelect, onCustomSubmit }: MoodSelectorProps) {
   };
 
   const handleCustomPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    hapticImpact(ImpactFeedbackStyle.Light);
     setCustomOpen(!customOpen);
   };
 
   const handleCustomSubmit = () => {
     const trimmed = customText.trim();
     if (trimmed.length >= MIN_CHARS) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      hapticImpact(ImpactFeedbackStyle.Medium);
       onCustomSubmit(trimmed);
     }
   };

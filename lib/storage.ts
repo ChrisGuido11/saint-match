@@ -13,6 +13,7 @@ const KEYS = {
   discoveredSaints: '@saint_match_discovered_saints',
   matchHistory: '@saint_match_match_history',
   notificationPrefs: '@saint_match_notification_prefs',
+  hapticEnabled: '@saint_match_haptic_enabled',
 } as const;
 
 // Onboarding

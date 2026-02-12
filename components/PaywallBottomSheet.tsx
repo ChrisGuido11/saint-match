@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
-import * as Haptics from 'expo-haptics';
+import { hapticImpact, hapticNotification, ImpactFeedbackStyle, NotificationFeedbackType } from '@/lib/haptics';
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
@@ -34,12 +34,12 @@ export function PaywallBottomSheet({
 
   const handlePurchase = async () => {
     setIsLoading(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    hapticImpact(ImpactFeedbackStyle.Medium);
     try {
       const identifier = selectedPlan === 'annual' ? 'pro_annual' : 'pro_monthly';
       const success = await purchasePro(identifier);
       if (success) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        hapticNotification(NotificationFeedbackType.Success);
         onPurchaseSuccess();
       }
     } finally {

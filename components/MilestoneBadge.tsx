@@ -11,7 +11,7 @@ import Animated, {
   FadeInUp,
   Easing,
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import { hapticNotification, NotificationFeedbackType } from '@/lib/haptics';
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
@@ -31,7 +31,7 @@ export function MilestoneBadge({ streakCount, isNewMilestone = false }: Mileston
 
   useEffect(() => {
     if (isNewMilestone) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      hapticNotification(NotificationFeedbackType.Success);
       
       // Badge pop animation
       badgeScale.value = withDelay(

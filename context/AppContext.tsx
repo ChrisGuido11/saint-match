@@ -35,6 +35,7 @@ import {
 import { generateNovenaPrayers } from '../lib/novenaGenerate';
 import { getNotificationPreferences } from '../lib/storage';
 import { scheduleNovenaReminders, cancelNovenaNotifications } from '../lib/notifications';
+import { loadHapticPreference } from '../lib/haptics';
 import type { Session } from '@supabase/supabase-js';
 
 interface AppContextType {
@@ -152,6 +153,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function init() {
+      // Load haptic preference into module cache
+      loadHapticPreference().catch(() => {});
+
       // RevenueCat init skipped for free beta
       // await initPurchases();
 

@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, RefreshControl, Alert } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { hapticNotification, NotificationFeedbackType } from '@/lib/haptics';
 import { router } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Colors } from '../../../constants/colors';
@@ -43,7 +43,7 @@ export default function NovenasScreen() {
           text: 'Remove',
           style: 'destructive',
           onPress: async () => {
-            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            await hapticNotification(NotificationFeedbackType.Success);
             await abandonNovena(userNovenaId);
           },
         },

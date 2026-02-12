@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import * as Haptics from 'expo-haptics';
+import { hapticImpact, hapticNotification, ImpactFeedbackStyle, NotificationFeedbackType } from '@/lib/haptics';
 import Animated, {
   FadeIn,
   FadeInUp,
@@ -43,7 +43,7 @@ export default function NovenaCelebrationScreen() {
   const contentY = useSharedValue(20);
 
   useEffect(() => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    hapticNotification(NotificationFeedbackType.Success);
 
     iconScale.value = withDelay(
       100,
@@ -69,7 +69,7 @@ export default function NovenaCelebrationScreen() {
   }));
 
   const handleDone = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    hapticImpact(ImpactFeedbackStyle.Light);
     router.replace('/(auth)/(tabs)');
   };
 

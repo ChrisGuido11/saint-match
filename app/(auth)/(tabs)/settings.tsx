@@ -9,6 +9,8 @@ import {
   ToastAndroid,
   Platform,
   Linking,
+  Share,
+  Switch,
 } from 'react-native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { router } from 'expo-router';
@@ -16,7 +18,7 @@ import { Colors } from '../../../constants/colors';
 import { Typography, FontFamily } from '../../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
-import { clearAllData, exportAllData, getNotificationPreferences, setNotificationPreferences } from '../../../lib/storage';
+import { clearAllData, getNotificationPreferences, setNotificationPreferences } from '../../../lib/storage';
 import { resetAllData } from '../../../lib/streak';
 import { resetProStatus } from '../../../lib/purchases';
 import { signOut, isSupabaseConfigured, deleteUserAccount } from '../../../lib/supabase';
@@ -24,10 +26,9 @@ import { requestNotificationPermission, scheduleDailyReminder, cancelDailyRemind
 import * as Notifications from 'expo-notifications';
 import { LinkAccountModal } from '../../../components/LinkAccountModal';
 import { NotificationSettingsModal } from '../../../components/NotificationSettingsModal';
-import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
-import * as Sharing from 'expo-sharing';
 import { IconChevron } from '../../../components/icons';
 import { NotificationPreferences } from '../../../types';
+import { isHapticEnabled, setHapticPreference, loadHapticPreference } from '../../../lib/haptics';
 
 function showToast(message: string) {
   if (Platform.OS === 'android') {
@@ -78,15 +79,31 @@ function formatReminderTime(hour: number, minute: number): string {
 
 export default function SettingsScreen() {
   const { refreshAll, session } = useApp();
-  const [isExporting, setIsExporting] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [showNotifModal, setShowNotifModal] = useState(false);
   const [notifPrefs, setNotifPrefs] = useState<NotificationPreferences>(DEFAULT_PREFS);
+  const [hapticOn, setHapticOn] = useState(true);
   const userEmail = session?.user?.email;
 
   useEffect(() => {
     getNotificationPreferences().then(setNotifPrefs);
+    loadHapticPreference().then(setHapticOn);
   }, []);
+
+  const handleToggleHaptic = async (value: boolean) => {
+    setHapticOn(value);
+    await setHapticPreference(value);
+  };
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: 'I\'ve been using Saint Match to grow in virtue with daily challenges inspired by the saints. Check it out! https://saint-match.lovable.app',
+      });
+    } catch {
+      // User cancelled or share failed
+    }
+  };
 
   const handlePrivacyPolicy = () => {
     Linking.openURL('https://saint-match.lovable.app/privacy');
@@ -100,19 +117,26 @@ export default function SettingsScreen() {
     Linking.openURL('https://saint-match.lovable.app/support');
   };
 
-  const handleExportData = async () => {
-    setIsExporting(true);
-    try {
-      const data = await exportAllData();
-      const json = JSON.stringify(data, null, 2);
-      const fileUri = documentDirectory + 'saint-match-export.json';
-      await writeAsStringAsync(fileUri, json);
-      await Sharing.shareAsync(fileUri);
-    } catch {
-      showToast('Could not export data. Please try again.');
-    } finally {
-      setIsExporting(false);
-    }
+  const handleSignOut = () => {
+    Alert.alert(
+      'Sign Out',
+      'You will be signed out of your account. Your local data will remain on this device.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign Out',
+          onPress: async () => {
+            try {
+              await signOut();
+              router.replace('/(public)/welcome');
+            } catch (error) {
+              console.error('Error signing out:', error);
+              showToast('Could not sign out. Please try again.');
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleDeleteAccount = () => {
@@ -217,28 +241,53 @@ export default function SettingsScreen() {
         </View>
       </Animated.View>
 
-      {/* Legal section */}
+      {/* Preferences section */}
       <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.section}>
-        <Text style={styles.sectionTitle}>LEGAL</Text>
+        <Text style={styles.sectionTitle}>PREFERENCES</Text>
         <View style={styles.sectionCard}>
+          <View style={styles.settingRow}>
+            <View style={styles.settingContent}>
+              <Text style={styles.settingLabel}>Haptic Feedback</Text>
+              <Text style={styles.settingSubtitle}>Vibration on taps and actions</Text>
+            </View>
+            <Switch
+              value={hapticOn}
+              onValueChange={handleToggleHaptic}
+              trackColor={{ false: Colors.creamDark, true: Colors.sageLight }}
+              thumbColor={hapticOn ? Colors.sage : Colors.charcoalSubtle}
+            />
+          </View>
+        </View>
+      </Animated.View>
+
+      {/* Support section */}
+      <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.section}>
+        <Text style={styles.sectionTitle}>SUPPORT</Text>
+        <View style={styles.sectionCard}>
+          <SettingRow label="Share with a Friend" subtitle="Spread the word" onPress={handleShare} />
+          <View style={styles.divider} />
+          <SettingRow label="Support & FAQ" onPress={handleSupport} />
+          <View style={styles.divider} />
           <SettingRow label="Privacy Policy" onPress={handlePrivacyPolicy} />
           <View style={styles.divider} />
           <SettingRow label="Terms of Service" onPress={handleTerms} />
-          <View style={styles.divider} />
-          <SettingRow label="Support & FAQ" onPress={handleSupport} />
         </View>
       </Animated.View>
 
       {/* Data section */}
-      <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.section}>
+      <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.section}>
         <Text style={styles.sectionTitle}>YOUR DATA</Text>
         <View style={styles.sectionCard}>
-          <SettingRow
-            label="Export My Data"
-            subtitle="Download all your data as JSON"
-            onPress={handleExportData}
-          />
-          <View style={styles.divider} />
+          {userEmail && (
+            <>
+              <SettingRow
+                label="Sign Out"
+                subtitle={userEmail}
+                onPress={handleSignOut}
+              />
+              <View style={styles.divider} />
+            </>
+          )}
           <SettingRow
             label="Delete Account"
             subtitle="Permanently delete all data"
@@ -249,7 +298,7 @@ export default function SettingsScreen() {
       </Animated.View>
 
       {/* App info */}
-      <Animated.View entering={FadeIn.delay(500).duration(400)} style={styles.appInfo}>
+      <Animated.View entering={FadeIn.delay(600).duration(400)} style={styles.appInfo}>
         <Text style={styles.appName}>Saint Match</Text>
         <Text style={styles.appVersion}>Version 1.0.0</Text>
         <Text style={styles.appTagline}>Daily virtue challenges from the saints</Text>

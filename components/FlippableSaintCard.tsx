@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, StyleSheet, TouchableOpacity, View, Modal, Pressable } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, runOnJS, interpolate } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Haptics from 'expo-haptics';
+import { hapticImpact, ImpactFeedbackStyle } from '@/lib/haptics';
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
@@ -20,7 +20,7 @@ export default function FlippableSaintCard({ saint, count }: FlippableSaintCardP
 
   const openCard = () => {
     setExpanded(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    hapticImpact(ImpactFeedbackStyle.Light);
     flipProgress.value = withSpring(1, Springs.cardEntrance);
   };
 
@@ -38,11 +38,9 @@ export default function FlippableSaintCard({ saint, count }: FlippableSaintCardP
 
   const expandedCardStyle = useAnimatedStyle(() => ({
     transform: [
-      { perspective: 1200 },
-      { rotateY: `${interpolate(flipProgress.value, [0, 1], [90, 0])}deg` },
-      { scale: interpolate(flipProgress.value, [0, 1], [0.5, 1]) },
+      { scale: interpolate(flipProgress.value, [0, 1], [0.85, 1]) },
     ],
-    opacity: interpolate(flipProgress.value, [0, 0.3], [0, 1]),
+    opacity: flipProgress.value,
   }));
 
   return (

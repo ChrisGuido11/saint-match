@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import * as Haptics from 'expo-haptics';
+import { hapticNotification, NotificationFeedbackType } from '@/lib/haptics';
 import Animated, {
   FadeIn,
   FadeInUp,
@@ -44,7 +44,7 @@ export default function NovenaCompleteScreen() {
   const iconScale = useSharedValue(0);
 
   useEffect(() => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    hapticNotification(NotificationFeedbackType.Success);
     iconScale.value = withDelay(
       100,
       withSequence(
@@ -62,7 +62,7 @@ export default function NovenaCompleteScreen() {
     if (!userNovena || !reflection.trim()) return;
     await saveNovenaReflection(userNovena.id, reflection.trim());
     setSaved(true);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    hapticNotification(NotificationFeedbackType.Success);
   };
 
   const handleStartAnother = () => {
