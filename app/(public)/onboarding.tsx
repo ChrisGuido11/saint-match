@@ -22,6 +22,7 @@ import { Typography } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { useApp } from '../../context/AppContext';
 import { requestNotificationPermission, scheduleDailyReminder } from '../../lib/notifications';
+import { setNotificationPreferences } from '../../lib/storage';
 import { IconMeetSaint, IconChallenge, IconStreak } from '../../components/icons';
 
 const { width } = Dimensions.get('window');
@@ -79,6 +80,12 @@ export default function OnboardingScreen() {
     } else {
       await requestNotificationPermission();
       await scheduleDailyReminder();
+      await setNotificationPreferences({
+        dailyReminderEnabled: true,
+        dailyReminderHour: 8,
+        dailyReminderMinute: 30,
+        novenaReminderEnabled: false,
+      });
       await setOnboardingComplete();
       router.replace('/(auth)/(tabs)');
     }

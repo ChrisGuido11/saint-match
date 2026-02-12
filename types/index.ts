@@ -118,6 +118,13 @@ export interface UserNovena {
   generatedPrayers: GeneratedPrayers | null;
 }
 
+export interface NotificationPreferences {
+  dailyReminderEnabled: boolean;
+  dailyReminderHour: number;    // 0-23
+  dailyReminderMinute: number;  // 0-59
+  novenaReminderEnabled: boolean;
+}
+
 // Achievement/Milestone types for enhanced gamification
 export type MilestoneType = 
   | 'first-challenge'

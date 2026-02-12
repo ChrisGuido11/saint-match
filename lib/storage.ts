@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActiveChallenge, Completion, Saint, UsageData, UserNovena } from '../types';
+import { ActiveChallenge, Completion, NotificationPreferences, Saint, UsageData, UserNovena } from '../types';
 import { format, startOfWeek, addDays } from 'date-fns';
 import { SAINTS } from '../constants/saints';
 
@@ -11,6 +11,8 @@ const KEYS = {
   isPro: '@saint_match_pro_status',
   userNovenas: '@saint_match_user_novenas',
   discoveredSaints: '@saint_match_discovered_saints',
+  matchHistory: '@saint_match_match_history',
+  notificationPrefs: '@saint_match_notification_prefs',
 } as const;
 
 // Onboarding
@@ -196,6 +198,67 @@ export async function migrateDiscoveredSaintsFromCompletions(completions: Comple
 
   await AsyncStorage.setItem(KEYS.discoveredSaints, JSON.stringify(saints));
   return saints;
+}
+
+// Match History (for deduplication)
+export async function getMatchHistory(): Promise<string[]> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.matchHistory);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function addToMatchHistory(saintName: string): Promise<void> {
+  const history = await getMatchHistory();
+  const filtered = history.filter((n) => n.toLowerCase() !== saintName.toLowerCase());
+  filtered.unshift(saintName);
+  await AsyncStorage.setItem(KEYS.matchHistory, JSON.stringify(filtered.slice(0, 50)));
+}
+
+export async function migrateMatchHistoryFromCompletions(): Promise<void> {
+  const existing = await getMatchHistory();
+  if (existing.length > 0) return; // Already migrated
+
+  const completions = await getCompletions();
+  if (completions.length === 0) return;
+
+  const seen = new Set<string>();
+  const names: string[] = [];
+  for (const c of completions) {
+    const lower = c.saintName.toLowerCase();
+    if (!seen.has(lower)) {
+      seen.add(lower);
+      names.push(c.saintName);
+    }
+  }
+
+  await AsyncStorage.setItem(KEYS.matchHistory, JSON.stringify(names.slice(0, 50)));
+}
+
+// Notification preferences
+export async function getNotificationPreferences(): Promise<NotificationPreferences> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.notificationPrefs);
+    return raw ? JSON.parse(raw) : {
+      dailyReminderEnabled: true,
+      dailyReminderHour: 8,
+      dailyReminderMinute: 30,
+      novenaReminderEnabled: false,
+    };
+  } catch {
+    return {
+      dailyReminderEnabled: true,
+      dailyReminderHour: 8,
+      dailyReminderMinute: 30,
+      novenaReminderEnabled: false,
+    };
+  }
+}
+
+export async function setNotificationPreferences(prefs: NotificationPreferences): Promise<void> {
+  await AsyncStorage.setItem(KEYS.notificationPrefs, JSON.stringify(prefs));
 }
 
 // Full data export

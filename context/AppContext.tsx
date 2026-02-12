@@ -17,6 +17,7 @@ import {
   getDiscoveredSaints,
   saveDiscoveredSaint,
   migrateDiscoveredSaintsFromCompletions,
+  migrateMatchHistoryFromCompletions,
 } from '../lib/storage';
 // RevenueCat kept dormant — re-enable for paid tiers later
 // import { checkProStatus, initPurchases, loginRevenueCat } from '../lib/purchases';
@@ -32,6 +33,8 @@ import {
   syncUserNovenaToServer,
 } from '../lib/sync';
 import { generateNovenaPrayers } from '../lib/novenaGenerate';
+import { getNotificationPreferences } from '../lib/storage';
+import { scheduleNovenaReminders, cancelNovenaNotifications } from '../lib/notifications';
 import type { Session } from '@supabase/supabase-js';
 
 interface AppContextType {
@@ -122,6 +125,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } else {
       setDiscoveredSaints(discovered);
     }
+
+    // Seed match history from completions for existing users
+    migrateMatchHistoryFromCompletions().catch(() => {});
 
     // Slow path: background sync with Supabase
     if (isSupabaseConfigured()) {
@@ -255,6 +261,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await storeUserNovena(newNovena);
     setUserNovenas((prev) => [newNovena, ...prev]);
     syncUserNovenaToServer(newNovena).catch(() => {});
+
+    // Schedule novena reminders if enabled
+    getNotificationPreferences()
+      .then((prefs) => {
+        if (prefs.novenaReminderEnabled) {
+          scheduleNovenaReminders(newNovena, saintName).catch(() => {});
+        }
+      })
+      .catch(() => {});
+
     return newNovena;
   }, []);
 
@@ -299,6 +315,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [userNovenas]);
 
   const abandonNovena = useCallback(async (userNovenaId: string) => {
+    cancelNovenaNotifications(userNovenaId).catch(() => {});
     await removeUserNovena(userNovenaId);
     setUserNovenas((prev) => prev.filter((n) => n.id !== userNovenaId));
   }, []);

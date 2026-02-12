@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,14 +16,18 @@ import { Colors } from '../../../constants/colors';
 import { Typography, FontFamily } from '../../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
-import { clearAllData, exportAllData } from '../../../lib/storage';
+import { clearAllData, exportAllData, getNotificationPreferences, setNotificationPreferences } from '../../../lib/storage';
 import { resetAllData } from '../../../lib/streak';
 import { resetProStatus } from '../../../lib/purchases';
 import { signOut, isSupabaseConfigured, deleteUserAccount } from '../../../lib/supabase';
+import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder } from '../../../lib/notifications';
+import * as Notifications from 'expo-notifications';
 import { LinkAccountModal } from '../../../components/LinkAccountModal';
+import { NotificationSettingsModal } from '../../../components/NotificationSettingsModal';
 import { documentDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { IconChevron } from '../../../components/icons';
+import { NotificationPreferences } from '../../../types';
 
 function showToast(message: string) {
   if (Platform.OS === 'android') {
@@ -59,11 +63,30 @@ function SettingRow({ label, subtitle, onPress, destructive, rightText }: Settin
   );
 }
 
+const DEFAULT_PREFS: NotificationPreferences = {
+  dailyReminderEnabled: true,
+  dailyReminderHour: 8,
+  dailyReminderMinute: 30,
+  novenaReminderEnabled: false,
+};
+
+function formatReminderTime(hour: number, minute: number): string {
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  return minute === 0 ? `${displayHour}:00 ${period}` : `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
+}
+
 export default function SettingsScreen() {
   const { refreshAll, session } = useApp();
   const [isExporting, setIsExporting] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
+  const [showNotifModal, setShowNotifModal] = useState(false);
+  const [notifPrefs, setNotifPrefs] = useState<NotificationPreferences>(DEFAULT_PREFS);
   const userEmail = session?.user?.email;
+
+  useEffect(() => {
+    getNotificationPreferences().then(setNotifPrefs);
+  }, []);
 
   const handlePrivacyPolicy = () => {
     Linking.openURL('https://saint-match.lovable.app/privacy');
@@ -107,6 +130,8 @@ export default function SettingsScreen() {
               if (isSupabaseConfigured()) {
                 await deleteUserAccount();
               }
+              // Cancel all scheduled notifications
+              await Notifications.cancelAllScheduledNotificationsAsync();
               // Then clear local data
               await clearAllData();
               await resetAllData();
@@ -123,7 +148,29 @@ export default function SettingsScreen() {
   };
 
   const handleNotifications = () => {
-    showToast('Notification settings coming soon');
+    setShowNotifModal(true);
+  };
+
+  const handleSaveNotifPrefs = async (prefs: NotificationPreferences) => {
+    setShowNotifModal(false);
+
+    // Persist to storage
+    await setNotificationPreferences(prefs);
+    setNotifPrefs(prefs);
+
+    // Schedule or cancel daily reminder
+    if (prefs.dailyReminderEnabled) {
+      const granted = await requestNotificationPermission();
+      if (granted) {
+        await scheduleDailyReminder(prefs.dailyReminderHour, prefs.dailyReminderMinute);
+      } else {
+        showToast('Please enable notifications in your device settings.');
+      }
+    } else {
+      await cancelDailyReminder();
+    }
+
+    showToast('Notification settings saved');
   };
 
   return (
@@ -143,7 +190,11 @@ export default function SettingsScreen() {
         <View style={styles.sectionCard}>
           <SettingRow
             label="Notifications"
-            subtitle="Daily reminder at 8:30 AM"
+            subtitle={
+              notifPrefs.dailyReminderEnabled
+                ? `Daily reminder at ${formatReminderTime(notifPrefs.dailyReminderHour, notifPrefs.dailyReminderMinute)}`
+                : 'Notifications off'
+            }
             onPress={handleNotifications}
           />
           {isSupabaseConfigured() && (
@@ -203,6 +254,13 @@ export default function SettingsScreen() {
         <Text style={styles.appVersion}>Version 1.0.0</Text>
         <Text style={styles.appTagline}>Daily virtue challenges from the saints</Text>
       </Animated.View>
+
+      <NotificationSettingsModal
+        visible={showNotifModal}
+        onClose={() => setShowNotifModal(false)}
+        onSave={handleSaveNotifPrefs}
+        initialPrefs={notifPrefs}
+      />
 
       <LinkAccountModal
         visible={showLinkModal}
