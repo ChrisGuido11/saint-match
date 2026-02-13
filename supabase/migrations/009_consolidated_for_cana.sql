@@ -88,7 +88,7 @@
   CREATE TABLE IF NOT EXISTS match_cache (
     id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     emotion           TEXT NOT NULL
-                      CHECK (emotion IN ('anxious','overwhelmed','scattered','impatient','frustrated','peaceful')),
+                      CHECK (emotion IN ('anxious','overwhelmed','scattered','grateful','joyful','peaceful')),
     saint_name        TEXT NOT NULL,
     feast_day         TEXT NOT NULL,
     bio               TEXT NOT NULL,
@@ -120,7 +120,7 @@
     saint_id          TEXT NOT NULL,
     micro_action_id   TEXT NOT NULL,
     emotion_selected  TEXT NOT NULL
-                      CHECK (emotion_selected IN ('anxious','overwhelmed','scattered','impatient','frustrated','peaceful')),
+                      CHECK (emotion_selected IN ('anxious','overwhelmed','scattered','grateful','joyful','peaceful')),
     saint_name        TEXT NOT NULL,
     action_text       TEXT NOT NULL,
     date_completed    DATE NOT NULL,

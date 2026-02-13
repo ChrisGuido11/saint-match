@@ -19,7 +19,6 @@ import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { useApp } from '../../context/AppContext';
 import { getNovenaById } from '../../constants/novenas';
 import { SAINTS } from '../../constants/saints';
-import { scheduleNovenaReminders } from '../../lib/notifications';
 import { IconClose, IconNavNovenas } from '../../components/icons';
 
 export default function StartNovenaScreen() {
@@ -103,7 +102,6 @@ export default function StartNovenaScreen() {
         resolvedSaintBio,
         intention
       );
-      scheduleNovenaReminders(userNovena, resolvedSaintName).catch(() => {});
       router.replace({
         pathname: '/(auth)/novena-prayer',
         params: { userNovenaId: userNovena.id },

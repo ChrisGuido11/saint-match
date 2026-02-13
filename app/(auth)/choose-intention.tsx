@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
 import { hapticImpact, hapticSelection, ImpactFeedbackStyle } from '@/lib/haptics';
@@ -61,6 +62,11 @@ export default function ChooseIntentionScreen() {
           matchReason: result.matchReason,
         },
       });
+    } catch {
+      Alert.alert(
+        'Could not find a novena',
+        'Please check your connection and try again.',
+      );
     } finally {
       setIsMatching(false);
     }

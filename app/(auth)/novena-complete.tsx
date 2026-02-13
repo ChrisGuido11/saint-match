@@ -27,7 +27,6 @@ import { ConfettiAnimation } from '../../components/ConfettiAnimation';
 import { useApp } from '../../context/AppContext';
 import { SAINTS } from '../../constants/saints';
 import { IconNavNovenas } from '../../components/icons';
-import { NOVENAS } from '../../constants/novenas';
 
 export default function NovenaCompleteScreen() {
   const { userNovenaId } = useLocalSearchParams<{ userNovenaId: string }>();
@@ -66,11 +65,7 @@ export default function NovenaCompleteScreen() {
   };
 
   const handleStartAnother = () => {
-    const firstNovena = NOVENAS[0];
-    router.replace({
-      pathname: '/(auth)/start-novena',
-      params: { novenaId: firstNovena.id, saintId: firstNovena.saintId },
-    });
+    router.replace({ pathname: '/(auth)/choose-intention' });
   };
 
   const handleGoHome = () => {

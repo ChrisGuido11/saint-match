@@ -10,6 +10,7 @@ import Animated, {
   withSpring,
   withDelay,
   withSequence,
+  interpolate,
 } from 'react-native-reanimated';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
@@ -68,7 +69,7 @@ export default function CelebrationScreen() {
 
   const contentStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: contentY.value }],
-    opacity: contentY.value === 0 ? 1 : 0,
+    opacity: interpolate(contentY.value, [20, 0], [0, 1]),
   }));
 
   const handleDone = () => {

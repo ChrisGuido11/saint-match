@@ -43,7 +43,7 @@ function deriveSaintName(entry: NovenaEntry): string {
 }
 
 function deriveSaintId(slug: string): string {
-  return `catalog-${slug}`;
+  return slug;
 }
 
 export default function BrowseNovenasScreen() {
