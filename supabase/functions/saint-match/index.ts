@@ -421,11 +421,17 @@ Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max con
 Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "", "estimatedMinutes": 10, "matchReason": "1 sentence: why this saint fits their emotion"}`;
 }
 
+// Track last Claude error for debugging in fallback response
+let _lastClaudeError = '';
+
 async function callClaude(
   input: { emotion?: string; customMood?: string; excludeSaints?: string[] }
 ): Promise<ClaudeResponse | null> {
+  _lastClaudeError = '';
+
   if (!ANTHROPIC_API_KEY) {
-    console.error('ANTHROPIC_API_KEY is not set');
+    _lastClaudeError = 'ANTHROPIC_API_KEY is not set';
+    console.error(_lastClaudeError);
     return null;
   }
 
@@ -453,32 +459,39 @@ async function callClaude(
 
     if (!response.ok) {
       const errBody = await response.text();
-      console.error(`Claude API error ${response.status}: ${errBody}`);
+      _lastClaudeError = `Claude API ${response.status}: ${errBody.slice(0, 200)}`;
+      console.error(_lastClaudeError);
       return null;
     }
 
     const data = await response.json();
     console.log('Claude API response received, source: claude');
     let text = data.content?.[0]?.text;
-    if (!text) return null;
+    if (!text) {
+      _lastClaudeError = 'Empty response text from Claude';
+      return null;
+    }
 
     // Strip markdown code fences and extra whitespace that Haiku may add
     text = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
     // Extract JSON object if there's surrounding text
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.error('No JSON object found in Claude response:', text.slice(0, 200));
+      _lastClaudeError = `No JSON in response: ${text.slice(0, 200)}`;
+      console.error(_lastClaudeError);
       return null;
     }
 
     const parsed = JSON.parse(jsonMatch[0]);
     if (!isValidClaudeResponse(parsed)) {
-      console.error('Invalid Claude response structure:', JSON.stringify(parsed).slice(0, 200));
+      _lastClaudeError = `Invalid structure: ${JSON.stringify(parsed).slice(0, 200)}`;
+      console.error(_lastClaudeError);
       return null;
     }
 
     return parsed;
   } catch (err) {
+    _lastClaudeError = `Exception: ${String(err).slice(0, 200)}`;
     console.error('Claude API call exception:', err);
     return null;
   }
@@ -675,7 +688,7 @@ Deno.serve(async (req) => {
     // 6. Local fallback — map custom mood to nearest emotion via keywords
     const fallbackEmotion = emotion ?? mapCustomMoodToEmotion(customMood ?? '');
     const localMatch = matchLocally(fallbackEmotion, excludeSaints);
-    return jsonResponse({ ...localMatch, source: 'local' }, 200, headers);
+    return jsonResponse({ ...localMatch, source: 'local', _debug: _lastClaudeError || 'claude returned null' }, 200, headers);
   } catch (error) {
     console.error('saint-match error:', error);
     return jsonResponse(
