@@ -93,12 +93,14 @@ export default function SaintMatchScreen() {
             saintName={match.saint.name}
             saintBio={match.saint.bio}
             onStartNovena={() => {
+              const novenaIntention = customMoodText || (selectedMoodData ? selectedMoodData.label : undefined);
               router.push({
                 pathname: '/(auth)/start-novena',
                 params: {
                   saintId: match.saint.id,
                   saintName: match.saint.name,
                   saintBio: match.saint.bio,
+                  ...(novenaIntention ? { intention: novenaIntention } : {}),
                 },
               });
             }}
