@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
-import { Saint, StreakData, UsageData, ActiveChallenge, Completion, UserNovena } from '../types';
+import { Saint, StreakData, UsageData, ActiveChallenge, Completion, UserNovena, ChallengeLogEntry } from '../types';
 import { getStreakData, incrementStreak as incrementStreakData } from '../lib/streak';
 import {
   getUsageData,
@@ -16,6 +16,9 @@ import {
   saveDiscoveredSaint,
   migrateDiscoveredSaintsFromCompletions,
   migrateMatchHistoryFromCompletions,
+  getChallengeLog,
+  addChallengeLogEntry,
+  markChallengeLogCompleted,
 } from '../lib/storage';
 // RevenueCat kept dormant — re-enable for paid tiers later
 // import { checkProStatus, initPurchases, loginRevenueCat } from '../lib/purchases';
@@ -48,11 +51,12 @@ interface AppContextType {
   session: Session | null;
   userNovenas: UserNovena[];
   discoveredSaints: Saint[];
+  challengeLog: ChallengeLogEntry[];
 
   // Actions
   refreshStreak: () => Promise<void>;
   refreshUsage: () => Promise<void>;
-  acceptChallenge: (challenge: ActiveChallenge) => Promise<void>;
+  acceptChallenge: (challenge: ActiveChallenge, moodText?: string) => Promise<void>;
   completeChallenge: () => Promise<StreakData>;
   consumeMatch: () => Promise<boolean>;
   setOnboardingComplete: () => Promise<void>;
@@ -84,6 +88,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isOnboarded, setIsOnboarded] = useState(false);
   const [userNovenas, setUserNovenas] = useState<UserNovena[]>([]);
   const [discoveredSaints, setDiscoveredSaints] = useState<Saint[]>([]);
+  const [challengeLog, setChallengeLog] = useState<ChallengeLogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const authListenerRef = useRef<{ subscription: { unsubscribe: () => void } } | null>(null);
@@ -100,7 +105,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const refreshAll = useCallback(async () => {
     // Fast path: load from AsyncStorage
-    const [streakData, usageData, challenge, comps, onboarded, novenas, discovered] = await Promise.all([
+    const [streakData, usageData, challenge, comps, onboarded, novenas, discovered, logEntries] = await Promise.all([
       getStreakData(),
       getUsageData(),
       getActiveChallenge(),
@@ -108,6 +113,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       hasCompletedOnboarding(),
       getUserNovenas(),
       getDiscoveredSaints(),
+      getChallengeLog(),
     ]);
     setStreak(streakData);
     setUsage(usageData);
@@ -116,6 +122,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // isPro stays true — free beta, no pro check needed
     setIsOnboarded(onboarded);
     setUserNovenas(novenas);
+    setChallengeLog(logEntries);
 
     // Migrate discovered saints from completions for existing users
     if (discovered.length === 0 && comps.length > 0) {
@@ -185,9 +192,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, [refreshAll]);
 
-  const acceptChallenge = useCallback(async (challenge: ActiveChallenge) => {
+  const acceptChallenge = useCallback(async (challenge: ActiveChallenge, moodText?: string) => {
     await storeChallenge(challenge);
     setActiveChallenge(challenge);
+
+    // Write to challenge log for persistent tracking
+    const logEntry: ChallengeLogEntry = {
+      id: `cl-${Date.now()}`,
+      saintId: challenge.match.saint.id,
+      saintName: challenge.match.saint.name,
+      actionText: challenge.match.microAction.actionText,
+      emotionSelected: moodText || challenge.match.microAction.emotion,
+      dateAccepted: format(new Date(), 'yyyy-MM-dd'),
+      acceptedAt: challenge.acceptedAt,
+      completed: false,
+      completedAt: null,
+    };
+    await addChallengeLogEntry(logEntry);
+    setChallengeLog((prev) => [logEntry, ...prev]);
 
     // Background sync to Supabase
     syncActiveChallengeToServer(challenge).catch(() => {});
@@ -223,6 +245,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await storeChallenge(updated);
       setActiveChallenge(updated);
 
+      // Mark matching challenge log entry as completed
+      const logEntry = challengeLog.find(
+        (e) => e.dateAccepted === today && e.saintId === activeChallenge.match.saint.id && !e.completed
+      );
+      if (logEntry) {
+        await markChallengeLogCompleted(logEntry.id);
+        setChallengeLog((prev) =>
+          prev.map((e) => e.id === logEntry.id ? { ...e, completed: true, completedAt: new Date().toISOString() } : e)
+        );
+      }
+
       // Background sync to Supabase
       syncCompletionToServer(completion).catch(() => {});
       syncActiveChallengeToServer(updated).catch(() => {});
@@ -234,7 +267,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     syncStreakToServer(updatedStreak).catch(() => {});
 
     return updatedStreak;
-  }, [activeChallenge]);
+  }, [activeChallenge, challengeLog]);
 
   const consumeMatch = useCallback(async () => {
     // Free beta: always allow matches, no usage limit
@@ -343,6 +376,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         session,
         userNovenas,
         discoveredSaints,
+        challengeLog,
         refreshStreak,
         refreshUsage,
         acceptChallenge,

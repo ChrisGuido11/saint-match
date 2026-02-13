@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActiveChallenge, Completion, NotificationPreferences, Saint, UsageData, UserNovena } from '../types';
+import { ActiveChallenge, ChallengeLogEntry, Completion, NotificationPreferences, Saint, UsageData, UserNovena } from '../types';
 import { format, startOfWeek, addDays } from 'date-fns';
 import { SAINTS } from '../constants/saints';
 
@@ -21,6 +21,7 @@ const KEYS = {
   syncQueue: '@saint_match_sync_queue',
   proCacheTs: '@saint_match_pro_cache_ts',
   novenaCatalog: '@saint_match_novena_catalog',
+  challengeLog: '@saint_match_challenge_log',
   migratedOnboarding: '@saint_match_migrated_onboarding',
   migratedCompletions: '@saint_match_migrated_completions',
   migratedStreaks: '@saint_match_migrated_streaks',
@@ -246,6 +247,45 @@ export async function migrateMatchHistoryFromCompletions(): Promise<void> {
   }
 
   await AsyncStorage.setItem(KEYS.matchHistory, JSON.stringify(names.slice(0, 50)));
+}
+
+// Challenge Log
+export async function getChallengeLog(): Promise<ChallengeLogEntry[]> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.challengeLog);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function addChallengeLogEntry(entry: ChallengeLogEntry): Promise<void> {
+  const log = await getChallengeLog();
+  log.unshift(entry);
+  await AsyncStorage.setItem(KEYS.challengeLog, JSON.stringify(log));
+}
+
+export async function markChallengeLogCompleted(id: string): Promise<void> {
+  const log = await getChallengeLog();
+  const entry = log.find((e) => e.id === id);
+  if (entry) {
+    entry.completed = true;
+    entry.completedAt = new Date().toISOString();
+    await AsyncStorage.setItem(KEYS.challengeLog, JSON.stringify(log));
+  }
+}
+
+export async function getChallengeLogDates(): Promise<{ accepted: string[]; completed: string[] }> {
+  const log = await getChallengeLog();
+  const accepted: string[] = [];
+  const completed: string[] = [];
+  for (const entry of log) {
+    accepted.push(entry.dateAccepted);
+    if (entry.completed) {
+      completed.push(entry.dateAccepted);
+    }
+  }
+  return { accepted, completed };
 }
 
 // Notification preferences

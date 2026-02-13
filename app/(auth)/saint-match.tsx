@@ -43,11 +43,11 @@ export default function SaintMatchScreen() {
 
   const handleAcceptChallenge = async () => {
     hapticImpact(ImpactFeedbackStyle.Medium);
-    await acceptChallenge({
-      match,
-      acceptedAt: new Date().toISOString(),
-      completed: false,
-    });
+    const moodText = customMoodText || (selectedMoodData ? selectedMoodData.label : undefined);
+    await acceptChallenge(
+      { match, acceptedAt: new Date().toISOString(), completed: false },
+      moodText,
+    );
     router.replace('/(auth)/(tabs)');
   };
 
@@ -92,7 +92,13 @@ export default function SaintMatchScreen() {
             saintId={match.saint.id}
             saintName={match.saint.name}
             saintBio={match.saint.bio}
-            onStartNovena={() => {
+            onStartNovena={async () => {
+              // Auto-accept challenge so the saint match is persisted before leaving
+              const moodText = customMoodText || (selectedMoodData ? selectedMoodData.label : undefined);
+              await acceptChallenge(
+                { match, acceptedAt: new Date().toISOString(), completed: false },
+                moodText,
+              );
               const novenaIntention = customMoodText || (selectedMoodData ? selectedMoodData.label : undefined);
               router.push({
                 pathname: '/(auth)/start-novena',

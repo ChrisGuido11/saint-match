@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, Modal, ScrollView } from 'react-native';
+import { View, Text, Pressable, TouchableOpacity, StyleSheet, Modal, ScrollView } from 'react-native';
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
 import { format, parseISO } from 'date-fns';
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius } from '../constants/spacing';
-import type { Completion, ActiveChallenge } from '../types';
+import type { Completion, ActiveChallenge, ChallengeLogEntry } from '../types';
 
 interface DayDetailBottomSheetProps {
   visible: boolean;
@@ -13,6 +13,8 @@ interface DayDetailBottomSheetProps {
   date: string;
   completions: Completion[];
   activeChallenge: ActiveChallenge | null;
+  challengeLogEntries?: ChallengeLogEntry[];
+  onCompleteChallenge?: () => void;
 }
 
 export function DayDetailBottomSheet({
@@ -21,12 +23,15 @@ export function DayDetailBottomSheet({
   date,
   completions,
   activeChallenge,
+  challengeLogEntries,
+  onCompleteChallenge,
 }: DayDetailBottomSheetProps) {
   if (!visible) return null;
 
   const dateObj = parseISO(date);
   const formattedDate = format(dateObj, 'EEEE, MMM d');
-  const hasContent = completions.length > 0 || (activeChallenge && !activeChallenge.completed);
+  const logEntries = challengeLogEntries ?? [];
+  const hasContent = completions.length > 0 || (activeChallenge && !activeChallenge.completed) || logEntries.length > 0;
 
   return (
     <Modal visible={visible} transparent animationType="none" statusBarTranslucent>
@@ -74,10 +79,50 @@ export function DayDetailBottomSheet({
               </View>
             ))}
 
+            {/* Challenge log entries (from calendar view) */}
+            {logEntries.map((entry) => (
+              <View key={entry.id} style={[styles.card, entry.completed ? styles.cardCompleted : styles.cardPending]}>
+                {entry.completed ? (
+                  <View style={styles.cardHeader}>
+                    <View style={[styles.pendingBadge, { backgroundColor: Colors.sageMuted }]}>
+                      <Text style={[styles.pendingBadgeText, { color: Colors.sage }]}>Completed</Text>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.cardHeader}>
+                    <View style={styles.pendingBadge}>
+                      <Text style={styles.pendingBadgeText}>Accepted</Text>
+                    </View>
+                  </View>
+                )}
+                <Text style={styles.cardAction}>{entry.actionText}</Text>
+                <Text style={styles.cardSaint}>Inspired by {entry.saintName}</Text>
+                {entry.emotionSelected && (
+                  <Text style={styles.cardTime}>{entry.emotionSelected}</Text>
+                )}
+                {entry.completedAt && (
+                  <Text style={styles.cardTime}>
+                    Completed {format(new Date(entry.completedAt), 'h:mm a')}
+                  </Text>
+                )}
+              </View>
+            ))}
+
+            {/* Complete challenge button (for today's pending challenge from log) */}
+            {onCompleteChallenge && logEntries.some((e) => !e.completed) && (
+              <TouchableOpacity
+                style={styles.completeButton}
+                onPress={onCompleteChallenge}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.completeButtonText}>Complete Challenge</Text>
+              </TouchableOpacity>
+            )}
+
             {/* Empty state */}
             {!hasContent && (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>No activity this day</Text>
+                <Text style={styles.emptyText}>No challenge this day</Text>
               </View>
             )}
           </ScrollView>
@@ -162,6 +207,19 @@ const styles = StyleSheet.create({
     ...Typography.caption,
     color: Colors.charcoalSubtle,
     marginTop: 4,
+  },
+  completeButton: {
+    backgroundColor: Colors.terracotta,
+    borderRadius: BorderRadius.md,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  completeButtonText: {
+    fontFamily: FontFamily.sansSemiBold,
+    fontSize: 16,
+    color: Colors.white,
   },
   emptyState: {
     paddingVertical: Spacing.xl,

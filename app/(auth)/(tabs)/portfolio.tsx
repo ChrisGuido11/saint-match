@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, LayoutAnimation } from 'react-native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { format, subDays, startOfDay } from 'date-fns';
 import { Colors } from '../../../constants/colors';
@@ -18,6 +18,7 @@ export default function PortfolioScreen() {
   const [isExporting, setIsExporting] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
+  const [visibleSaintsCount, setVisibleSaintsCount] = useState(9);
 
   const saintCompletionMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -226,14 +227,30 @@ export default function PortfolioScreen() {
           <Text style={styles.sectionSubtitle}>{sortedSaints.length} saints discovered</Text>
         </View>
         {sortedSaints.length > 0 ? (
-          <View style={styles.saintsGrid}>
-            {sortedSaints.map((saint) => {
-              const count = saintCompletionMap.get(saint.id) ?? 0;
-              return (
-                <FlippableSaintCard key={saint.id} saint={saint} count={count} />
-              );
-            })}
-          </View>
+          <>
+            <View style={styles.saintsGrid}>
+              {sortedSaints.slice(0, visibleSaintsCount).map((saint) => {
+                const count = saintCompletionMap.get(saint.id) ?? 0;
+                return (
+                  <FlippableSaintCard key={saint.id} saint={saint} count={count} />
+                );
+              })}
+            </View>
+            {sortedSaints.length > visibleSaintsCount && (
+              <TouchableOpacity
+                style={styles.seeMoreButton}
+                onPress={() => {
+                  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                  setVisibleSaintsCount((prev) => prev + 3);
+                }}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.seeMoreText}>
+                  See more ({sortedSaints.length - visibleSaintsCount} remaining)
+                </Text>
+              </TouchableOpacity>
+            )}
+          </>
         ) : (
           <View style={styles.emptyCard}>
             <IconChart size={48} color={Colors.sage} />
@@ -366,6 +383,18 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: Spacing.sm,
     marginBottom: Spacing.xl,
+  },
+
+  // See more button
+  seeMoreButton: {
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  seeMoreText: {
+    ...Typography.bodySmall,
+    color: Colors.terracotta,
+    fontFamily: FontFamily.sansSemiBold,
   },
 
   // Journey Stats

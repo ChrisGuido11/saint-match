@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import {
   format,
@@ -7,17 +7,16 @@ import {
   endOfMonth,
   eachDayOfInterval,
   getDay,
-  isSameDay,
   isToday,
   subMonths,
   addMonths,
 } from 'date-fns';
+import { router } from 'expo-router';
 import { Colors } from '../../../constants/colors';
 import { Typography, FontFamily } from '../../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
 import { getCompletionDates } from '../../../lib/streak';
-import { TouchableOpacity } from 'react-native';
 import {
   IconFire,
   IconTrophy,
@@ -25,6 +24,7 @@ import {
   IconChevronLeft,
   IconChevronRight,
 } from '../../../components/icons';
+import { DayDetailBottomSheet } from '../../../components/DayDetailBottomSheet';
 
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -46,9 +46,11 @@ function SkeletonBlock({ width, height, style }: { width: number | string; heigh
 }
 
 export default function CalendarScreen() {
-  const { streak } = useApp();
+  const { streak, challengeLog, activeChallenge, completeChallenge, refreshAll } = useApp();
   const [completionDates, setCompletionDates] = useState<string[] | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [sheetVisible, setSheetVisible] = useState(false);
 
   useEffect(() => {
     getCompletionDates().then(setCompletionDates);
@@ -62,9 +64,66 @@ export default function CalendarScreen() {
   const isLoading = completionDates === null;
   const dates = completionDates ?? [];
 
+  // Build date maps from challenge log
+  const acceptedDateSet = useMemo(() => {
+    const set = new Set<string>();
+    for (const entry of challengeLog) {
+      set.add(entry.dateAccepted);
+    }
+    return set;
+  }, [challengeLog]);
+
+  const completedDateSet = useMemo(() => {
+    const set = new Set<string>();
+    for (const entry of challengeLog) {
+      if (entry.completed) {
+        set.add(entry.dateAccepted);
+      }
+    }
+    // Also include completion dates from the streak system
+    for (const d of dates) {
+      set.add(d);
+    }
+    return set;
+  }, [challengeLog, dates]);
+
   const isCompleted = (date: Date): boolean => {
     const dateStr = format(date, 'yyyy-MM-dd');
-    return dates.includes(dateStr);
+    return completedDateSet.has(dateStr);
+  };
+
+  const isAcceptedOnly = (date: Date): boolean => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return acceptedDateSet.has(dateStr) && !completedDateSet.has(dateStr);
+  };
+
+  // Get challenge log entries for the selected date
+  const selectedLogEntries = useMemo(() => {
+    if (!selectedDate) return [];
+    return challengeLog.filter((e) => e.dateAccepted === selectedDate);
+  }, [challengeLog, selectedDate]);
+
+  // Get completions for the selected date
+  const selectedCompletions = useMemo(() => {
+    if (!selectedDate) return [];
+    // Completions are loaded from a different source; filter from dates
+    return [];
+  }, [selectedDate]);
+
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
+
+  const handleDayPress = (dateStr: string) => {
+    setSelectedDate(dateStr);
+    setSheetVisible(true);
+  };
+
+  const handleCompleteChallenge = async () => {
+    setSheetVisible(false);
+    await completeChallenge();
+    await refreshAll();
+    // Refresh completion dates
+    getCompletionDates().then(setCompletionDates);
+    router.push('/(auth)/celebration');
   };
 
   return (
@@ -156,10 +215,17 @@ export default function CalendarScreen() {
           {/* Day cells */}
           {daysInMonth.map((day) => {
             const completed = isCompleted(day);
+            const accepted = isAcceptedOnly(day);
             const today = isToday(day);
+            const dateStr = format(day, 'yyyy-MM-dd');
 
             return (
-              <View key={day.toISOString()} style={styles.dayCell}>
+              <TouchableOpacity
+                key={day.toISOString()}
+                style={styles.dayCell}
+                onPress={() => handleDayPress(dateStr)}
+                activeOpacity={0.6}
+              >
                 <View
                   style={[
                     styles.dayCircle,
@@ -177,7 +243,11 @@ export default function CalendarScreen() {
                     {format(day, 'd')}
                   </Text>
                 </View>
-              </View>
+                {/* Terracotta dot for accepted-but-not-completed */}
+                {accepted && (
+                  <View style={styles.acceptedDot} />
+                )}
+              </TouchableOpacity>
             );
           })}
         </View>
@@ -190,6 +260,10 @@ export default function CalendarScreen() {
           <Text style={styles.legendText}>Completed</Text>
         </View>
         <View style={styles.legendItem}>
+          <View style={[styles.legendDot, { backgroundColor: Colors.terracotta }]} />
+          <Text style={styles.legendText}>Accepted</Text>
+        </View>
+        <View style={styles.legendItem}>
           <View
             style={[
               styles.legendDot,
@@ -198,11 +272,24 @@ export default function CalendarScreen() {
           />
           <Text style={styles.legendText}>Today</Text>
         </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: Colors.creamDark }]} />
-          <Text style={styles.legendText}>Missed</Text>
-        </View>
       </Animated.View>
+
+      {/* Day detail bottom sheet */}
+      <DayDetailBottomSheet
+        visible={sheetVisible}
+        onClose={() => setSheetVisible(false)}
+        date={selectedDate ?? todayStr}
+        completions={selectedCompletions}
+        activeChallenge={
+          selectedDate === todayStr ? activeChallenge : null
+        }
+        challengeLogEntries={selectedLogEntries}
+        onCompleteChallenge={
+          selectedDate === todayStr && activeChallenge && !activeChallenge.completed
+            ? handleCompleteChallenge
+            : undefined
+        }
+      />
     </ScrollView>
   );
 }
@@ -332,6 +419,13 @@ const styles = StyleSheet.create({
   dayTextToday: {
     color: Colors.terracotta,
     fontFamily: FontFamily.sansBold,
+  },
+  acceptedDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.terracotta,
+    marginTop: 2,
   },
   legend: {
     flexDirection: 'row',

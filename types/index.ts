@@ -125,6 +125,18 @@ export interface NotificationPreferences {
   novenaReminderEnabled: boolean;
 }
 
+export interface ChallengeLogEntry {
+  id: string;                    // `cl-${Date.now()}`
+  saintId: string;
+  saintName: string;
+  actionText: string;
+  emotionSelected: string;       // mood label or custom text
+  dateAccepted: string;          // 'yyyy-MM-dd'
+  acceptedAt: string;            // ISO timestamp
+  completed: boolean;
+  completedAt: string | null;    // ISO timestamp
+}
+
 // Achievement/Milestone types for enhanced gamification
 export type MilestoneType = 
   | 'first-challenge'
