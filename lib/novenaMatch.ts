@@ -1,4 +1,5 @@
 import { NovenaEntry } from './novenaCatalog';
+import { supabase, isSupabaseConfigured } from './supabase';
 
 export const PRESET_INTENTIONS = [
   'Spiritual growth',
@@ -125,6 +126,18 @@ const PATRON_SAINT_MAP: Array<{
     reason: 'St. Francis prayed "Lord, make me an instrument of your peace," becoming patron of peacemakers.',
     preferredSlugs: ['st-francis-novena', 'sacred-heart-novena'],
   },
+  {
+    keywords: ['app', 'technology', 'tech', 'computer', 'internet', 'website', 'software', 'code', 'coding', 'programming', 'developer', 'startup', 'launch', 'approval', 'approved', 'app store'],
+    patronSaint: 'Bl. Carlo Acutis',
+    reason: 'Blessed Carlo Acutis used technology to spread the faith, becoming patron of the internet and computer programmers.',
+    preferredSlugs: ['holy-spirit-novena', 'st-joseph-novena'],
+  },
+  {
+    keywords: ['business', 'entrepreneur', 'company', 'project', 'success', 'goal', 'goals', 'achievement', 'endeavor', 'venture'],
+    patronSaint: 'St. Joseph',
+    reason: 'As a carpenter who faithfully provided for the Holy Family, St. Joseph is patron of workers and all who build with their hands.',
+    preferredSlugs: ['st-joseph-novena', 'holy-spirit-novena'],
+  },
 ];
 
 // Comprehensive saint reason lookup — covers every saint that can appear in the system
@@ -170,6 +183,7 @@ const SAINT_REASON_MAP: Record<string, string> = {
   'St. Raphael the Archangel': 'Patron of happy meetings, St. Raphael guided Tobias to his future spouse in the Book of Tobit.',
   'St. Anthony of Padua': 'Known worldwide as the patron of lost things, St. Anthony intercedes for all who seek what is missing.',
   'St. Thérèse of Lisieux': 'The Little Flower taught total surrender to God through small acts of trust and her "Little Way."',
+  'Bl. Carlo Acutis': 'Blessed Carlo Acutis used technology to spread the faith, becoming patron of the internet and computer programmers.',
 };
 
 // Preferred slugs and category filters for each preset intention
@@ -277,15 +291,63 @@ function getReasonForSaint(saintName: string): string {
 }
 
 /**
+ * Call the novena-match edge function to get an AI-picked patron saint.
+ * Returns null on any failure (offline, error, unconfigured) — callers fall through gracefully.
+ */
+async function fetchAIMatch(intention: string): Promise<NovenaMatchResult | null> {
+  if (!isSupabaseConfigured()) return null;
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return null;
+
+    const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/novena-match`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+        apikey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '',
+      },
+      body: JSON.stringify({ intention }),
+    });
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (!data.patronSaint || !data.novenaSlug || !data.novenaTitle) return null;
+
+    // Enrich SAINT_REASON_MAP so getReasonForSaint works for this saint
+    if (data.patronSaint && data.matchReason) {
+      SAINT_REASON_MAP[data.patronSaint] = data.matchReason;
+    }
+
+    const entry: NovenaEntry = {
+      slug: data.novenaSlug,
+      title: data.novenaTitle,
+      category: 'saints',
+    };
+
+    return {
+      entry,
+      patronSaint: data.patronSaint,
+      matchReason: data.matchReason || undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Match a novena from the catalog based on the user's intention.
  * For presets: tries preferred slugs first, then filters by category.
- * For custom text: checks patron saint keyword map first, then falls back to title scoring.
+ * For custom text: checks patron saint keyword map first, then AI fallback, then title scoring.
  * Always returns a proper saint name — never a fabricated name from title manipulation.
  */
-export function matchNovenaToIntention(
+export async function matchNovenaToIntention(
   intention: string,
   catalog: NovenaEntry[]
-): NovenaMatchResult {
+): Promise<NovenaMatchResult> {
   if (catalog.length === 0) {
     const fallback: NovenaEntry = { slug: 'st-jude-novena', title: 'St. Jude Novena', category: 'saints' };
     return { entry: fallback, patronSaint: 'St. Jude', matchReason: 'Patron of desperate cases, St. Jude intercedes when all other hope is lost.' };
@@ -345,7 +407,13 @@ export function matchNovenaToIntention(
       }
     }
 
-    // No keyword group matched — fall back to title scoring
+    // No keyword group matched — try AI-powered matching
+    const aiMatch = await fetchAIMatch(intention);
+    if (aiMatch) {
+      return aiMatch;
+    }
+
+    // AI unavailable — fall back to title scoring
     const keywords = intention
       .toLowerCase()
       .split(/\s+/)
@@ -374,8 +442,13 @@ export function matchNovenaToIntention(
     }
   }
 
-  // Fallback: random from catalog
-  const fallback = catalog[Math.floor(Math.random() * catalog.length)];
+  // Fallback: prefer Holy Spirit Novena (general guidance) over random
+  const generalFallback = findPreferredEntry(['holy-spirit-novena', 'sacred-heart-novena', 'st-jude-novena'], catalog);
+  if (generalFallback) {
+    const saint = resolveSaintName(generalFallback);
+    return { entry: generalFallback, patronSaint: saint, matchReason: getReasonForSaint(saint) };
+  }
+  const fallback = catalog[0];
   const fallbackSaint = resolveSaintName(fallback);
   return { entry: fallback, patronSaint: fallbackSaint, matchReason: getReasonForSaint(fallbackSaint) };
 }

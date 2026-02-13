@@ -12,7 +12,7 @@ import {
 } from '../types';
 import { format, startOfWeek, addDays } from 'date-fns';
 
-const MIGRATION_KEY = '@saint_match_supabase_migrated';
+const MIGRATION_KEY = '@saint_match_supabase_migrated_v2';
 const SYNC_QUEUE_KEY = '@saint_match_sync_queue';
 
 // ── Sync retry queue ─────────────────────────────────────────────────
@@ -423,9 +423,9 @@ async function migrateLocalDataToServer(userId: string): Promise<void> {
 
   // Track each step independently so partial failures can be retried
   const STEP_KEYS = {
-    onboarding: '@saint_match_migrated_onboarding',
-    completions: '@saint_match_migrated_completions',
-    streaks: '@saint_match_migrated_streaks',
+    onboarding: '@saint_match_migrated_onboarding_v2',
+    completions: '@saint_match_migrated_completions_v2',
+    streaks: '@saint_match_migrated_streaks_v2',
   };
 
   let allSucceeded = true;

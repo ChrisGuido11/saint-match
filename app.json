@@ -14,8 +14,11 @@
       "backgroundColor": "#F5F1EA"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.saintmatch.app",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "infoPlist": {
         "NSUserNotificationsUsageDescription": "Saint Match sends daily reminders and novena prayer notifications to support your spiritual journey."
       }

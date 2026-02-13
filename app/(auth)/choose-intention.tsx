@@ -44,7 +44,7 @@ export default function ChooseIntentionScreen() {
     try {
       // Ensure we have the freshest catalog
       const freshCatalog = catalog.length > 0 ? catalog : await getCachedCatalog();
-      const result = matchNovenaToIntention(intention, freshCatalog);
+      const result = await matchNovenaToIntention(intention, freshCatalog);
 
       const saintId = result.entry.slug;
       const saintName = result.patronSaint;
