@@ -396,14 +396,25 @@ function buildPrompt(input: { emotion?: string; customMood?: string; excludeSain
     : '';
 
   if (input.customMood) {
-    return `You are a Catholic spiritual director. The user describes how they feel in their own words:
+    return `You are a Catholic spiritual director. The user describes what's on their heart:
 
 "${input.customMood}"
 
-First, identify the key emotional themes in their words (e.g., anxiety, loneliness, gratitude, confusion, hope).
-Then recommend ONE saint who specifically addressed those emotional struggles or joys, and ONE concrete 5-15 minute micro-action they can do today.
-Draw from the FULL calendar of Catholic saints — canonized saints, blesseds, venerables, and servants of God across all centuries and cultures. Surprise the user with lesser-known holy men and women, not just the famous ones. Pick a saint that uniquely fits their specific situation — not a generic match.${excludeClause}
-Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "", "estimatedMinutes": 10, "matchReason": "1 sentence: why this saint fits their situation"}`;
+Your job: recommend ONE saint whose life DIRECTLY relates to this specific concern. The connection must be obvious and immediate — not a loose thematic link.
+
+Examples of GOOD matching:
+- "worried about money" → St. Homobonus (patron of business/finances) or St. Joseph (provider for his family in poverty)
+- "struggling with anger" → St. Francis de Sales (conquered violent temper)
+- "grieving a loss" → St. Elizabeth Ann Seton (lost husband and children)
+
+Examples of BAD matching:
+- "worried about money" → a saint known only for humility or prayer (too generic)
+- "lonely" → a saint known only for courage (wrong theme)
+
+Pick a saint whose life story, patronage, or personal struggles speak DIRECTLY to the user's words. Then suggest ONE concrete 5-15 minute micro-action inspired by how that saint handled a similar situation.
+
+Draw from the full calendar of Catholic saints across all centuries and cultures.${excludeClause}
+Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max connecting the saint to the user's concern", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "a concrete action referencing both the saint and the user's concern", "estimatedMinutes": 10, "matchReason": "1 sentence: why this saint fits their specific situation"}`;
   }
 
   return `You are a Catholic spiritual director. The user is feeling ${input.emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Draw from the FULL calendar of Catholic saints — canonized saints, blesseds, venerables, and servants of God across all centuries and cultures. Surprise the user with lesser-known holy men and women from any era or region, not just the famous ones.${excludeClause}
@@ -430,7 +441,7 @@ async function callClaude(
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 400,
-        temperature: 1,
+        temperature: 0.7,
         messages: [
           {
             role: 'user',
