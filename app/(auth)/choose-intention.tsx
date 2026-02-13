@@ -48,14 +48,15 @@ export default function ChooseIntentionScreen() {
 
       const saintId = result.entry.slug;
       const saintName = result.patronSaint;
+      const novenaTitle = `${saintName} Novena`;
 
       router.push({
         pathname: '/(auth)/start-novena',
         params: {
           saintId,
           saintName,
-          novenaTitle: result.entry.title,
-          novenaDescription: `Nine days of prayer — ${result.entry.title}. Praying for: ${intention}.`,
+          novenaTitle,
+          novenaDescription: `Nine days of prayer — ${novenaTitle}. Praying for: ${intention}.`,
           intention,
           matchReason: result.matchReason,
         },
