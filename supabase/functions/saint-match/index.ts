@@ -322,6 +322,23 @@ const MICRO_ACTIONS: MicroAction[] = [
 
 // ── Helper functions ───────────────────────────────────────────────────
 
+function mapCustomMoodToEmotion(text: string): string {
+  const lower = text.toLowerCase();
+  const KEYWORD_MAP: Record<string, string[]> = {
+    anxious: ['worry', 'worried', 'anxious', 'anxiety', 'nervous', 'fear', 'scared', 'afraid', 'stress', 'stressed', 'panic', 'money', 'finances', 'financial', 'job', 'health', 'future', 'uncertain', 'dread'],
+    overwhelmed: ['overwhelm', 'too much', 'exhausted', 'tired', 'burnout', 'busy', 'swamped', 'drowning', 'pressure', 'overload', 'broken', 'falling apart', 'can\'t cope'],
+    scattered: ['confused', 'lost', 'direction', 'purpose', 'scattered', 'unfocused', 'distracted', 'restless', 'stuck', 'don\'t know', 'uncertain'],
+    grateful: ['grateful', 'thankful', 'blessed', 'appreciate', 'gratitude', 'thank'],
+    joyful: ['joy', 'joyful', 'excited', 'celebration', 'love', 'loving', 'hopeful', 'hope', 'inspired', 'happy', 'wonderful', 'amazing'],
+    peaceful: ['peace', 'peaceful', 'calm', 'content', 'serene', 'quiet', 'still', 'relaxed'],
+  };
+
+  for (const [emotion, keywords] of Object.entries(KEYWORD_MAP)) {
+    if (keywords.some((k) => lower.includes(k))) return emotion;
+  }
+  return 'anxious'; // sensible default for unrecognized custom moods
+}
+
 function matchLocally(emotion: string, excludeSaints: string[] = []) {
   let matchingSaints = SAINTS.filter((s) => s.emotions.includes(emotion));
 
@@ -620,9 +637,9 @@ Deno.serve(async (req) => {
         Date.now() + CACHE_DURATION_HOURS * 60 * 60 * 1000
       ).toISOString();
 
-      // Store in cache (use customMood as emotion field for analytics)
+      // Store in cache (map custom mood to nearest emotion for CHECK constraint)
       await supabaseAdmin.from('match_cache').insert({
-        emotion: emotion ?? customMood,
+        emotion: emotion ?? mapCustomMoodToEmotion(customMood ?? ''),
         saint_name: claudeResult.saintName,
         feast_day: claudeResult.feastDay,
         bio: claudeResult.bio,
@@ -644,8 +661,8 @@ Deno.serve(async (req) => {
       }, 200, headers);
     }
 
-    // 6. Local fallback
-    const fallbackEmotion = emotion ?? VALID_EMOTIONS[Math.floor(Math.random() * VALID_EMOTIONS.length)];
+    // 6. Local fallback — map custom mood to nearest emotion via keywords
+    const fallbackEmotion = emotion ?? mapCustomMoodToEmotion(customMood ?? '');
     const localMatch = matchLocally(fallbackEmotion, excludeSaints);
     return jsonResponse({ ...localMatch, source: 'local' }, 200, headers);
   } catch (error) {

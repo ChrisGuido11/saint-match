@@ -49,6 +49,23 @@ async function fetchFromEdgeFunction(payload: { emotion: Emotion; excludeSaints?
   }
 }
 
+function mapCustomMoodToEmotion(text: string): Emotion {
+  const lower = text.toLowerCase();
+  const KEYWORD_MAP: Record<Emotion, string[]> = {
+    anxious: ['worry', 'worried', 'anxious', 'anxiety', 'nervous', 'fear', 'scared', 'afraid', 'stress', 'stressed', 'panic', 'money', 'finances', 'financial', 'job', 'health', 'future', 'uncertain', 'dread'],
+    overwhelmed: ['overwhelm', 'too much', 'exhausted', 'tired', 'burnout', 'busy', 'swamped', 'drowning', 'pressure', 'overload', 'broken', 'falling apart'],
+    scattered: ['confused', 'lost', 'direction', 'purpose', 'scattered', 'unfocused', 'distracted', 'restless', 'stuck', 'don\'t know'],
+    grateful: ['grateful', 'thankful', 'blessed', 'appreciate', 'gratitude', 'thank'],
+    joyful: ['joy', 'joyful', 'excited', 'celebration', 'love', 'loving', 'hopeful', 'hope', 'inspired', 'happy', 'wonderful', 'amazing'],
+    peaceful: ['peace', 'peaceful', 'calm', 'content', 'serene', 'quiet', 'still', 'relaxed'],
+  };
+
+  for (const [emotion, keywords] of Object.entries(KEYWORD_MAP)) {
+    if (keywords.some((k) => lower.includes(k))) return emotion as Emotion;
+  }
+  return 'anxious';
+}
+
 // Fallback: local saint matching using curated data
 function matchLocally(emotion: Emotion, excludeSaints: string[] = []): SaintMatch {
   let matchingSaints = SAINTS.filter((s) => s.emotions.includes(emotion));
@@ -130,17 +147,14 @@ export async function getSaintMatchCustom(moodText: string): Promise<SaintMatch>
   const result = await fetchFromEdgeFunction({ customMood: moodText, excludeSaints });
 
   if (result) {
-    // Use a generic emotion for the MicroAction field since custom moods don't map to one
-    const fallbackEmotion: Emotion = 'peaceful';
-    const match = buildSaintMatch(result, fallbackEmotion);
+    const match = buildSaintMatch(result, mapCustomMoodToEmotion(moodText));
     addToMatchHistory(match.saint.name).catch(() => {});
     return match;
   }
 
-  // Local fallback: pick a random emotion and match locally
-  const emotions: Emotion[] = ['anxious', 'overwhelmed', 'scattered', 'grateful', 'joyful', 'peaceful'];
-  const randomEmotion = emotions[Math.floor(Math.random() * emotions.length)];
-  const match = matchLocally(randomEmotion, excludeSaints);
+  // Local fallback: map custom text to nearest emotion via keywords
+  const mappedEmotion = mapCustomMoodToEmotion(moodText);
+  const match = matchLocally(mappedEmotion, excludeSaints);
   addToMatchHistory(match.saint.name).catch(() => {});
   return match;
 }
