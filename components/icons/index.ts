@@ -10,6 +10,7 @@ export { IconServe } from './IconServe';
 export { IconMeetSaint } from './IconMeetSaint';
 export { IconChallenge } from './IconChallenge';
 export { IconStreak } from './IconStreak';
+export { IconNovena } from './IconNovena';
 export { IconLogo } from './IconLogo';
 export { IconCompleted } from './IconCompleted';
 export { IconMatching } from './IconMatching';

@@ -23,7 +23,7 @@ import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { useApp } from '../../context/AppContext';
 import { requestNotificationPermission, scheduleDailyReminder } from '../../lib/notifications';
 import { setNotificationPreferences } from '../../lib/storage';
-import { IconMeetSaint, IconChallenge, IconStreak } from '../../components/icons';
+import { IconMeetSaint, IconChallenge, IconStreak, IconNovena } from '../../components/icons';
 
 const { width } = Dimensions.get('window');
 
@@ -55,6 +55,13 @@ const SLIDES: OnboardingSlide[] = [
     description:
       'Complete challenges daily to grow your streak and watch your virtues flourish over time.',
     illustration: <IconStreak size={120} />,
+  },
+  {
+    id: '4',
+    title: 'Pray a Novena',
+    description:
+      'Deepen your faith with guided 9-day prayer journeys alongside the saints who inspire you.',
+    illustration: <IconNovena size={120} />,
   },
 ];
 
