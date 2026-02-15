@@ -28,7 +28,21 @@
       "Bash(timeout:*)",
       "Bash(more:*)",
       "Bash(lsof:*)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(TASKKILL:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(git -C \"C:\\\\Users\\\\cguid\\\\saint-match\" status)",
+      "Bash(git -C \"C:\\\\Users\\\\cguid\\\\saint-match\" diff)",
+      "Bash(git -C \"C:\\\\Users\\\\cguid\\\\saint-match\" log --oneline -5)",
+      "Bash(git -C \"C:\\\\Users\\\\cguid\\\\saint-match\" add app.json \"app/\\(auth\\)/\\(tabs\\)/index.tsx\" \"app/\\(auth\\)/\\(tabs\\)/novenas.tsx\" \"app/\\(auth\\)/_layout.tsx\" \"app/\\(auth\\)/saint-match.tsx\" \"app/\\(auth\\)/start-novena.tsx\" \"components/ActiveNovenaCard.tsx\" \"components/FlippableSaintCard.tsx\" \"components/LinkAccountModal.tsx\" \"components/MilestoneBadge.tsx\" \"components/MoodSelector.tsx\" \"context/AppContext.tsx\" \"lib/claude.ts\" \"lib/storage.ts\" \"lib/streak.ts\" \"lib/supabase.ts\")",
+      "Bash(git -C \"C:\\\\Users\\\\cguid\\\\saint-match\" commit -m \"$\\(cat <<''EOF''\nfix: pre-App Store code review bugfixes across 16 files\n\n- Wrap JSON.parse in saint-match.tsx with try/catch to prevent crash on malformed route params\n- Move consumeMatch\\(\\) after successful API call so failed matches don''t consume usage\n- Add Alert on match failure instead of silent catch\n- Guard initials split/filter against empty strings \\(6 locations, 5 files\\)\n- Add user_novenas table to deleteUserAccount cleanup\n- Reset streak freeze counter when streak breaks\n- Cancel infinite animation on MilestoneBadge unmount to prevent memory leak\n- Add onRequestClose to FlippableSaintCard modal for Android back button\n- Remove console.log of auth data in LinkAccountModal\n- Add transparent border to MoodSelector base button to prevent layout shift\n- Register all 9 missing AsyncStorage keys in KEYS object so clearAllData is thorough\n- Remove ghost Stack.Screen for deleted active-challenge route\n- Add novena-celebration to auth layout with fade animation\n- Add NSUserNotificationsUsageDescription to app.json for iOS\n- Remove unused imports \\(ensureAnonymousSession, incrementUsage, Easing, MILESTONES\\)\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "WebFetch(domain:job-logs.eascdn.net)",
+      "Bash(git -C \"C:\\\\Users\\\\cguid\\\\saint-match\" add .npmrc)",
+      "Bash(git -C \"C:\\\\Users\\\\cguid\\\\saint-match\" commit -m \"$\\(cat <<''EOF''\nfix: add .npmrc with legacy-peer-deps for EAS iOS build\n\nexpo-router transitively pulls react-dom@19.2.4 which requires\nreact@^19.2.4, conflicting with the pinned react@19.1.0. npm ci\nin the EAS build environment fails with ERESOLVE. legacy-peer-deps\nskips strict peer resolution, matching how Expo projects typically\nhandle transitive web dependency conflicts.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(TOKEN=\"eyJhbGciOiJFUzI1NiIsImtpZCI6ImJlNTk0ZjJhLThhYTQtNGFhZC04ZjZmLWYxMmM1Njg2ZDA5ZSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3plc2tob3J3ZGR4eWpoaG5wZ3NhLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhOGFkZjZlOC01MDdjLTQ4ZjctYjI4ZC0wNTlhNmYyNDQ2OWEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzcwOTU3ODkxLCJpYXQiOjE3NzA5NTQyOTEsImVtYWlsIjoiIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnt9LCJ1c2VyX21ldGFkYXRhIjp7fSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJhbm9ueW1vdXMiLCJ0aW1lc3RhbXAiOjE3NzA5NTQyOTF9XSwic2Vzc2lvbl9pZCI6Ijk2OTFhYzM3LWRjODEtNDNkYi05MjI2LTIxNWYwODUxOTVmOCIsImlzX2Fub255bW91cyI6dHJ1ZX0.bQ2URvGQMeDugMDZh2WutSRxQBYiLWDY8KAWkAUtgO2Lh9RcDPVv7IuF0Op6oVAs8o1sxUvzHqWhfSInuthJbA\")",
+      "Bash(grep:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [],
     "ask": []

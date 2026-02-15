@@ -33,6 +33,17 @@ export default function HomeScreen() {
     setRefreshing(false);
   }, [refreshAll]);
 
+  const handleMatchError = (error: unknown) => {
+    const message = error instanceof Error ? error.message : '';
+    if (message === 'USAGE_LIMIT_REACHED') {
+      Alert.alert('Weekly limit reached', 'Upgrade to Pro for unlimited saint matches, or wait until next week.');
+    } else if (message === 'MATCH_UNAVAILABLE') {
+      Alert.alert('Connection needed', 'Saint matching requires an internet connection. Please check your connection and try again.');
+    } else {
+      Alert.alert('Matching failed', 'Something went wrong. Please try again.');
+    }
+  };
+
   const handleMoodSelect = async (mood: Mood) => {
     const emotion = getEmotionFromMood(mood);
 
@@ -47,8 +58,8 @@ export default function HomeScreen() {
           selectedMood: mood,
         },
       });
-    } catch {
-      Alert.alert('Matching failed', 'Could not find a saint right now. Please try again.');
+    } catch (error) {
+      handleMatchError(error);
     } finally {
       setIsMatching(false);
     }
@@ -66,8 +77,8 @@ export default function HomeScreen() {
           customMoodText: text,
         },
       });
-    } catch {
-      Alert.alert('Matching failed', 'Could not find a saint right now. Please try again.');
+    } catch (error) {
+      handleMatchError(error);
     } finally {
       setIsMatching(false);
     }
