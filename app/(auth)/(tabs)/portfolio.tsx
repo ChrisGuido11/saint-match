@@ -10,12 +10,14 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { IconChart } from '../../../components/icons';
 import FlippableSaintCard from '../../../components/FlippableSaintCard';
+import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 import { WeeklyMiniCalendar } from '../../../components/WeeklyMiniCalendar';
 import { DayDetailBottomSheet } from '../../../components/DayDetailBottomSheet';
 
 export default function PortfolioScreen() {
-  const { completions, streak, discoveredSaints, activeChallenge } = useApp();
+  const { completions, streak, discoveredSaints, activeChallenge, isPro, refreshAll } = useApp();
   const [isExporting, setIsExporting] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [visibleSaintsCount, setVisibleSaintsCount] = useState(9);
@@ -321,17 +323,26 @@ export default function PortfolioScreen() {
       <Animated.View entering={FadeInDown.delay(500).duration(500)}>
         <TouchableOpacity
           style={[styles.exportButton, isExporting && styles.exportButtonDisabled]}
-          onPress={handleExport}
+          onPress={isPro ? handleExport : () => setShowPaywall(true)}
           activeOpacity={0.85}
           disabled={isExporting}
           accessibilityRole="button"
           accessibilityLabel="Export portfolio as PDF"
         >
           <Text style={styles.exportButtonText}>
-            {isExporting ? 'Exporting...' : 'Export Portfolio as PDF'}
+            {isExporting ? 'Exporting...' : isPro ? 'Export Portfolio as PDF' : 'Export PDF (Pro)'}
           </Text>
         </TouchableOpacity>
       </Animated.View>
+
+      <PaywallBottomSheet
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseSuccess={() => {
+          setShowPaywall(false);
+          refreshAll();
+        }}
+      />
     </ScrollView>
   );
 }

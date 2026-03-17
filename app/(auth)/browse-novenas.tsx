@@ -19,6 +19,8 @@ import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { fetchNovenaCatalog, getCachedCatalog, NovenaEntry } from '../../lib/novenaCatalog';
 import { resolveSaintName } from '../../lib/novenaMatch';
 import { IconChevronLeft } from '../../components/icons';
+import { useApp } from '../../context/AppContext';
+import { PaywallBottomSheet } from '../../components/PaywallBottomSheet';
 
 type CategoryFilter = 'all' | 'saints' | 'marian' | 'holy-days' | 'intentions';
 
@@ -47,6 +49,9 @@ function deriveSaintId(slug: string): string {
 }
 
 export default function BrowseNovenasScreen() {
+  const { userNovenas, isPro, refreshAll } = useApp();
+  const isNovenaLimited = !isPro && userNovenas.filter((n) => !n.completed).length >= 1;
+  const [showPaywall, setShowPaywall] = useState(false);
   const [catalog, setCatalog] = useState<NovenaEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -90,6 +95,10 @@ export default function BrowseNovenasScreen() {
   }, [catalog, activeCategory, search]);
 
   const handleSelect = useCallback((entry: NovenaEntry) => {
+    if (isNovenaLimited) {
+      setShowPaywall(true);
+      return;
+    }
     hapticSelection();
     const saintName = deriveSaintName(entry);
     router.push({
@@ -222,6 +231,15 @@ export default function BrowseNovenasScreen() {
           maxToRenderPerBatch={15}
         />
       )}
+
+      <PaywallBottomSheet
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseSuccess={() => {
+          setShowPaywall(false);
+          refreshAll();
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }

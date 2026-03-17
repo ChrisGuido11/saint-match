@@ -20,7 +20,8 @@ import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
 import { clearAllData, getNotificationPreferences, setNotificationPreferences } from '../../../lib/storage';
 import { resetAllData } from '../../../lib/streak';
-import { resetProStatus } from '../../../lib/purchases';
+import { resetProStatus, restorePurchases, showCustomerCenter } from '../../../lib/purchases';
+import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 import { signOut, isSupabaseConfigured, deleteUserAccount } from '../../../lib/supabase';
 import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder } from '../../../lib/notifications';
 import * as Notifications from 'expo-notifications';
@@ -78,9 +79,10 @@ function formatReminderTime(hour: number, minute: number): string {
 }
 
 export default function SettingsScreen() {
-  const { refreshAll, session } = useApp();
+  const { refreshAll, session, isPro } = useApp();
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [showNotifModal, setShowNotifModal] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
   const [notifPrefs, setNotifPrefs] = useState<NotificationPreferences>(DEFAULT_PREFS);
   const [hapticOn, setHapticOn] = useState(true);
   const userEmail = session?.user?.email;
@@ -127,6 +129,7 @@ export default function SettingsScreen() {
           text: 'Sign Out',
           onPress: async () => {
             try {
+              await resetProStatus();
               await signOut();
               router.replace('/(public)/welcome');
             } catch (error) {
@@ -260,8 +263,56 @@ export default function SettingsScreen() {
         </View>
       </Animated.View>
 
+      {/* Subscription section */}
+      <Animated.View entering={FadeInDown.delay(250).duration(400)} style={styles.section}>
+        <Text style={styles.sectionTitle}>SUBSCRIPTION</Text>
+        <View style={styles.sectionCard}>
+          {isPro ? (
+            <>
+              <SettingRow
+                label="Saint Match Pro"
+                subtitle="Unlimited matches & novenas"
+                onPress={() => {
+                  showCustomerCenter().catch(() => {
+                    Linking.openURL('https://apps.apple.com/account/subscriptions');
+                  });
+                }}
+                rightText="Active"
+              />
+              <View style={styles.divider} />
+              <SettingRow
+                label="Manage Subscription"
+                onPress={() => Linking.openURL('https://apps.apple.com/account/subscriptions')}
+              />
+            </>
+          ) : (
+            <>
+              <SettingRow
+                label="Upgrade to Pro"
+                subtitle="Unlimited matches, novenas & PDF export"
+                onPress={() => setShowPaywall(true)}
+                rightText="$4.99/mo"
+              />
+              <View style={styles.divider} />
+              <SettingRow
+                label="Restore Purchases"
+                onPress={async () => {
+                  const success = await restorePurchases();
+                  if (success) {
+                    refreshAll();
+                    Alert.alert('Restored', 'Your Pro subscription has been restored.');
+                  } else {
+                    Alert.alert('No purchases found', 'We could not find any previous purchases to restore.');
+                  }
+                }}
+              />
+            </>
+          )}
+        </View>
+      </Animated.View>
+
       {/* Support section */}
-      <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.section}>
+      <Animated.View entering={FadeInDown.delay(350).duration(400)} style={styles.section}>
         <Text style={styles.sectionTitle}>SUPPORT</Text>
         <View style={styles.sectionCard}>
           <SettingRow label="Share with a Friend" subtitle="Spread the word" onPress={handleShare} />
@@ -275,7 +326,7 @@ export default function SettingsScreen() {
       </Animated.View>
 
       {/* Data section */}
-      <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.section}>
+      <Animated.View entering={FadeInDown.delay(450).duration(400)} style={styles.section}>
         <Text style={styles.sectionTitle}>YOUR DATA</Text>
         <View style={styles.sectionCard}>
           {userEmail && (
@@ -298,7 +349,7 @@ export default function SettingsScreen() {
       </Animated.View>
 
       {/* App info */}
-      <Animated.View entering={FadeIn.delay(600).duration(400)} style={styles.appInfo}>
+      <Animated.View entering={FadeIn.delay(550).duration(400)} style={styles.appInfo}>
         <Text style={styles.appName}>Saint Match</Text>
         <Text style={styles.appVersion}>Version 1.0.0</Text>
         <Text style={styles.appTagline}>Daily virtue challenges from the saints</Text>
@@ -318,6 +369,15 @@ export default function SettingsScreen() {
           setShowLinkModal(false);
           refreshAll();
           showToast('Account linked successfully!');
+        }}
+      />
+
+      <PaywallBottomSheet
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseSuccess={() => {
+          setShowPaywall(false);
+          refreshAll();
         }}
       />
     </ScrollView>

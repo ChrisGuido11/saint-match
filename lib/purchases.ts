@@ -28,7 +28,7 @@ const FALLBACK_PACKAGES: Package[] = [
     identifier: 'monthly',
     product: {
       title: 'Pro Monthly',
-      priceString: '$7.99/mo',
+      priceString: '$4.99/mo',
       description: 'Unlimited daily saint matches, full Virtue Portfolio analytics, and streak protection.',
     },
   },
@@ -36,8 +36,8 @@ const FALLBACK_PACKAGES: Package[] = [
     identifier: 'yearly',
     product: {
       title: 'Pro Annual',
-      priceString: '$79/yr',
-      description: 'Save 17%! All Pro features for one year.',
+      priceString: '$39.99/yr',
+      description: 'Save 33%! All Pro features for one year.',
     },
   },
 ];
@@ -127,7 +127,33 @@ export async function purchasePro(packageIdentifier: string): Promise<boolean> {
     return isPro;
   } catch (err: any) {
     if (err.userCancelled) return false;
+
+    // Handle Apple-tested purchase error codes
+    const code = err?.code ?? err?.errorCode ?? '';
+    if (code === 'PRODUCT_ALREADY_PURCHASED' || code === 1) {
+      // Auto-restore instead of showing error
+      const restored = await restorePurchases();
+      return restored;
+    }
+    if (code === 'PURCHASE_NOT_ALLOWED' || code === 2) {
+      const { Alert } = require('react-native');
+      Alert.alert('Purchase not allowed', 'Please check your device settings to enable purchases.');
+      return false;
+    }
+    if (code === 'PAYMENT_PENDING' || code === 4) {
+      const { Alert } = require('react-native');
+      Alert.alert('Payment pending', 'Your purchase is being processed. This may take a few minutes.');
+      return false;
+    }
+    if (code === 'NETWORK_ERROR' || code === 3) {
+      const { Alert } = require('react-native');
+      Alert.alert('Connection error', 'Please check your internet connection and try again.');
+      return false;
+    }
+
     console.error('Purchase failed:', err);
+    const { Alert } = require('react-native');
+    Alert.alert('Purchase failed', 'Something went wrong. Please try again or use Restore Purchases.');
     return false;
   }
 }

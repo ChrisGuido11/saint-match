@@ -381,23 +381,23 @@ Deno.serve(async (req) => {
       customMood = customMood!.trim();
     }
 
-    // 3. Usage limits disabled for free beta
-    // const { data: profile } = await supabaseAdmin
-    //   .from('profiles')
-    //   .select('is_pro')
-    //   .eq('id', user.id)
-    //   .single();
-    //
-    // if (!profile?.is_pro) {
-    //   const canUse = await checkAndIncrementUsage(supabaseAdmin, user.id);
-    //   if (!canUse) {
-    //     return jsonResponse(
-    //       { error: 'Weekly limit reached', code: 'USAGE_LIMIT_REACHED' },
-    //       429,
-    //       headers
-    //     );
-    //   }
-    // }
+    // 3. Usage limits — pro users bypass, free users limited to 3/week
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('is_pro')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile?.is_pro) {
+      const canUse = await checkAndIncrementUsage(supabaseAdmin, user.id);
+      if (!canUse) {
+        return jsonResponse(
+          { error: 'Weekly limit reached', code: 'USAGE_LIMIT_REACHED' },
+          429,
+          headers
+        );
+      }
+    }
 
     // 4. Normalize input and check keyword cache
     const rawInput = hasValidCustomMood ? customMood! : emotion!;

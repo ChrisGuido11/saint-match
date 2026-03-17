@@ -10,6 +10,7 @@ import { getGreetingMessage } from '../../../constants/saints';
 import { MoodSelector } from '../../../components/MoodSelector';
 import { StreakCounter } from '../../../components/StreakCounter';
 import { ChallengeCard } from '../../../components/ChallengeCard';
+import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 
 import { Mood } from '../../../types';
 import { getSaintMatch, getSaintMatchCustom } from '../../../lib/claude';
@@ -18,6 +19,8 @@ import { IconCompleted, IconMatching } from '../../../components/icons';
 export default function HomeScreen() {
   const {
     streak,
+    usage,
+    isPro,
     activeChallenge,
     consumeMatch,
     completeChallenge,
@@ -26,6 +29,7 @@ export default function HomeScreen() {
 
   const [isMatching, setIsMatching] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -33,10 +37,13 @@ export default function HomeScreen() {
     setRefreshing(false);
   }, [refreshAll]);
 
+  const isAtLimit = !isPro && usage.matchesUsedThisWeek >= usage.weeklyLimit;
+
   const handleMatchError = (error: unknown) => {
     const message = error instanceof Error ? error.message : '';
     if (message === 'USAGE_LIMIT_REACHED') {
-      Alert.alert('Weekly limit reached', 'Upgrade to Pro for unlimited saint matches, or wait until next week.');
+      // Server-side safety net caught it — show paywall
+      setShowPaywall(true);
     } else if (message === 'MATCH_UNAVAILABLE') {
       Alert.alert('Connection needed', 'Saint matching requires an internet connection. Please check your connection and try again.');
     } else {
@@ -45,8 +52,13 @@ export default function HomeScreen() {
   };
 
   const handleMoodSelect = async (mood: Mood) => {
-    const emotion = getEmotionFromMood(mood);
+    // Pre-flight: check usage before making API call
+    if (isAtLimit) {
+      setShowPaywall(true);
+      return;
+    }
 
+    const emotion = getEmotionFromMood(mood);
     setIsMatching(true);
     try {
       const match = await getSaintMatch(emotion);
@@ -66,6 +78,12 @@ export default function HomeScreen() {
   };
 
   const handleCustomMoodSubmit = async (text: string) => {
+    // Pre-flight: check usage before making API call
+    if (isAtLimit) {
+      setShowPaywall(true);
+      return;
+    }
+
     setIsMatching(true);
     try {
       const match = await getSaintMatchCustom(text);
@@ -82,6 +100,11 @@ export default function HomeScreen() {
     } finally {
       setIsMatching(false);
     }
+  };
+
+  const handlePurchaseSuccess = () => {
+    setShowPaywall(false);
+    refreshAll();
   };
 
   const handleCompleteChallenge = async () => {
@@ -144,6 +167,12 @@ export default function HomeScreen() {
       </View>
 
     </ScrollView>
+
+      <PaywallBottomSheet
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseSuccess={handlePurchaseSuccess}
+      />
     </KeyboardAvoidingView>
   );
 }

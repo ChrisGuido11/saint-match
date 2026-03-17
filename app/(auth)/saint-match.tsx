@@ -19,7 +19,7 @@ export default function SaintMatchScreen() {
     selectedMood?: Mood;
     customMoodText?: string;
   }>();
-  const { acceptChallenge, userNovenas } = useApp();
+  const { acceptChallenge, userNovenas, isPro } = useApp();
 
   const selectedMoodData = selectedMood ? getMoodById(selectedMood) : null;
 
@@ -86,8 +86,9 @@ export default function SaintMatchScreen() {
           </Animated.View>
         ) : null}
 
-        {/* Novena Suggestion */}
-        {!userNovenas.some((n) => n.saintId === match.saint.id && !n.completed) && (
+        {/* Novena Suggestion — hidden if free user already has an active novena */}
+        {(isPro || userNovenas.filter((n) => !n.completed).length === 0) &&
+         !userNovenas.some((n) => n.saintId === match.saint.id && !n.completed) && (
           <NovenaSuggestionCard
             saintId={match.saint.id}
             saintName={match.saint.name}

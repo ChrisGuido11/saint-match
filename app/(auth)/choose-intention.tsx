@@ -20,8 +20,14 @@ import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { fetchNovenaCatalog, getCachedCatalog, NovenaEntry } from '../../lib/novenaCatalog';
 import { PRESET_INTENTIONS, matchNovenaToIntention } from '../../lib/novenaMatch';
 import { IconClose, IconNavNovenas } from '../../components/icons';
+import { useApp } from '../../context/AppContext';
+import { PaywallBottomSheet } from '../../components/PaywallBottomSheet';
 
 export default function ChooseIntentionScreen() {
+  const { userNovenas, isPro, refreshAll } = useApp();
+  const activeNovenaCount = userNovenas.filter((n) => !n.completed).length;
+  const isNovenaLimited = !isPro && activeNovenaCount >= 1;
+  const [showPaywall, setShowPaywall] = useState(false);
   const [selectedIntention, setSelectedIntention] = useState<string | null>(null);
   const [customIntention, setCustomIntention] = useState('');
   const [isMatching, setIsMatching] = useState(false);
@@ -39,6 +45,10 @@ export default function ChooseIntentionScreen() {
 
   const handleFindNovena = async () => {
     if (!canSearch) return;
+    if (isNovenaLimited) {
+      setShowPaywall(true);
+      return;
+    }
     setIsMatching(true);
     hapticImpact(ImpactFeedbackStyle.Medium);
 
@@ -73,6 +83,10 @@ export default function ChooseIntentionScreen() {
   };
 
   const handleViewCatalog = () => {
+    if (isNovenaLimited) {
+      setShowPaywall(true);
+      return;
+    }
     router.push({ pathname: '/(auth)/browse-novenas' });
   };
 
@@ -205,6 +219,15 @@ export default function ChooseIntentionScreen() {
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
+
+      <PaywallBottomSheet
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseSuccess={() => {
+          setShowPaywall(false);
+          refreshAll();
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }

@@ -10,12 +10,14 @@ import { useApp } from '../../../context/AppContext';
 import { SAINTS } from '../../../constants/saints';
 import { NovenaProgressDots } from '../../../components/NovenaProgressDots';
 import { NovenaInfoModal } from '../../../components/NovenaInfoModal';
+import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 import { IconNavNovenas } from '../../../components/icons';
 
 export default function NovenasScreen() {
-  const { userNovenas, refreshAll, abandonNovena } = useApp();
+  const { userNovenas, refreshAll, abandonNovena, isPro } = useApp();
   const [refreshing, setRefreshing] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const activeNovenas = userNovenas.filter((n) => !n.completed);
   const completedNovenas = userNovenas.filter((n) => n.completed);
@@ -52,6 +54,10 @@ export default function NovenasScreen() {
   };
 
   const handleStartNovena = () => {
+    if (!isPro && activeNovenas.length >= 1) {
+      setShowPaywall(true);
+      return;
+    }
     router.push({ pathname: '/(auth)/choose-intention' });
   };
 
@@ -201,6 +207,15 @@ export default function NovenasScreen() {
       )}
 
       <NovenaInfoModal visible={showInfo} onClose={() => setShowInfo(false)} />
+
+      <PaywallBottomSheet
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseSuccess={() => {
+          setShowPaywall(false);
+          refreshAll();
+        }}
+      />
     </ScrollView>
   );
 }

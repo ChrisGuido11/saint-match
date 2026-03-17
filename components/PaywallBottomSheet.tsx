@@ -7,6 +7,8 @@ import {
   Modal,
   Pressable,
   ActivityIndicator,
+  Alert,
+  Linking,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { hapticImpact, hapticNotification, ImpactFeedbackStyle, NotificationFeedbackType } from '@/lib/haptics';
@@ -52,7 +54,10 @@ export function PaywallBottomSheet({
     try {
       const success = await restorePurchases();
       if (success) {
+        hapticNotification(NotificationFeedbackType.Success);
         onPurchaseSuccess();
+      } else {
+        Alert.alert('No purchases found', 'We could not find any previous purchases to restore.');
       }
     } finally {
       setIsLoading(false);
@@ -62,7 +67,7 @@ export function PaywallBottomSheet({
   return (
     <Modal visible={visible} transparent animationType="none" statusBarTranslucent>
       <Animated.View entering={FadeIn.duration(300)} style={styles.overlay}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+        <Pressable style={StyleSheet.absoluteFill} onPress={isLoading ? undefined : onClose} />
         <Animated.View entering={SlideInDown.duration(400).springify()} style={styles.sheet}>
           {/* Handle bar */}
           <View style={styles.handleBar} />
@@ -90,11 +95,11 @@ export function PaywallBottomSheet({
               accessibilityState={{ selected: selectedPlan === 'annual' }}
             >
               <View style={styles.saveBadge}>
-                <Text style={styles.saveBadgeText}>SAVE 17%</Text>
+                <Text style={styles.saveBadgeText}>SAVE 33%</Text>
               </View>
               <Text style={styles.planName}>Yearly</Text>
-              <Text style={styles.planPrice}>$79/yr</Text>
-              <Text style={styles.planPriceMonthly}>$6.58/mo</Text>
+              <Text style={styles.planPrice}>$39.99/yr</Text>
+              <Text style={styles.planPriceMonthly}>$3.33/mo</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -106,7 +111,7 @@ export function PaywallBottomSheet({
               accessibilityState={{ selected: selectedPlan === 'monthly' }}
             >
               <Text style={styles.planName}>Monthly</Text>
-              <Text style={styles.planPrice}>$7.99/mo</Text>
+              <Text style={styles.planPrice}>$4.99/mo</Text>
               <Text style={styles.planPriceMonthly}>billed monthly</Text>
             </TouchableOpacity>
           </View>
@@ -138,8 +143,8 @@ export function PaywallBottomSheet({
             ) : (
               <Text style={styles.ctaText}>
                 {selectedPlan === 'annual'
-                  ? 'Upgrade to Pro \u{2014} $79/yr'
-                  : 'Upgrade to Pro \u{2014} $7.99/mo'}
+                  ? 'Upgrade to Pro \u{2014} $39.99/yr'
+                  : 'Upgrade to Pro \u{2014} $4.99/mo'}
               </Text>
             )}
           </TouchableOpacity>
@@ -150,9 +155,27 @@ export function PaywallBottomSheet({
           </TouchableOpacity>
 
           {/* Dismiss */}
-          <TouchableOpacity onPress={onClose} style={styles.dismissButton} accessibilityRole="button" accessibilityLabel="Dismiss">
+          <TouchableOpacity onPress={onClose} style={styles.dismissButton} disabled={isLoading} accessibilityRole="button" accessibilityLabel="Dismiss">
             <Text style={styles.dismissText}>Maybe Later</Text>
           </TouchableOpacity>
+
+          {/* Apple-required auto-renewal disclosure */}
+          <Text style={styles.renewalDisclosure}>
+            Payment will be charged to your Apple ID account at confirmation of purchase.
+            Subscription automatically renews unless canceled at least 24 hours before the end of the current period.
+            You can manage and cancel subscriptions in your App Store account settings.
+          </Text>
+
+          {/* Apple-required legal links */}
+          <View style={styles.legalRow}>
+            <TouchableOpacity onPress={() => Linking.openURL('https://saint-match.lovable.app/terms')}>
+              <Text style={styles.legalText}>Terms of Use</Text>
+            </TouchableOpacity>
+            <Text style={styles.legalSeparator}>|</Text>
+            <TouchableOpacity onPress={() => Linking.openURL('https://saint-match.lovable.app/privacy')}>
+              <Text style={styles.legalText}>Privacy Policy</Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
       </Animated.View>
     </Modal>
@@ -297,6 +320,29 @@ const styles = StyleSheet.create({
   },
   dismissText: {
     ...Typography.bodySmall,
+    color: Colors.charcoalSubtle,
+  },
+  renewalDisclosure: {
+    ...Typography.caption,
+    color: Colors.charcoalSubtle,
+    textAlign: 'center',
+    marginTop: Spacing.sm,
+    lineHeight: 16,
+    paddingHorizontal: Spacing.sm,
+  },
+  legalRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Spacing.sm,
+    gap: Spacing.xs,
+  },
+  legalText: {
+    ...Typography.caption,
+    color: Colors.charcoalSubtle,
+    textDecorationLine: 'underline',
+  },
+  legalSeparator: {
+    ...Typography.caption,
     color: Colors.charcoalSubtle,
   },
 });

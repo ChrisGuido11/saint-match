@@ -20,6 +20,7 @@ import { useApp } from '../../context/AppContext';
 import { getNovenaById } from '../../constants/novenas';
 import { SAINTS } from '../../constants/saints';
 import { IconClose, IconNavNovenas } from '../../components/icons';
+import { PaywallBottomSheet } from '../../components/PaywallBottomSheet';
 
 export default function StartNovenaScreen() {
   const { novenaId, saintId, saintName: saintNameParam, saintBio: saintBioParam, novenaTitle, novenaDescription, intention: passedIntention, matchReason } = useLocalSearchParams<{
@@ -32,7 +33,8 @@ export default function StartNovenaScreen() {
     intention?: string;
     matchReason?: string;
   }>();
-  const { startNovena } = useApp();
+  const { startNovena, refreshAll } = useApp();
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const novena = novenaId ? getNovenaById(novenaId) : null;
   const saint = saintId ? SAINTS.find((s) => s.id === saintId) : null;
@@ -106,11 +108,16 @@ export default function StartNovenaScreen() {
         pathname: '/(auth)/novena-prayer',
         params: { userNovenaId: userNovena.id },
       });
-    } catch {
-      Alert.alert(
-        'Could not generate prayers',
-        'Please check your connection and try again.',
-      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
+      if (message === 'NOVENA_LIMIT_REACHED') {
+        setShowPaywall(true);
+      } else {
+        Alert.alert(
+          'Could not generate prayers',
+          'Please check your connection and try again.',
+        );
+      }
     } finally {
       setIsStarting(false);
     }
@@ -253,6 +260,15 @@ export default function StartNovenaScreen() {
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
+
+      <PaywallBottomSheet
+        visible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseSuccess={() => {
+          setShowPaywall(false);
+          refreshAll();
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }

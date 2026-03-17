@@ -20,8 +20,8 @@ import {
   addChallengeLogEntry,
   markChallengeLogCompleted,
 } from '../lib/storage';
-// RevenueCat kept dormant — re-enable for paid tiers later
-// import { checkProStatus, initPurchases, loginRevenueCat } from '../lib/purchases';
+import { checkProStatus, initPurchases, loginRevenueCat } from '../lib/purchases';
+import { incrementUsage } from '../lib/storage';
 import { addCompletionDate } from '../lib/streak';
 import { format } from 'date-fns';
 import { supabase, isSupabaseConfigured, ensureAnonymousSession } from '../lib/supabase';
@@ -84,7 +84,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
   const [activeChallenge, setActiveChallenge] = useState<ActiveChallenge | null>(null);
   const [completions, setCompletions] = useState<Completion[]>([]);
-  const [isPro, setIsPro] = useState(true); // Free beta: everyone gets full access
+  const [isPro, setIsPro] = useState(false);
   const [isOnboarded, setIsOnboarded] = useState(false);
   const [userNovenas, setUserNovenas] = useState<UserNovena[]>([]);
   const [discoveredSaints, setDiscoveredSaints] = useState<Saint[]>([]);
@@ -119,7 +119,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setUsage(usageData);
     setActiveChallenge(challenge);
     setCompletions(comps);
-    // isPro stays true — free beta, no pro check needed
     setIsOnboarded(onboarded);
     setUserNovenas(novenas);
     setChallengeLog(logEntries);
@@ -161,17 +160,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // Load haptic preference into module cache
       loadHapticPreference().catch(() => {});
 
-      // RevenueCat init skipped for free beta
-      // await initPurchases();
+      // Initialize RevenueCat (safe no-op if API key missing or in Expo Go)
+      try {
+        await initPurchases();
+      } catch {
+        // RevenueCat unavailable — purchases will use fallback mode
+      }
 
       // Initialize anonymous auth if Supabase is configured
       if (isSupabaseConfigured()) {
         try {
           const sess = await ensureAnonymousSession();
           setSession(sess);
+
+          // Link RevenueCat to Supabase user for subscription tracking
+          if (sess?.user?.id) {
+            loginRevenueCat(sess.user.id).catch(() => {});
+          }
         } catch {
           // Auth failed — app still works offline with AsyncStorage
         }
+      }
+
+      // Check pro status before rendering UI (prevents flicker)
+      try {
+        const pro = await checkProStatus();
+        setIsPro(pro);
+      } catch {
+        // Offline or error — defaults to free
       }
 
       await refreshAll();
@@ -270,11 +286,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [activeChallenge, challengeLog]);
 
   const consumeMatch = useCallback(async () => {
-    // Free beta: always allow matches, no usage limit
-    return true;
-  }, []);
+    if (isPro) return true;
+    try {
+      const updated = await incrementUsage();
+      setUsage(updated);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [isPro]);
 
   const startNovena = useCallback(async (novenaId: string, saintId: string, saintName: string, saintBio: string, personalIntention: string): Promise<UserNovena> => {
+    // Gate: free users limited to 1 active novena
+    if (!isPro) {
+      const activeCount = userNovenas.filter((n) => !n.completed).length;
+      if (activeCount >= 1) {
+        throw new Error('NOVENA_LIMIT_REACHED');
+      }
+    }
+
     // Generate AI prayers — null means offline (ok), thrown error means API failure (propagates to UI)
     const generatedPrayers = await generateNovenaPrayers(saintName, saintBio, personalIntention);
 
