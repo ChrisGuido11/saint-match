@@ -1,7 +1,8 @@
 import { Emotion, Saint, SaintMatch } from '../types';
 import { SAINTS } from '../constants/saints';
-import { supabase, isSupabaseConfigured } from './supabase';
+import { isSupabaseConfigured } from './supabase';
 import { getMatchHistory, addToMatchHistory } from './storage';
+import { getValidAccessToken, refreshAccessToken } from './authHelpers';
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
@@ -21,12 +22,9 @@ async function fetchFromEdgeFunction(payload: { emotion: Emotion; excludeSaints?
     throw new Error('MATCH_UNAVAILABLE');
   }
 
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
-    throw new Error('MATCH_UNAVAILABLE');
-  }
+  let accessToken = await getValidAccessToken();
 
-  const doFetch = async (): Promise<EdgeFunctionResponse> => {
+  const doFetch = async (token: string): Promise<EdgeFunctionResponse> => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
 
@@ -35,7 +33,7 @@ async function fetchFromEdgeFunction(payload: { emotion: Emotion; excludeSaints?
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${token}`,
           'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!,
         },
         body: JSON.stringify(payload),
@@ -48,12 +46,16 @@ async function fetchFromEdgeFunction(payload: { emotion: Emotion; excludeSaints?
         throw new Error('USAGE_LIMIT_REACHED');
       }
 
-      if (response.status === 503) {
-        throw new Error('RETRYABLE');
+      if (response.status === 401) {
+        throw new Error('AUTH_RETRY');
+      }
+
+      if (response.status === 503 || response.status === 500) {
+        throw new Error('SERVICE_ERROR');
       }
 
       if (!response.ok) {
-        throw new Error('RETRYABLE');
+        throw new Error('SERVICE_ERROR');
       }
 
       return await response.json();
@@ -64,20 +66,45 @@ async function fetchFromEdgeFunction(payload: { emotion: Emotion; excludeSaints?
   };
 
   try {
-    return await doFetch();
+    return await doFetch(accessToken);
   } catch (error) {
     if (error instanceof Error && error.message === 'USAGE_LIMIT_REACHED') {
       throw error;
+    }
+
+    // On 401, refresh the token and retry once
+    if (error instanceof Error && error.message === 'AUTH_RETRY') {
+      try {
+        accessToken = await refreshAccessToken();
+        return await doFetch(accessToken);
+      } catch (retryError) {
+        if (retryError instanceof Error && (retryError.message === 'USAGE_LIMIT_REACHED' || retryError.message === 'AUTH_SESSION_EXPIRED')) {
+          throw retryError;
+        }
+        throw new Error('MATCH_UNAVAILABLE');
+      }
     }
 
     // Retry once after 2s for transient failures
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
-      return await doFetch();
+      return await doFetch(accessToken);
     } catch (retryError) {
-      if (retryError instanceof Error && retryError.message === 'USAGE_LIMIT_REACHED') {
+      if (retryError instanceof Error && (retryError.message === 'USAGE_LIMIT_REACHED' || retryError.message === 'SERVICE_ERROR')) {
         throw retryError;
+      }
+      // If the retry also gets 401, try refreshing token
+      if (retryError instanceof Error && retryError.message === 'AUTH_RETRY') {
+        try {
+          accessToken = await refreshAccessToken();
+          return await doFetch(accessToken);
+        } catch (finalError) {
+          if (finalError instanceof Error && (finalError.message === 'USAGE_LIMIT_REACHED' || finalError.message === 'AUTH_SESSION_EXPIRED')) {
+            throw finalError;
+          }
+          throw new Error('MATCH_UNAVAILABLE');
+        }
       }
       throw new Error('MATCH_UNAVAILABLE');
     }

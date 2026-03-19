@@ -42,7 +42,10 @@
       "Bash(git -C \"C:\\\\Users\\\\cguid\\\\saint-match\" commit -m \"$\\(cat <<''EOF''\nfix: add .npmrc with legacy-peer-deps for EAS iOS build\n\nexpo-router transitively pulls react-dom@19.2.4 which requires\nreact@^19.2.4, conflicting with the pinned react@19.1.0. npm ci\nin the EAS build environment fails with ERESOLVE. legacy-peer-deps\nskips strict peer resolution, matching how Expo projects typically\nhandle transitive web dependency conflicts.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(TOKEN=\"eyJhbGciOiJFUzI1NiIsImtpZCI6ImJlNTk0ZjJhLThhYTQtNGFhZC04ZjZmLWYxMmM1Njg2ZDA5ZSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3plc2tob3J3ZGR4eWpoaG5wZ3NhLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhOGFkZjZlOC01MDdjLTQ4ZjctYjI4ZC0wNTlhNmYyNDQ2OWEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzcwOTU3ODkxLCJpYXQiOjE3NzA5NTQyOTEsImVtYWlsIjoiIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnt9LCJ1c2VyX21ldGFkYXRhIjp7fSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJhbm9ueW1vdXMiLCJ0aW1lc3RhbXAiOjE3NzA5NTQyOTF9XSwic2Vzc2lvbl9pZCI6Ijk2OTFhYzM3LWRjODEtNDNkYi05MjI2LTIxNWYwODUxOTVmOCIsImlzX2Fub255bW91cyI6dHJ1ZX0.bQ2URvGQMeDugMDZh2WutSRxQBYiLWDY8KAWkAUtgO2Lh9RcDPVv7IuF0Op6oVAs8o1sxUvzHqWhfSInuthJbA\")",
       "Bash(grep:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(python3 -c \"import base64,sys; s=sys.stdin.read\\(\\).strip\\(\\); s+=''''=''''*\\(4-len\\(s\\)%4\\); print\\(base64.urlsafe_b64decode\\(s\\)\\)\")",
+      "Bash(python3 -c \"import base64,sys; s=sys.stdin.read\\(\\).strip\\(\\); s+=''''=''''*\\(4-len\\(s\\)%4\\); print\\(base64.urlsafe_b64decode\\(s\\).decode\\(\\)\\)\")",
+      "Bash(where supabase:*)"
     ],
     "deny": [],
     "ask": []

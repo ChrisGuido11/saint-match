@@ -235,6 +235,7 @@ export default function BrowseNovenasScreen() {
       <PaywallBottomSheet
         visible={showPaywall}
         onClose={() => setShowPaywall(false)}
+        reason="novenas"
         onPurchaseSuccess={() => {
           setShowPaywall(false);
           refreshAll();

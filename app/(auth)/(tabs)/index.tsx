@@ -23,6 +23,7 @@ export default function HomeScreen() {
     usage,
     isPro,
     activeChallenge,
+    challengeLog,
     consumeMatch,
     completeChallenge,
     refreshAll,
@@ -51,6 +52,10 @@ export default function HomeScreen() {
     if (message === 'USAGE_LIMIT_REACHED') {
       // Server-side safety net caught it — show paywall
       setShowPaywall(true);
+    } else if (message === 'AUTH_SESSION_EXPIRED') {
+      Alert.alert('Session expired', 'Pull down to refresh, or restart the app.');
+    } else if (message === 'SERVICE_ERROR') {
+      Alert.alert('Temporarily unavailable', 'Saint matching is temporarily unavailable. Please try again in a few minutes.');
     } else if (message === 'MATCH_UNAVAILABLE') {
       Alert.alert('Connection needed', 'Saint matching requires an internet connection. Please check your connection and try again.');
     } else {
@@ -118,11 +123,21 @@ export default function HomeScreen() {
   const handleCompleteChallenge = async () => {
     if (isCompleting) return;
     setIsCompleting(true);
+    // Capture saint + mood before completeChallenge clears activeChallenge
+    const saintName = activeChallenge?.match.saint.name;
+    const todayLog = challengeLog.find(
+      (e) => e.saintId === activeChallenge?.match.saint.id && !e.completed
+    );
+    const moodText = todayLog?.emotionSelected;
     try {
       const updatedStreak = await completeChallenge();
       router.push({
         pathname: '/(auth)/celebration',
-        params: { streakCount: updatedStreak.currentStreak.toString() },
+        params: {
+          streakCount: updatedStreak.currentStreak.toString(),
+          saintName: saintName ?? '',
+          moodText: moodText ?? '',
+        },
       });
     } catch {
       Alert.alert('Error', 'Could not complete challenge. Please try again.');

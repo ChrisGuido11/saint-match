@@ -79,21 +79,22 @@ function buildPrompt(
 
 "${input.customMood}"
 
-Your job: recommend ONE saint whose life DIRECTLY relates to this specific concern. The connection must be obvious and immediate — not a loose thematic link.
+Your job: recommend ONE saint whose life DIRECTLY relates to this specific concern.
 
-Examples of GOOD matching:
-- "worried about money" → St. Homobonus (patron of business/finances) or St. Joseph (provider for his family in poverty)
-- "struggling with anger" → St. Francis de Sales (conquered violent temper)
-- "grieving a loss" → St. Elizabeth Ann Seton (lost husband and children)
+MATCHING RULES:
+1. The saint's patronage, life story, or personal struggle must DIRECTLY address the user's words — not a loose thematic link.
+2. A "direct" match means the saint personally experienced or overcame the SAME struggle the user describes. A "generic" match picks a saint whose general reputation is only vaguely related — avoid this.
+3. Do NOT default to a saint's most famous teaching. Choose the aspect of the saint's life that mirrors the user's SPECIFIC words.
 
-Examples of BAD matching:
-- "worried about money" → a saint known only for humility or prayer (too generic)
-- "lonely" → a saint known only for courage (wrong theme)
+BIO RULES:
+- The bio MUST describe how this saint experienced or overcame the SPECIFIC struggle the user described — not the saint's general reputation or most famous teaching.
+- Echo the user's own language in the bio. If they said "angry," write about anger/temper. If they said "lonely," write about isolation/loneliness.
+- Never write a bio about a different topic than what the user expressed.
 
 Pick a saint whose life story, patronage, or personal struggles speak DIRECTLY to the user's words. Then suggest ONE concrete 5-15 minute micro-action inspired by how that saint handled a similar situation.
 
 Draw from the full calendar of Catholic saints across all centuries and cultures.${excludeClause}${keywordClause}
-Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max connecting the saint to the user's concern", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "a concrete action referencing both the saint and the user's concern", "estimatedMinutes": 10, "matchReason": "1 sentence: why this saint fits their specific situation", "keywords": ["3-8 semantic keywords describing the user's core concern"]}`;
+Respond ONLY in JSON: {"saintName": "", "feastDay": "", "bio": "50 words max — MUST reference the user's exact concern, not the saint's general teaching", "virtues": ["keyword1", "keyword2", "keyword3"], "microAction": "a concrete action referencing both the saint and the user's concern", "estimatedMinutes": 10, "matchReason": "1 sentence: why this saint fits their specific situation", "keywords": ["3-8 semantic keywords describing the user's core concern"]}`;
   }
 
   return `You are a Catholic spiritual director. The user is feeling ${input.emotion}. Recommend ONE saint who overcame this struggle and ONE specific 5-15 minute micro-action they can do today inspired by this saint's virtue. The action should be concrete and modern (actual behavioral action, not just prayer). Draw from the FULL calendar of Catholic saints — canonized saints, blesseds, venerables, and servants of God across all centuries and cultures. Surprise the user with lesser-known holy men and women from any era or region, not just the famous ones.${excludeClause}${keywordClause}
@@ -110,7 +111,7 @@ async function callClaude(
   }
 
   try {
-    console.log('Calling Claude API with model claude-sonnet-4-6-20250514...');
+    console.log('Calling Claude API with model claude-sonnet-4-6...');
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -119,7 +120,7 @@ async function callClaude(
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 500,
         temperature: 0.7,
         messages: [

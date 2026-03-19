@@ -342,6 +342,7 @@ export default function PortfolioScreen() {
       <PaywallBottomSheet
         visible={showPaywall}
         onClose={() => setShowPaywall(false)}
+        reason="export"
         onPurchaseSuccess={() => {
           setShowPaywall(false);
           refreshAll();

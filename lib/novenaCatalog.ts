@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase, isSupabaseConfigured } from './supabase';
+import { isSupabaseConfigured } from './supabase';
+import { getValidAccessToken, refreshAccessToken } from './authHelpers';
 
 export interface NovenaEntry {
   slug: string;
@@ -60,27 +61,49 @@ async function saveToCache(catalog: NovenaEntry[]): Promise<void> {
 async function fetchFromEdgeFunction(): Promise<NovenaEntry[] | null> {
   if (!isSupabaseConfigured()) return null;
 
+  let accessToken: string;
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) return null;
+    accessToken = await getValidAccessToken();
+  } catch {
+    return null;
+  }
 
-    const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/novena-catalog`;
+  const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/novena-catalog`;
+
+  const doFetch = async (token: string): Promise<NovenaEntry[] | null> => {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         apikey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '',
       },
     });
 
+    if (response.status === 401) {
+      throw new Error('AUTH_RETRY');
+    }
+
     if (!response.ok) return null;
 
     const data = await response.json();
     if (Array.isArray(data) && data.length > 0) return data;
-  } catch {}
+    return null;
+  };
 
-  return null;
+  try {
+    return await doFetch(accessToken);
+  } catch (error) {
+    if (error instanceof Error && error.message === 'AUTH_RETRY') {
+      try {
+        accessToken = await refreshAccessToken();
+        return await doFetch(accessToken);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
 }
 
 /**

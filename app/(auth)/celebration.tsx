@@ -17,7 +17,7 @@ import { Typography } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { ConfettiAnimation } from '../../components/ConfettiAnimation';
 import { isMilestoneStreak } from '../../constants/saints';
-import { IconMilestone, IconCompleted } from '../../components/icons';
+import { IconNavNovenas } from '../../components/icons';
 
 const MESSAGES: Record<number, string> = {
   1: "The journey of a thousand miles begins with a single step.",
@@ -36,10 +36,14 @@ const DEFAULT_MESSAGES = [
 ];
 
 export default function CelebrationScreen() {
-  const { streakCount } = useLocalSearchParams<{ streakCount: string }>();
+  const { streakCount, saintName, moodText } = useLocalSearchParams<{
+    streakCount: string;
+    saintName?: string;
+    moodText?: string;
+  }>();
   const count = parseInt(streakCount ?? '0', 10);
   const [showConfetti, setShowConfetti] = useState(true);
-  
+
   const isMilestone = isMilestoneStreak(count);
   const message = MESSAGES[count] || DEFAULT_MESSAGES[Math.floor(Math.random() * DEFAULT_MESSAGES.length)];
 
@@ -82,20 +86,26 @@ export default function CelebrationScreen() {
       {showConfetti && <ConfettiAnimation count={50} onFinish={() => setShowConfetti(false)} />}
 
       <View style={styles.content}>
-        {/* Celebration Icon */}
+        {/* Icon — same as novena celebration */}
         <Animated.View style={[styles.iconContainer, iconStyle]}>
-          {isMilestone ? (
-            <IconMilestone size={80} streak={count} />
-          ) : (
-            <IconCompleted size={80} color={Colors.sage} />
-          )}
+          <IconNavNovenas size={80} color={Colors.sage} />
         </Animated.View>
 
-        {/* Streak count */}
-        <Animated.View entering={FadeIn.delay(400).duration(500)}>
-          <Text style={styles.streakNumber}>{count}</Text>
-          <Text style={styles.streakLabel}>{count === 1 ? 'day' : 'days'}</Text>
+        {/* Day + streak count side by side */}
+        <Animated.View entering={FadeIn.delay(400).duration(500)} style={styles.infoSection}>
+          <Text style={styles.dayNumber}>Day {count}</Text>
+          <Text style={styles.dayLabel}>{isMilestone ? 'milestone reached' : 'complete'}</Text>
+          {saintName ? (
+            <Text style={styles.saintName}>{saintName}</Text>
+          ) : null}
         </Animated.View>
+
+        {/* Mood text */}
+        {moodText ? (
+          <Animated.View entering={FadeIn.delay(500).duration(500)}>
+            <Text style={styles.moodText}>"{moodText}"</Text>
+          </Animated.View>
+        ) : null}
 
         {/* Message */}
         <Animated.Text style={[styles.message, contentStyle]}>
@@ -127,15 +137,32 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginBottom: Spacing.lg,
   },
-  streakNumber: {
+  infoSection: {
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  dayNumber: {
     ...Typography.streakDisplay,
     textAlign: 'center',
   },
-  streakLabel: {
+  dayLabel: {
     ...Typography.bodyLarge,
     color: Colors.charcoalMuted,
     textAlign: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.sm,
+  },
+  saintName: {
+    ...Typography.saintName,
+    color: Colors.sage,
+    textAlign: 'center',
+  },
+  moodText: {
+    ...Typography.body,
+    color: Colors.charcoalMuted,
+    textAlign: 'center',
+    fontStyle: 'italic',
+    maxWidth: 280,
+    marginBottom: Spacing.md,
   },
   message: {
     ...Typography.bodyLarge,

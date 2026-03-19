@@ -1,5 +1,6 @@
 import { NovenaEntry } from './novenaCatalog';
-import { supabase, isSupabaseConfigured } from './supabase';
+import { isSupabaseConfigured } from './supabase';
+import { getValidAccessToken, refreshAccessToken } from './authHelpers';
 
 export const PRESET_INTENTIONS = [
   'Spiritual growth',
@@ -121,21 +122,29 @@ function getReasonForSaint(saintName: string): string {
 async function fetchAIMatch(intention: string): Promise<NovenaMatchResult | null> {
   if (!isSupabaseConfigured()) return null;
 
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session?.access_token) return null;
+  let accessToken: string;
+  try {
+    accessToken = await getValidAccessToken();
+  } catch {
+    return null;
+  }
 
   const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/novena-match`;
 
-  const doFetch = async (): Promise<NovenaMatchResult | null> => {
+  const doFetch = async (token: string): Promise<NovenaMatchResult | null> => {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         apikey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '',
       },
       body: JSON.stringify({ intention }),
     });
+
+    if (response.status === 401) {
+      throw new Error('AUTH_RETRY');
+    }
 
     if (!response.ok) return null;
 
@@ -161,18 +170,32 @@ async function fetchAIMatch(intention: string): Promise<NovenaMatchResult | null
   };
 
   try {
-    const result = await doFetch();
-    if (result) return result;
+    return await doFetch(accessToken);
+  } catch (error) {
+    // On 401, refresh token and retry
+    if (error instanceof Error && error.message === 'AUTH_RETRY') {
+      try {
+        accessToken = await refreshAccessToken();
+        return await doFetch(accessToken);
+      } catch {
+        return null;
+      }
+    }
 
-    // Retry once after 2s
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    return await doFetch();
-  } catch {
     // Retry once on network error
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      return await doFetch();
-    } catch {
+      return await doFetch(accessToken);
+    } catch (retryError) {
+      // If retry also gets 401, try refreshing token
+      if (retryError instanceof Error && retryError.message === 'AUTH_RETRY') {
+        try {
+          accessToken = await refreshAccessToken();
+          return await doFetch(accessToken);
+        } catch {
+          return null;
+        }
+      }
       return null;
     }
   }

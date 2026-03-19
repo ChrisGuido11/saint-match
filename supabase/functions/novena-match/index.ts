@@ -89,22 +89,31 @@ async function pickPatronSaint(intention: string): Promise<AIMatchResult | null>
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 500,
         temperature: 0.3,
         messages: [
           {
             role: 'user',
-            content: `Given this prayer intention: "${intention}"
+            content: `You are a Catholic spiritual director. The user has shared what's on their heart:
 
-Pick the single most appropriate Catholic patron saint (or Blessed/Venerable).
-Consider traditional patronages, the saint's life story, and relevance to this specific need.
+"${intention}"
+
+Pick the single most appropriate Catholic patron saint (or Blessed/Venerable) whose life DIRECTLY relates to this specific concern.
+
+MATCHING RULES:
+1. The saint's patronage, life story, or personal struggle must DIRECTLY address the user's words.
+2. If the user describes an emotion (angry, sad, anxious, lonely), pick a saint who personally experienced and overcame THAT emotion — not a general intercessor.
+3. If the user describes a situation (job loss, illness, relationship trouble), pick the traditional patron saint for that situation.
+4. Do NOT default to general-purpose saints (St. Jude, Holy Spirit) unless the user's words genuinely describe a desperate or hopeless situation.
+
+The matchReason MUST echo the user's own words and explain the specific connection between this saint's life and the user's concern.
 
 Respond ONLY in JSON:
 {
   "patronSaint": "Full name (e.g. Bl. Carlo Acutis)",
-  "saintBio": "2-3 sentences about this saint, focused on why they relate to this intention",
-  "matchReason": "1-2 sentences explaining why this saint is the perfect intercessor for this intention",
+  "saintBio": "2-3 sentences about this saint, focused specifically on how they relate to what the user described",
+  "matchReason": "1-2 sentences using the user's own language to explain why this saint is the perfect intercessor",
   "novenaSlug": "kebab-case-novena-slug (e.g. bl-carlo-acutis-novena)",
   "novenaTitle": "Display title (e.g. Bl. Carlo Acutis Novena)"
 }`,

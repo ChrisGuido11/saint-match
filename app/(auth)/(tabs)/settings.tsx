@@ -381,6 +381,7 @@ export default function SettingsScreen() {
       <PaywallBottomSheet
         visible={showPaywall}
         onClose={() => setShowPaywall(false)}
+        reason="upgrade"
         onPurchaseSuccess={() => {
           setShowPaywall(false);
           showToast('Pro unlocked! Enjoy unlimited matches and novenas.');

@@ -120,11 +120,23 @@ export default function CalendarScreen() {
   const handleCompleteChallenge = async () => {
     if (!activeChallenge || activeChallenge.completed) return;
     setSheetVisible(false);
+    const saintName = activeChallenge.match.saint.name;
+    const todayLog = challengeLog.find(
+      (e) => e.saintId === activeChallenge.match.saint.id && !e.completed
+    );
+    const moodText = todayLog?.emotionSelected;
     try {
-      await completeChallenge();
+      const updatedStreak = await completeChallenge();
       await refreshAll();
       getCompletionDates().then(setCompletionDates);
-      router.push('/(auth)/celebration');
+      router.push({
+        pathname: '/(auth)/celebration',
+        params: {
+          streakCount: updatedStreak.currentStreak.toString(),
+          saintName: saintName ?? '',
+          moodText: moodText ?? '',
+        },
+      });
     } catch {
       // completeChallenge has idempotency guard — safe to ignore
     }

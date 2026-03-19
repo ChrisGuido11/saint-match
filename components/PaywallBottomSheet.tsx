@@ -28,6 +28,7 @@ interface PaywallBottomSheetProps {
   onClose: () => void;
   onPurchaseSuccess: () => void;
   streakAtRisk?: number;
+  reason?: 'matches' | 'novenas' | 'export' | 'upgrade';
 }
 
 export function PaywallBottomSheet({
@@ -35,6 +36,7 @@ export function PaywallBottomSheet({
   onClose,
   onPurchaseSuccess,
   streakAtRisk,
+  reason,
 }: PaywallBottomSheetProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
@@ -90,7 +92,13 @@ export function PaywallBottomSheet({
           <Text style={styles.title}>
             {streakAtRisk
               ? `Protect your ${streakAtRisk}-day streak!`
-              : "You've used all 3 free saint matches this week"}
+              : reason === 'novenas'
+                ? "You've reached the free novena limit"
+                : reason === 'export'
+                  ? 'PDF export is a Pro feature'
+                  : reason === 'upgrade'
+                    ? 'Unlock the full Saint Match experience'
+                    : "You've used all 3 free saint matches this week"}
           </Text>
           <Text style={styles.subtitle}>
             Keep your momentum going! Unlock unlimited daily saint matches, unlimited novenas,

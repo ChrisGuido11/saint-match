@@ -223,6 +223,7 @@ export default function ChooseIntentionScreen() {
       <PaywallBottomSheet
         visible={showPaywall}
         onClose={() => setShowPaywall(false)}
+        reason="novenas"
         onPurchaseSuccess={() => {
           setShowPaywall(false);
           refreshAll();
