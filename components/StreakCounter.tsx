@@ -16,6 +16,7 @@ interface StreakCounterProps {
   count: number;
   size?: 'compact' | 'large';
   showLabel?: boolean;
+  freezeAvailable?: boolean;
 }
 
 function StreakIcon({ count, size }: { count: number; size: number }) {
@@ -26,7 +27,7 @@ function StreakIcon({ count, size }: { count: number; size: number }) {
   return null;
 }
 
-export function StreakCounter({ count, size = 'compact', showLabel = true }: StreakCounterProps) {
+export function StreakCounter({ count, size = 'compact', showLabel = true, freezeAvailable = false }: StreakCounterProps) {
   const scale = useSharedValue(0.9);
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export function StreakCounter({ count, size = 'compact', showLabel = true }: Str
       <StreakIcon count={count} size={iconSize} />
       <Text style={[styles.number, isLarge && styles.numberLarge]}>{count}</Text>
       {showLabel && <Text style={styles.label}>{count === 1 ? 'day' : 'days'}</Text>}
+      {freezeAvailable && <View style={styles.freezeDot} />}
     </Animated.View>
   );
 }
@@ -100,5 +102,12 @@ const styles = StyleSheet.create({
   label: {
     ...Typography.caption,
     color: Colors.charcoalMuted,
+  },
+  freezeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.sage,
+    marginLeft: 2,
   },
 });

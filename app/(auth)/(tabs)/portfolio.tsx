@@ -203,8 +203,12 @@ export default function PortfolioScreen() {
 
       const { uri } = await Print.printToFileAsync({ html });
       await Sharing.shareAsync(uri);
-    } catch {
-      Alert.alert('Error', 'Could not export PDF. Please try again.');
+    } catch (err: unknown) {
+      // Don't show error for user-initiated cancellation
+      const message = err instanceof Error ? err.message : '';
+      if (!message.includes('cancel') && !message.includes('dismiss')) {
+        Alert.alert('Error', 'Could not export PDF. Please try again.');
+      }
     } finally {
       setIsExporting(false);
     }

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { hapticImpact, ImpactFeedbackStyle } from '@/lib/haptics';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
@@ -20,6 +20,7 @@ export default function SaintMatchScreen() {
     customMoodText?: string;
   }>();
   const { acceptChallenge, userNovenas, isPro } = useApp();
+  const [isAccepting, setIsAccepting] = useState(false);
 
   const selectedMoodData = selectedMood ? getMoodById(selectedMood) : null;
 
@@ -42,13 +43,21 @@ export default function SaintMatchScreen() {
   }
 
   const handleAcceptChallenge = async () => {
+    if (isAccepting) return;
+    setIsAccepting(true);
     hapticImpact(ImpactFeedbackStyle.Medium);
-    const moodText = customMoodText || (selectedMoodData ? selectedMoodData.label : undefined);
-    await acceptChallenge(
-      { match, acceptedAt: new Date().toISOString(), completed: false },
-      moodText,
-    );
-    router.replace('/(auth)/(tabs)');
+    try {
+      const moodText = customMoodText || (selectedMoodData ? selectedMoodData.label : undefined);
+      await acceptChallenge(
+        { match, acceptedAt: new Date().toISOString(), completed: false },
+        moodText,
+      );
+      router.replace('/(auth)/(tabs)');
+    } catch {
+      Alert.alert('Error', 'Could not accept challenge. Please try again.');
+    } finally {
+      setIsAccepting(false);
+    }
   };
 
   return (
@@ -126,13 +135,18 @@ export default function SaintMatchScreen() {
       {/* Accept button */}
       <Animated.View entering={FadeInDown.delay(700).duration(500)} style={styles.bottomSection}>
         <TouchableOpacity
-          style={styles.acceptButton}
+          style={[styles.acceptButton, isAccepting && styles.acceptButtonDisabled]}
           onPress={handleAcceptChallenge}
           activeOpacity={0.85}
+          disabled={isAccepting}
           accessibilityRole="button"
           accessibilityLabel="Accept challenge"
         >
-          <Text style={styles.acceptButtonText}>Accept Challenge</Text>
+          {isAccepting ? (
+            <ActivityIndicator color={Colors.white} />
+          ) : (
+            <Text style={styles.acceptButtonText}>Accept Challenge</Text>
+          )}
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -228,6 +242,9 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     alignItems: 'center',
     ...Shadows.button,
+  },
+  acceptButtonDisabled: {
+    opacity: 0.7,
   },
   acceptButtonText: {
     ...Typography.buttonLarge,

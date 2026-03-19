@@ -110,7 +110,7 @@ async function callClaude(
   }
 
   try {
-    console.log('Calling Claude API with model claude-haiku-4-5-20251001...');
+    console.log('Calling Claude API with model claude-sonnet-4-6-20250514...');
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -119,7 +119,7 @@ async function callClaude(
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-sonnet-4-6-20250514',
         max_tokens: 500,
         temperature: 0.7,
         messages: [

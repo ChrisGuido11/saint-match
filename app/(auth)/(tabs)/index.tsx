@@ -9,6 +9,7 @@ import { useApp } from '../../../context/AppContext';
 import { getGreetingMessage } from '../../../constants/saints';
 import { MoodSelector } from '../../../components/MoodSelector';
 import { StreakCounter } from '../../../components/StreakCounter';
+import { StreakResetBanner } from '../../../components/StreakResetBanner';
 import { ChallengeCard } from '../../../components/ChallengeCard';
 import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 
@@ -25,9 +26,15 @@ export default function HomeScreen() {
     consumeMatch,
     completeChallenge,
     refreshAll,
+    setIsPro,
+    streakResetInfo,
+    freezeAvailable,
+    dismissStreakReset,
+    applyStreakFreeze,
   } = useApp();
 
   const [isMatching, setIsMatching] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -104,15 +111,24 @@ export default function HomeScreen() {
 
   const handlePurchaseSuccess = () => {
     setShowPaywall(false);
+    setIsPro(true);
     refreshAll();
   };
 
   const handleCompleteChallenge = async () => {
-    const updatedStreak = await completeChallenge();
-    router.push({
-      pathname: '/(auth)/celebration',
-      params: { streakCount: updatedStreak.currentStreak.toString() },
-    });
+    if (isCompleting) return;
+    setIsCompleting(true);
+    try {
+      const updatedStreak = await completeChallenge();
+      router.push({
+        pathname: '/(auth)/celebration',
+        params: { streakCount: updatedStreak.currentStreak.toString() },
+      });
+    } catch {
+      Alert.alert('Error', 'Could not complete challenge. Please try again.');
+    } finally {
+      setIsCompleting(false);
+    }
   };
 
   return (
@@ -137,8 +153,18 @@ export default function HomeScreen() {
             {getGreetingMessage(streak.currentStreak)}
           </Text>
         </View>
-        <StreakCounter count={streak.currentStreak} />
+        <StreakCounter count={streak.currentStreak} freezeAvailable={freezeAvailable && streak.currentStreak > 0} />
       </Animated.View>
+
+      {/* Streak Reset Banner */}
+      {streakResetInfo?.wasReset && (
+        <StreakResetBanner
+          resetInfo={streakResetInfo}
+          freezeAvailable={freezeAvailable}
+          onUseFreeze={applyStreakFreeze}
+          onDismiss={dismissStreakReset}
+        />
+      )}
 
       {/* Main Content Area */}
       <View style={styles.mainContent}>

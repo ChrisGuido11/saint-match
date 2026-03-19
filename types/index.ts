@@ -137,6 +137,12 @@ export interface ChallengeLogEntry {
   completedAt: string | null;    // ISO timestamp
 }
 
+export interface StreakResetInfo {
+  wasReset: boolean;
+  previousStreak: number;
+  daysMissed: number;
+}
+
 // Achievement/Milestone types for enhanced gamification
 export type MilestoneType = 
   | 'first-challenge'

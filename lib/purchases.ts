@@ -57,12 +57,22 @@ export async function initPurchases(): Promise<void> {
     return;
   }
 
+  // Reject test keys in production builds — RevenueCat SDK force-closes the app
+  if (!__DEV__ && apiKey.startsWith('test_')) {
+    console.warn('RevenueCat test key detected in production — skipping init to prevent crash');
+    return;
+  }
+
   if (__DEV__) {
     Purchases.setLogLevel(LOG_LEVEL.DEBUG);
   }
 
-  Purchases.configure({ apiKey });
-  isConfigured = true;
+  try {
+    Purchases.configure({ apiKey });
+    isConfigured = true;
+  } catch (err) {
+    console.warn('RevenueCat configure failed:', err);
+  }
 }
 
 /**

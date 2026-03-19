@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { hapticImpact, hapticNotification, ImpactFeedbackStyle, NotificationFeedbackType } from '@/lib/haptics';
@@ -17,6 +19,9 @@ import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
 import { purchasePro, restorePurchases } from '../lib/purchases';
+import { IconCrown } from './icons';
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 interface PaywallBottomSheetProps {
   visible: boolean;
@@ -72,16 +77,24 @@ export function PaywallBottomSheet({
           {/* Handle bar */}
           <View style={styles.handleBar} />
 
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
           {/* Header */}
-          <Text style={styles.headerEmoji}>{'\u{2728}'}</Text>
+          <View style={styles.headerIcon}>
+            <IconCrown size={72} />
+          </View>
           <Text style={styles.title}>
             {streakAtRisk
               ? `Protect your ${streakAtRisk}-day streak!`
               : "You've used all 3 free saint matches this week"}
           </Text>
           <Text style={styles.subtitle}>
-            Keep your momentum going! Unlock unlimited daily saint matches, full Virtue Portfolio
-            analytics, and streak protection with Pro.
+            Keep your momentum going! Unlock unlimited daily saint matches, unlimited novenas,
+            full Virtue Portfolio analytics, and PDF export with Pro.
           </Text>
 
           {/* Plan selection */}
@@ -120,8 +133,8 @@ export function PaywallBottomSheet({
           <View style={styles.features}>
             {[
               'Unlimited daily saint matches',
+              'Unlimited active novenas',
               'Full Virtue Portfolio analytics',
-              'Weekly streak freeze protection',
               'PDF export for spiritual director',
             ].map((feature) => (
               <View key={feature} style={styles.featureRow}>
@@ -141,11 +154,7 @@ export function PaywallBottomSheet({
             {isLoading ? (
               <ActivityIndicator color={Colors.white} />
             ) : (
-              <Text style={styles.ctaText}>
-                {selectedPlan === 'annual'
-                  ? 'Upgrade to Pro \u{2014} $39.99/yr'
-                  : 'Upgrade to Pro \u{2014} $4.99/mo'}
-              </Text>
+              <Text style={styles.ctaText}>Upgrade to Pro</Text>
             )}
           </TouchableOpacity>
 
@@ -176,6 +185,7 @@ export function PaywallBottomSheet({
               <Text style={styles.legalText}>Privacy Policy</Text>
             </TouchableOpacity>
           </View>
+          </ScrollView>
         </Animated.View>
       </Animated.View>
     </Modal>
@@ -192,8 +202,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.cream,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.sm,
+    maxHeight: SCREEN_HEIGHT * 0.9,
+  },
+  scrollView: {
+    flexGrow: 0,
+  },
+  scrollContent: {
+    paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
     alignItems: 'center',
   },
@@ -203,10 +219,11 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: Colors.charcoalSubtle,
     marginBottom: Spacing.lg,
+    alignSelf: 'center',
   },
-  headerEmoji: {
-    fontSize: 40,
+  headerIcon: {
     marginBottom: Spacing.sm,
+    alignItems: 'center',
   },
   title: {
     ...Typography.h3,

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
-import { Saint, StreakData, UsageData, ActiveChallenge, Completion, UserNovena, ChallengeLogEntry } from '../types';
-import { getStreakData, incrementStreak as incrementStreakData } from '../lib/streak';
+import { Saint, StreakData, StreakResetInfo, UsageData, ActiveChallenge, Completion, UserNovena, ChallengeLogEntry } from '../types';
+import { getStreakData, getStreakDataWithResetCheck, incrementStreak as incrementStreakData, useStreakFreeze as applyStreakFreezeStorage, acknowledgeStreakReset, canUseStreakFreeze } from '../lib/streak';
 import {
   getUsageData,
   getActiveChallenge,
@@ -52,6 +52,8 @@ interface AppContextType {
   userNovenas: UserNovena[];
   discoveredSaints: Saint[];
   challengeLog: ChallengeLogEntry[];
+  streakResetInfo: StreakResetInfo | null;
+  freezeAvailable: boolean;
 
   // Actions
   refreshStreak: () => Promise<void>;
@@ -62,6 +64,8 @@ interface AppContextType {
   setOnboardingComplete: () => Promise<void>;
   setIsPro: (value: boolean) => void;
   refreshAll: () => Promise<void>;
+  dismissStreakReset: () => Promise<void>;
+  applyStreakFreeze: () => Promise<boolean>;
   startNovena: (novenaId: string, saintId: string, saintName: string, saintBio: string, personalIntention: string) => Promise<UserNovena>;
   markNovenaDayPrayed: (userNovenaId: string) => Promise<{ alreadyPrayed: boolean; completed: boolean }>;
   saveNovenaReflection: (userNovenaId: string, reflection: string) => Promise<void>;
@@ -89,6 +93,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [userNovenas, setUserNovenas] = useState<UserNovena[]>([]);
   const [discoveredSaints, setDiscoveredSaints] = useState<Saint[]>([]);
   const [challengeLog, setChallengeLog] = useState<ChallengeLogEntry[]>([]);
+  const [streakResetInfo, setStreakResetInfo] = useState<StreakResetInfo | null>(null);
+  const [freezeAvailable, setFreezeAvailable] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const authListenerRef = useRef<{ subscription: { unsubscribe: () => void } } | null>(null);
@@ -105,8 +111,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const refreshAll = useCallback(async () => {
     // Fast path: load from AsyncStorage
-    const [streakData, usageData, challenge, comps, onboarded, novenas, discovered, logEntries] = await Promise.all([
-      getStreakData(),
+    const [streakResult, usageData, challenge, comps, onboarded, novenas, discovered, logEntries] = await Promise.all([
+      getStreakDataWithResetCheck(),
       getUsageData(),
       getActiveChallenge(),
       getCompletions(),
@@ -115,7 +121,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       getDiscoveredSaints(),
       getChallengeLog(),
     ]);
+    const { streakData, resetInfo } = streakResult;
     setStreak(streakData);
+    setStreakResetInfo(resetInfo);
+    setFreezeAvailable(canUseStreakFreeze(streakData));
     setUsage(usageData);
     setActiveChallenge(challenge);
     setCompletions(comps);
@@ -232,6 +241,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const completeChallenge = useCallback(async () => {
+    // Idempotency guard: prevent double-completion
+    if (!activeChallenge || activeChallenge.completed) {
+      return streak;
+    }
+
     const updatedStreak = await incrementStreakData();
     const today = format(new Date(), 'yyyy-MM-dd');
     await addCompletionDate(today);
@@ -253,9 +267,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // Persist the full Saint object for the portfolio
       const saint = activeChallenge.match.saint;
       await saveDiscoveredSaint(saint);
-      setDiscoveredSaints((prev) =>
-        prev.some((s) => s.id === saint.id) ? prev : [...prev, saint]
-      );
+      setDiscoveredSaints((prev) => {
+        if (prev.some((s) => s.id === saint.id)) return prev;
+        return [...prev, saint];
+      });
 
       const updated: ActiveChallenge = { ...activeChallenge, completed: true };
       await storeChallenge(updated);
@@ -305,8 +320,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // Generate AI prayers — null means offline (ok), thrown error means API failure (propagates to UI)
+    // Generate AI prayers — thrown error means API failure (propagates to UI)
     const generatedPrayers = await generateNovenaPrayers(saintName, saintBio, personalIntention);
+    if (!generatedPrayers) {
+      throw new Error('PRAYER_GENERATION_FAILED');
+    }
 
     const newNovena: UserNovena = {
       id: `un-${Date.now()}`,
@@ -380,10 +398,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [userNovenas]);
 
   const abandonNovena = useCallback(async (userNovenaId: string) => {
-    cancelNovenaNotifications(userNovenaId).catch(() => {});
+    try {
+      await cancelNovenaNotifications(userNovenaId);
+    } catch {
+      // Notification cancellation failed — proceed with removal anyway
+    }
     await removeUserNovena(userNovenaId);
     setUserNovenas((prev) => prev.filter((n) => n.id !== userNovenaId));
   }, []);
+
+  const dismissStreakReset = useCallback(async () => {
+    await acknowledgeStreakReset();
+    setStreakResetInfo(null);
+  }, []);
+
+  const applyStreakFreeze = useCallback(async (): Promise<boolean> => {
+    if (!streakResetInfo) return false;
+    const success = await applyStreakFreezeStorage(streakResetInfo.previousStreak);
+    if (success) {
+      const updatedStreak = await getStreakData();
+      setStreak(updatedStreak);
+      setStreakResetInfo(null);
+      setFreezeAvailable(false);
+      // Background sync streak to Supabase
+      syncStreakToServer(updatedStreak).catch(() => {});
+    }
+    return success;
+  }, [streakResetInfo]);
 
   const handleSetOnboardingComplete = useCallback(async () => {
     await storeOnboardingComplete();
@@ -407,6 +448,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         userNovenas,
         discoveredSaints,
         challengeLog,
+        streakResetInfo,
+        freezeAvailable,
         refreshStreak,
         refreshUsage,
         acceptChallenge,
@@ -415,6 +458,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setOnboardingComplete: handleSetOnboardingComplete,
         setIsPro,
         refreshAll,
+        dismissStreakReset,
+        applyStreakFreeze,
         startNovena,
         markNovenaDayPrayed,
         saveNovenaReflection,

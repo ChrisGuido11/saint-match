@@ -12,6 +12,7 @@ export { IconChallenge } from './IconChallenge';
 export { IconStreak } from './IconStreak';
 export { IconNovena } from './IconNovena';
 export { IconLogo } from './IconLogo';
+export { IconCrown } from './IconCrown';
 export { IconCompleted } from './IconCompleted';
 export { IconMatching } from './IconMatching';
 export { IconMilestone } from './IconMilestone';

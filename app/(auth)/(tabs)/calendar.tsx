@@ -118,12 +118,16 @@ export default function CalendarScreen() {
   };
 
   const handleCompleteChallenge = async () => {
+    if (!activeChallenge || activeChallenge.completed) return;
     setSheetVisible(false);
-    await completeChallenge();
-    await refreshAll();
-    // Refresh completion dates
-    getCompletionDates().then(setCompletionDates);
-    router.push('/(auth)/celebration');
+    try {
+      await completeChallenge();
+      await refreshAll();
+      getCompletionDates().then(setCompletionDates);
+      router.push('/(auth)/celebration');
+    } catch {
+      // completeChallenge has idempotency guard — safe to ignore
+    }
   };
 
   return (

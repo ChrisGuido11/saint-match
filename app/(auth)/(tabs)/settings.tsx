@@ -145,7 +145,7 @@ export default function SettingsScreen() {
   const handleDeleteAccount = () => {
     Alert.alert(
       'Delete Account',
-      'Are you sure? This will permanently delete all your data including streaks and Virtue Portfolio.',
+      'This will permanently delete all your data including streaks, novenas, and Virtue Portfolio. This cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -191,7 +191,14 @@ export default function SettingsScreen() {
       if (granted) {
         await scheduleDailyReminder(prefs.dailyReminderHour, prefs.dailyReminderMinute);
       } else {
-        showToast('Please enable notifications in your device settings.');
+        Alert.alert(
+          'Notifications Disabled',
+          'Saint Match needs notification permission to send reminders. Please enable it in Settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openURL('app-settings:') },
+          ]
+        );
       }
     } else {
       await cancelDailyReminder();
@@ -291,7 +298,6 @@ export default function SettingsScreen() {
                 label="Upgrade to Pro"
                 subtitle="Unlimited matches, novenas & PDF export"
                 onPress={() => setShowPaywall(true)}
-                rightText="$4.99/mo"
               />
               <View style={styles.divider} />
               <SettingRow
@@ -351,7 +357,7 @@ export default function SettingsScreen() {
       {/* App info */}
       <Animated.View entering={FadeIn.delay(550).duration(400)} style={styles.appInfo}>
         <Text style={styles.appName}>Saint Match</Text>
-        <Text style={styles.appVersion}>Version 1.0.0</Text>
+        <Text style={styles.appVersion}>Version 1.1.0</Text>
         <Text style={styles.appTagline}>Daily virtue challenges from the saints</Text>
       </Animated.View>
 
@@ -377,6 +383,7 @@ export default function SettingsScreen() {
         onClose={() => setShowPaywall(false)}
         onPurchaseSuccess={() => {
           setShowPaywall(false);
+          showToast('Pro unlocked! Enjoy unlimited matches and novenas.');
           refreshAll();
         }}
       />

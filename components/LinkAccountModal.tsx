@@ -43,7 +43,14 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
+      // Check if email is already linked
+      if (session?.user?.email) {
+        setError(`Account already linked to ${session.user.email}`);
+        setIsLoading(false);
+        return;
+      }
+
       if (session) {
         // User has an existing session - upgrade/link it
         await linkEmailToAccount(email.trim(), password);

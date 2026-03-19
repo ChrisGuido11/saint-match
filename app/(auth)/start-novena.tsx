@@ -112,9 +112,14 @@ export default function StartNovenaScreen() {
       const message = error instanceof Error ? error.message : '';
       if (message === 'NOVENA_LIMIT_REACHED') {
         setShowPaywall(true);
-      } else {
+      } else if (message === 'PRAYER_GENERATION_FAILED') {
         Alert.alert(
           'Could not generate prayers',
+          'The prayer generation service is temporarily unavailable. Please try again in a moment.',
+        );
+      } else {
+        Alert.alert(
+          'Could not start novena',
           'Please check your connection and try again.',
         );
       }
