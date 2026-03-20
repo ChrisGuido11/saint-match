@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
   }
 
   const anonClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: { headers: { authorization: authHeader } },
+    global: { headers: { Authorization: authHeader } },
   });
 
   console.log('Calling getUser()...');

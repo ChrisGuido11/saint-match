@@ -28,6 +28,10 @@ export function scopeEmail(email: string): string {
   return `${local}+saintmatch@${domain}`;
 }
 
+export function unscopeEmail(scopedEmail: string): string {
+  return scopedEmail.replace('+saintmatch', '');
+}
+
 // Auth helpers
 
 export async function ensureAnonymousSession() {
@@ -77,6 +81,10 @@ export async function signInWithEmail(email: string, password: string) {
   });
 
   if (!error && data.session) {
+    // Store the raw (unscoped) email in profiles for display
+    if (data.user?.id) {
+      await supabase.from('profiles').update({ email }).eq('id', data.user.id);
+    }
     // Link RevenueCat to the authenticated user
     const { loginRevenueCat } = require('./purchases');
     loginRevenueCat(data.user.id).catch(() => {});
@@ -91,6 +99,8 @@ export async function signInWithEmail(email: string, password: string) {
   if (rawError) throw rawError;
 
   if (rawData.user?.id) {
+    // Store the raw email in profiles for display
+    await supabase.from('profiles').update({ email }).eq('id', rawData.user.id);
     const { loginRevenueCat } = require('./purchases');
     loginRevenueCat(rawData.user.id).catch(() => {});
   }
@@ -99,12 +109,20 @@ export async function signInWithEmail(email: string, password: string) {
 }
 
 export async function getDisplayEmail(userId: string): Promise<string | null> {
+  // Primary: read raw email from profiles
   const { data } = await supabase
     .from('profiles')
     .select('email')
     .eq('id', userId)
     .single();
-  return data?.email ?? null;
+  if (data?.email) return data.email;
+
+  // Fallback: derive from auth session's scoped email
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user?.email) {
+    return unscopeEmail(session.user.email);
+  }
+  return null;
 }
 
 export async function signOut() {

@@ -331,28 +331,26 @@ export default function SettingsScreen() {
         </View>
       </Animated.View>
 
-      {/* Data section */}
-      <Animated.View entering={FadeInDown.delay(450).duration(400)} style={styles.section}>
-        <Text style={styles.sectionTitle}>YOUR DATA</Text>
-        <View style={styles.sectionCard}>
-          {userEmail && (
-            <>
-              <SettingRow
-                label="Sign Out"
-                subtitle={userEmail}
-                onPress={handleSignOut}
-              />
-              <View style={styles.divider} />
-            </>
-          )}
-          <SettingRow
-            label="Delete Account"
-            subtitle="Permanently delete all data"
-            onPress={handleDeleteAccount}
-            destructive
-          />
-        </View>
-      </Animated.View>
+      {/* Data section — only visible when a real account exists */}
+      {userEmail && (
+        <Animated.View entering={FadeInDown.delay(450).duration(400)} style={styles.section}>
+          <Text style={styles.sectionTitle}>YOUR DATA</Text>
+          <View style={styles.sectionCard}>
+            <SettingRow
+              label="Sign Out"
+              subtitle={userEmail}
+              onPress={handleSignOut}
+            />
+            <View style={styles.divider} />
+            <SettingRow
+              label="Delete Account"
+              subtitle="Permanently delete all data"
+              onPress={handleDeleteAccount}
+              destructive
+            />
+          </View>
+        </Animated.View>
+      )}
 
       {/* App info */}
       <Animated.View entering={FadeIn.delay(550).duration(400)} style={styles.appInfo}>
