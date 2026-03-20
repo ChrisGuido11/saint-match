@@ -245,7 +245,7 @@ export default function StartNovenaScreen() {
         {/* Helper text */}
         <Animated.View entering={FadeInDown.delay(400).duration(400)}>
           <Text style={styles.helperText}>
-            You'll receive a daily reminder at noon to pray. Each day takes about 5 minutes.
+            Each day takes about 5 minutes. Set a daily reminder in Settings to stay on track.
           </Text>
         </Animated.View>
 

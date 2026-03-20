@@ -287,7 +287,7 @@ export function NotificationSettingsModal({
               />
             </View>
             <Text style={styles.settingDescription}>
-              Daily reminders at noon for your active novenas
+              Daily reminders for your active novenas
             </Text>
           </View>
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Text, StyleSheet, TouchableOpacity, View, Modal, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, runOnJS, interpolate } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { hapticImpact, ImpactFeedbackStyle } from '@/lib/haptics';
@@ -15,13 +16,24 @@ interface FlippableSaintCardProps {
 }
 
 export default function FlippableSaintCard({ saint, count }: FlippableSaintCardProps) {
+  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
+  const [navigating, setNavigating] = useState(false);
   const flipProgress = useSharedValue(0);
 
   const openCard = () => {
     setExpanded(true);
     hapticImpact(ImpactFeedbackStyle.Light);
     flipProgress.value = withSpring(1, Springs.cardEntrance);
+  };
+
+  const navigateToNovena = () => {
+    setExpanded(false);
+    router.push({
+      pathname: '/(auth)/start-novena',
+      params: { saintId: saint.id, saintName: saint.name, saintBio: saint.bio },
+    });
+    setNavigating(false);
   };
 
   const closeCard = () => {
@@ -102,6 +114,25 @@ export default function FlippableSaintCard({ saint, count }: FlippableSaintCardP
                 {count} {count === 1 ? 'challenge' : 'challenges'} completed
               </Text>
             )}
+
+            {/* Start Novena CTA */}
+            <TouchableOpacity
+              style={styles.novenaButton}
+              activeOpacity={0.8}
+              disabled={navigating}
+              accessibilityLabel="Start novena"
+              accessibilityRole="button"
+              onPress={() => {
+                if (navigating) return;
+                setNavigating(true);
+                hapticImpact(ImpactFeedbackStyle.Light);
+                flipProgress.value = withTiming(0, { duration: Durations.fast }, () => {
+                  runOnJS(navigateToNovena)();
+                });
+              }}
+            >
+              <Text style={styles.novenaButtonText}>Start Novena</Text>
+            </TouchableOpacity>
           </Animated.View>
         </Animated.View>
       </Modal>
@@ -237,5 +268,19 @@ const styles = StyleSheet.create({
     ...Typography.bodySmall,
     color: Colors.charcoalMuted,
     marginTop: Spacing.md,
+  },
+  novenaButton: {
+    backgroundColor: Colors.terracotta,
+    borderRadius: BorderRadius.md,
+    paddingVertical: 14,
+    paddingHorizontal: Spacing.lg,
+    marginTop: Spacing.md,
+    width: '100%',
+    alignItems: 'center',
+  },
+  novenaButtonText: {
+    fontFamily: FontFamily.sansSemiBold,
+    fontSize: 15,
+    color: Colors.white,
   },
 });
