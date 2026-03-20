@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'Unauthorized' }, 401);
     }
   } else {
-    console.warn('REVENUECAT_WEBHOOK_SECRET not set — skipping auth check');
+    return jsonResponse({ error: 'Webhook auth not configured' }, 500);
   }
 
   try {

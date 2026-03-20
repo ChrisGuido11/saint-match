@@ -45,7 +45,10 @@
       "mcp__ide__getDiagnostics",
       "Bash(python3 -c \"import base64,sys; s=sys.stdin.read\\(\\).strip\\(\\); s+=''''=''''*\\(4-len\\(s\\)%4\\); print\\(base64.urlsafe_b64decode\\(s\\)\\)\")",
       "Bash(python3 -c \"import base64,sys; s=sys.stdin.read\\(\\).strip\\(\\); s+=''''=''''*\\(4-len\\(s\\)%4\\); print\\(base64.urlsafe_b64decode\\(s\\).decode\\(\\)\\)\")",
-      "Bash(where supabase:*)"
+      "Bash(where supabase:*)",
+      "Bash(find /c/Users/cguid/saint-match -type f \\\\\\(-name *pdf* -o -name *export* -o -name *report* \\\\\\))",
+      "Bash(find . -name *.ts -type f -exec grep -l functions.invoke.*delete-account {})",
+      "Bash(2)"
     ],
     "deny": [],
     "ask": []

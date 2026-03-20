@@ -82,7 +82,7 @@ async function replaySyncQueue(): Promise<void> {
 
 // ── Helper: Ensure profile exists ──────────────────────────────────────
 
-async function ensureProfileExists(userId: string, email: string | undefined): Promise<void> {
+async function ensureProfileExists(userId: string): Promise<void> {
   try {
     // Try to fetch the profile first
     const { data: existingProfile } = await supabase
@@ -92,10 +92,10 @@ async function ensureProfileExists(userId: string, email: string | undefined): P
       .single();
 
     if (!existingProfile) {
-      // Profile doesn't exist, create it
+      // Profile doesn't exist, create it (email is set only via linkEmailToAccount)
       await supabase.from('profiles').insert({
         id: userId,
-        email: email || null,
+        email: null,
       });
 
       // Also create the streak record
@@ -104,7 +104,7 @@ async function ensureProfileExists(userId: string, email: string | undefined): P
       });
     }
   } catch (err) {
-    console.error('ensureProfileExists error:', err);
+    if (__DEV__) console.error('ensureProfileExists error:', err);
   }
 }
 
@@ -151,13 +151,13 @@ export async function syncCompletionToServer(completion: Completion): Promise<vo
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
-    console.warn('syncCompletionToServer: No session available');
+    if (__DEV__) console.warn('syncCompletionToServer: No session available');
     return;
   }
 
   try {
     // Ensure profile exists first
-    await ensureProfileExists(session.user.id, session.user.email);
+    await ensureProfileExists(session.user.id);
 
     const result = await supabase.from('completions').upsert(
       {
@@ -174,13 +174,13 @@ export async function syncCompletionToServer(completion: Completion): Promise<vo
     );
 
     if (result.error) {
-      console.error('syncCompletionToServer error:', result.error);
+      if (__DEV__) console.error('syncCompletionToServer error:', result.error);
       throw result.error;
     } else {
-      console.log('syncCompletionToServer success');
+      if (__DEV__) console.log('syncCompletionToServer success');
     }
   } catch (err) {
-    console.error('syncCompletionToServer exception:', err);
+    if (__DEV__) console.error('syncCompletionToServer exception:', err);
     await addToSyncQueue({
       type: 'completion',
       payload: completion,
@@ -194,13 +194,13 @@ export async function syncStreakToServer(streak: StreakData): Promise<void> {
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
-    console.warn('syncStreakToServer: No session available');
+    if (__DEV__) console.warn('syncStreakToServer: No session available');
     return;
   }
 
   try {
     // Ensure profile exists first
-    await ensureProfileExists(session.user.id, session.user.email);
+    await ensureProfileExists(session.user.id);
 
     const result = await supabase.from('streaks').upsert({
       user_id: session.user.id,
@@ -211,13 +211,13 @@ export async function syncStreakToServer(streak: StreakData): Promise<void> {
     });
 
     if (result.error) {
-      console.error('syncStreakToServer error:', result.error);
+      if (__DEV__) console.error('syncStreakToServer error:', result.error);
       throw result.error;
     } else {
-      console.log('syncStreakToServer success');
+      if (__DEV__) console.log('syncStreakToServer success');
     }
   } catch (err) {
-    console.error('syncStreakToServer exception:', err);
+    if (__DEV__) console.error('syncStreakToServer exception:', err);
     await addToSyncQueue({
       type: 'streak',
       payload: streak,
@@ -252,7 +252,7 @@ export async function syncActiveChallengeToServer(
 
     if (result.error) throw result.error;
   } catch (err) {
-    console.error('syncActiveChallengeToServer exception:', err);
+    if (__DEV__) console.error('syncActiveChallengeToServer exception:', err);
     await addToSyncQueue({
       type: 'challenge',
       payload: challenge,
@@ -275,7 +275,7 @@ export async function syncOnboardingToServer(): Promise<void> {
 
     if (result.error) throw result.error;
   } catch (err) {
-    console.error('syncOnboardingToServer exception:', err);
+    if (__DEV__) console.error('syncOnboardingToServer exception:', err);
     await addToSyncQueue({
       type: 'onboarding',
       payload: null,
@@ -359,7 +359,7 @@ export async function syncUserNovenaToServer(novena: UserNovena): Promise<void> 
   if (!session) return;
 
   try {
-    await ensureProfileExists(session.user.id, session.user.email);
+    await ensureProfileExists(session.user.id);
 
     const result = await supabase.from('user_novenas').upsert({
       id: novena.id,
@@ -380,7 +380,7 @@ export async function syncUserNovenaToServer(novena: UserNovena): Promise<void> 
 
     if (result.error) throw result.error;
   } catch (err) {
-    console.error('syncUserNovenaToServer exception:', err);
+    if (__DEV__) console.error('syncUserNovenaToServer exception:', err);
     await addToSyncQueue({
       type: 'user_novena',
       payload: novena,

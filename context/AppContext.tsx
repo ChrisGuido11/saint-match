@@ -24,7 +24,7 @@ import { checkProStatus, initPurchases, loginRevenueCat } from '../lib/purchases
 import { incrementUsage } from '../lib/storage';
 import { addCompletionDate } from '../lib/streak';
 import { format } from 'date-fns';
-import { supabase, isSupabaseConfigured, ensureAnonymousSession } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, ensureAnonymousSession, getDisplayEmail } from '../lib/supabase';
 import {
   syncAllData,
   syncCompletionToServer,
@@ -49,6 +49,7 @@ interface AppContextType {
   isOnboarded: boolean;
   isLoading: boolean;
   session: Session | null;
+  displayEmail: string | null;
   userNovenas: UserNovena[];
   discoveredSaints: Saint[];
   challengeLog: ChallengeLogEntry[];
@@ -97,6 +98,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [freezeAvailable, setFreezeAvailable] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
+  const [displayEmail, setDisplayEmail] = useState<string | null>(null);
   const authListenerRef = useRef<{ subscription: { unsubscribe: () => void } } | null>(null);
 
   const refreshStreak = useCallback(async () => {
@@ -143,6 +145,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Seed match history from completions for existing users
     migrateMatchHistoryFromCompletions().catch(() => {});
 
+    // Refresh display email from current session
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (currentSession?.user?.id) {
+      getDisplayEmail(currentSession.user.id)
+        .then((email) => setDisplayEmail(email))
+        .catch(() => {});
+    }
+
     // Slow path: background sync with Supabase
     if (isSupabaseConfigured()) {
       syncAllData()
@@ -185,6 +195,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
           // Link RevenueCat to Supabase user for subscription tracking
           if (sess?.user?.id) {
             loginRevenueCat(sess.user.id).catch(() => {});
+            // Fetch raw display email from profiles
+            getDisplayEmail(sess.user.id)
+              .then((email) => setDisplayEmail(email))
+              .catch(() => {});
           }
         } catch {
           // Auth failed — app still works offline with AsyncStorage
@@ -208,6 +222,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (isSupabaseConfigured()) {
       const { data } = supabase.auth.onAuthStateChange((_event, sess) => {
         setSession(sess);
+        if (sess?.user?.id) {
+          getDisplayEmail(sess.user.id)
+            .then((email) => setDisplayEmail(email))
+            .catch(() => {});
+        } else {
+          setDisplayEmail(null);
+        }
       });
       authListenerRef.current = data;
     }
@@ -355,7 +376,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       .catch(() => {});
 
     return newNovena;
-  }, []);
+  }, [isPro, userNovenas]);
 
   const markNovenaDayPrayed = useCallback(async (userNovenaId: string): Promise<{ alreadyPrayed: boolean; completed: boolean }> => {
     const today = format(new Date(), 'yyyy-MM-dd');
@@ -445,6 +466,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isOnboarded,
         isLoading,
         session,
+        displayEmail,
         userNovenas,
         discoveredSaints,
         challengeLog,

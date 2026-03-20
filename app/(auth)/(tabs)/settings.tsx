@@ -79,13 +79,13 @@ function formatReminderTime(hour: number, minute: number): string {
 }
 
 export default function SettingsScreen() {
-  const { refreshAll, session, isPro } = useApp();
+  const { refreshAll, session, isPro, displayEmail } = useApp();
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [showNotifModal, setShowNotifModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [notifPrefs, setNotifPrefs] = useState<NotificationPreferences>(DEFAULT_PREFS);
   const [hapticOn, setHapticOn] = useState(true);
-  const userEmail = session?.user?.email;
+  const userEmail = displayEmail;
 
   useEffect(() => {
     getNotificationPreferences().then(setNotifPrefs);
@@ -133,7 +133,7 @@ export default function SettingsScreen() {
               await signOut();
               router.replace('/(public)/welcome');
             } catch (error) {
-              console.error('Error signing out:', error);
+              if (__DEV__) console.error('Error signing out:', error);
               showToast('Could not sign out. Please try again.');
             }
           },
@@ -165,8 +165,8 @@ export default function SettingsScreen() {
               await resetProStatus();
               router.replace('/(public)/welcome');
             } catch (error) {
-              console.error('Error deleting account:', error);
-              showToast('Error deleting account. Please try again.');
+              if (__DEV__) console.error('Error deleting account:', error);
+              showToast(error instanceof Error ? error.message : 'Error deleting account. Please try again.');
             }
           },
         },
@@ -371,10 +371,14 @@ export default function SettingsScreen() {
       <LinkAccountModal
         visible={showLinkModal}
         onClose={() => setShowLinkModal(false)}
-        onSuccess={(email) => {
+        onSuccess={(email, mode) => {
           setShowLinkModal(false);
           refreshAll();
-          showToast('Account linked successfully!');
+          showToast(
+            mode === 'signin'
+              ? 'Signed in! Your progress has been restored.'
+              : 'Account linked successfully!'
+          );
         }}
       />
 

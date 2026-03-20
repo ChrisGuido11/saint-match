@@ -15,7 +15,7 @@ import { WeeklyMiniCalendar } from '../../../components/WeeklyMiniCalendar';
 import { DayDetailBottomSheet } from '../../../components/DayDetailBottomSheet';
 
 export default function PortfolioScreen() {
-  const { completions, streak, discoveredSaints, activeChallenge, isPro, refreshAll } = useApp();
+  const { completions, streak, discoveredSaints, activeChallenge, isPro, refreshAll, userNovenas } = useApp();
   const [isExporting, setIsExporting] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -74,14 +74,17 @@ export default function PortfolioScreen() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
+      const esc = (str: string): string =>
+        str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+
       const exportDate = format(new Date(), 'MMMM d, yyyy');
 
       const saintsHtml = sortedSaints.map((saint) => {
         const count = saintCompletionMap.get(saint.id) ?? 0;
         return `<div class="saint-item">
-          <div class="saint-initials">${saint.initials}</div>
+          <div class="saint-initials">${esc(saint.initials)}</div>
           <div class="saint-info">
-            <strong>${saint.name}</strong>
+            <strong>${esc(saint.name)}</strong>
             <span class="saint-count">${count} challenge${count !== 1 ? 's' : ''}</span>
           </div>
         </div>`;
@@ -91,11 +94,33 @@ export default function PortfolioScreen() {
         ? completions.map(c =>
             `<div class="entry">
               <div class="entry-date">${format(new Date(c.completedAt), 'MMM d, yyyy')}</div>
-              <div class="entry-action">${c.actionText}</div>
-              <div class="entry-saint">Inspired by ${c.saintName}</div>
+              <div class="entry-action">${esc(c.actionText)}</div>
+              <div class="entry-saint">Inspired by ${esc(c.saintName)}</div>
             </div>`
           ).join('')
         : '<p class="empty">No completed challenges yet.</p>';
+
+      const completedNovenas = userNovenas.filter(n => n.completed);
+      const activeNovenas = userNovenas.filter(n => !n.completed);
+
+      const novenasHtml = userNovenas.length > 0
+        ? [
+            ...completedNovenas.map(n => `
+              <div class="entry">
+                <div class="entry-date">${format(new Date(n.startedAt), 'MMM d')} — ${n.completedAt ? format(new Date(n.completedAt), 'MMM d, yyyy') : 'Completed'}</div>
+                <div class="entry-action">${esc(n.saintName)}</div>
+                ${n.personalIntention ? `<div class="novena-intention">"${esc(n.personalIntention)}"</div>` : ''}
+                ${n.reflection ? `<div class="novena-reflection">Reflection: ${esc(n.reflection)}</div>` : ''}
+              </div>`),
+            ...activeNovenas.map(n => `
+              <div class="entry">
+                <div class="entry-date">Started ${format(new Date(n.startedAt), 'MMM d, yyyy')}</div>
+                <div class="entry-action">${esc(n.saintName)}</div>
+                ${n.personalIntention ? `<div class="novena-intention">"${esc(n.personalIntention)}"</div>` : ''}
+                <div class="novena-progress">Day ${n.currentDay} of 9</div>
+              </div>`)
+          ].join('')
+        : '<p class="empty">No novenas started yet.</p>';
 
       const html = `
         <html>
@@ -173,6 +198,9 @@ export default function PortfolioScreen() {
             .entry-date { color: #999; font-size: 12px; margin-bottom: 4px; }
             .entry-action { color: #2D2D2D; font-size: 15px; line-height: 1.4; }
             .entry-saint { color: #8B9D83; font-size: 13px; margin-top: 6px; font-style: italic; }
+            .novena-intention { color: #666; font-size: 13px; font-style: italic; margin-top: 4px; }
+            .novena-reflection { color: #8B9D83; font-size: 13px; margin-top: 6px; }
+            .novena-progress { color: #D4735E; font-size: 13px; font-weight: bold; margin-top: 6px; }
             .empty { color: #999; font-style: italic; }
           </style>
         </head>
@@ -194,6 +222,9 @@ export default function PortfolioScreen() {
 
           <h2>Saints Collection (${sortedSaints.length} Saints Discovered)</h2>
           ${saintsHtml}
+
+          <h2>Novena Journeys (${userNovenas.length} ${userNovenas.length === 1 ? 'novena' : 'novenas'})</h2>
+          ${novenasHtml}
 
           <h2>Challenge History (${completions.length} ${completions.length === 1 ? 'entry' : 'entries'})</h2>
           ${completionsHtml}

@@ -13,21 +13,26 @@ import {
 import { Colors } from '../constants/colors';
 import { Typography, FontFamily } from '../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../constants/spacing';
-import { linkEmailToAccount, supabase } from '../lib/supabase';
+import { linkEmailToAccount, signInWithEmail, supabase } from '../lib/supabase';
+
+type AuthMode = 'signup' | 'signin';
 
 interface LinkAccountModalProps {
   visible: boolean;
   onClose: () => void;
-  onSuccess: (email: string) => void;
+  onSuccess: (email: string, mode: AuthMode) => void;
 }
 
 export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [mode, setMode] = useState<AuthMode>('signup');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleLink = async () => {
+  const isSignUp = mode === 'signup';
+
+  const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) {
       setError('Please enter both email and password.');
       return;
@@ -42,43 +47,51 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
     setError(null);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      if (isSignUp) {
+        const { data: { session } } = await supabase.auth.getSession();
 
-      // Check if email is already linked
-      if (session?.user?.email) {
-        setError(`Account already linked to ${session.user.email}`);
-        setIsLoading(false);
-        return;
-      }
+        if (session?.user?.email) {
+          setError(`Account already linked to ${session.user.email}`);
+          setIsLoading(false);
+          return;
+        }
 
-      if (session) {
-        // User has an existing session - upgrade/link it
-        await linkEmailToAccount(email.trim(), password);
-      } else {
-        // No session - sign up as a new user directly
-        const { data, error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password,
-        });
-        if (error) throw error;
-        
-        // If no session after signup, try signing in
-        if (data?.user && !data.session) {
-          const { error: signInError } = await supabase.auth.signInWithPassword({
+        if (session) {
+          await linkEmailToAccount(email.trim(), password);
+        } else {
+          const { data, error: signUpError } = await supabase.auth.signUp({
             email: email.trim(),
             password,
           });
-          if (signInError) throw signInError;
+          if (signUpError) throw signUpError;
+
+          if (data?.user && !data.session) {
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+              email: email.trim(),
+              password,
+            });
+            if (signInError) throw signInError;
+          }
         }
+      } else {
+        await signInWithEmail(email.trim(), password);
       }
-      
-      onSuccess(email.trim());
+
+      onSuccess(email.trim(), mode);
       setEmail('');
       setPassword('');
-    } catch (err: any) {
-      console.error('Link account error:', err);
-      const message = err?.message || err?.error_description || 'Could not link account.';
-      setError(message);
+    } catch (err: unknown) {
+      if (__DEV__) console.error('Link account error:', err);
+      const message = (err as { message?: string })?.message ?? 'Could not complete request.';
+
+      // Smart error nudges
+      if (isSignUp && message.toLowerCase().includes('already registered')) {
+        setError('This email already has an account. Try signing in.');
+      } else if (!isSignUp && message.toLowerCase().includes('invalid login credentials')) {
+        setError('Email or password is incorrect.');
+      } else {
+        setError(message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +101,13 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
     setEmail('');
     setPassword('');
     setError(null);
+    setMode('signup');
     onClose();
+  };
+
+  const switchMode = (newMode: AuthMode) => {
+    setMode(newMode);
+    setError(null);
   };
 
   return (
@@ -99,9 +118,35 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
       >
         <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={handleClose} />
         <View style={styles.container}>
-          <Text style={styles.title}>Link Account</Text>
+          {/* Mode toggle tabs */}
+          <View style={styles.tabRow}>
+            <TouchableOpacity
+              style={[styles.tab, isSignUp && styles.tabActive]}
+              onPress={() => switchMode('signup')}
+              activeOpacity={0.7}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: isSignUp }}
+            >
+              <Text style={[styles.tabText, isSignUp && styles.tabTextActive]}>Create Account</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, !isSignUp && styles.tabActive]}
+              onPress={() => switchMode('signin')}
+              activeOpacity={0.7}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: !isSignUp }}
+            >
+              <Text style={[styles.tabText, !isSignUp && styles.tabTextActive]}>Sign In</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.title}>
+            {isSignUp ? 'Link Account' : 'Welcome Back'}
+          </Text>
           <Text style={styles.subtitle}>
-            Add your email to sync data across devices and keep your progress safe.
+            {isSignUp
+              ? 'Add your email to sync across devices and keep your progress safe.'
+              : 'Sign in to restore your saints, streaks, and progress.'}
           </Text>
 
           <TextInput
@@ -123,7 +168,7 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
             value={password}
             onChangeText={setPassword}
             secureTextEntry
-            autoComplete="new-password"
+            autoComplete={isSignUp ? 'new-password' : 'current-password'}
             accessibilityLabel="Password"
           />
 
@@ -131,16 +176,18 @@ export function LinkAccountModal({ visible, onClose, onSuccess }: LinkAccountMod
 
           <TouchableOpacity
             style={[styles.linkButton, isLoading && styles.linkButtonDisabled]}
-            onPress={handleLink}
+            onPress={handleSubmit}
             disabled={isLoading}
             activeOpacity={0.8}
             accessibilityRole="button"
-            accessibilityLabel="Link account"
+            accessibilityLabel={isSignUp ? 'Link account' : 'Sign in'}
           >
             {isLoading ? (
               <ActivityIndicator color={Colors.white} />
             ) : (
-              <Text style={styles.linkButtonText}>Link Account</Text>
+              <Text style={styles.linkButtonText}>
+                {isSignUp ? 'Link Account' : 'Sign In'}
+              </Text>
             )}
           </TouchableOpacity>
 
@@ -170,6 +217,31 @@ const styles = StyleSheet.create({
     width: '85%',
     maxWidth: 400,
     ...Shadows.card,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    marginBottom: Spacing.md,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.cream,
+    padding: 3,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: Spacing.xs + 2,
+    alignItems: 'center',
+    borderRadius: BorderRadius.md - 2,
+  },
+  tabActive: {
+    backgroundColor: Colors.white,
+    ...Shadows.card,
+  },
+  tabText: {
+    ...Typography.bodySmall,
+    fontFamily: FontFamily.sansMedium,
+    color: Colors.charcoalMuted,
+  },
+  tabTextActive: {
+    color: Colors.charcoal,
   },
   title: {
     ...Typography.h2,
