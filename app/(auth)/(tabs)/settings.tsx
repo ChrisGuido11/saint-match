@@ -20,7 +20,7 @@ import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
 import { useApp } from '../../../context/AppContext';
 import { clearAllData, getNotificationPreferences, setNotificationPreferences } from '../../../lib/storage';
 import { resetAllData } from '../../../lib/streak';
-import { resetProStatus, restorePurchases, showCustomerCenter } from '../../../lib/purchases';
+import { resetProStatus, restorePurchases } from '../../../lib/purchases';
 import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 import { signOut, isSupabaseConfigured, deleteUserAccount } from '../../../lib/supabase';
 import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder } from '../../../lib/notifications';
@@ -42,14 +42,14 @@ function showToast(message: string) {
 interface SettingRowProps {
   label: string;
   subtitle?: string;
-  onPress: () => void;
+  onPress?: () => void;
   destructive?: boolean;
   rightText?: string;
 }
 
 function SettingRow({ label, subtitle, onPress, destructive, rightText }: SettingRowProps) {
   return (
-    <TouchableOpacity style={styles.settingRow} onPress={onPress} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={`${label}${subtitle ? ` — ${subtitle}` : ''}`}>
+    <TouchableOpacity style={styles.settingRow} onPress={onPress} activeOpacity={onPress ? 0.7 : 1} disabled={!onPress} accessibilityRole="button" accessibilityLabel={`${label}${subtitle ? ` — ${subtitle}` : ''}`}>
       <View style={styles.settingContent}>
         <Text style={[styles.settingLabel, destructive && styles.settingLabelDestructive]}>
           {label}
@@ -279,11 +279,6 @@ export default function SettingsScreen() {
               <SettingRow
                 label="Saint Match Pro"
                 subtitle="Unlimited matches & novenas"
-                onPress={() => {
-                  showCustomerCenter().catch(() => {
-                    Linking.openURL('https://apps.apple.com/account/subscriptions');
-                  });
-                }}
                 rightText="Active"
               />
               <View style={styles.divider} />
