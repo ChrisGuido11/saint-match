@@ -22,7 +22,7 @@ import { clearAllData, getNotificationPreferences, setNotificationPreferences } 
 import { resetAllData } from '../../../lib/streak';
 import { resetProStatus, restorePurchases } from '../../../lib/purchases';
 import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
-import { signOut, isSupabaseConfigured, deleteUserAccount } from '../../../lib/supabase';
+import { signOut, isSupabaseConfigured, deleteUserAccount, supabase } from '../../../lib/supabase';
 import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder } from '../../../lib/notifications';
 import * as Notifications from 'expo-notifications';
 import { LinkAccountModal } from '../../../components/LinkAccountModal';
@@ -43,13 +43,14 @@ interface SettingRowProps {
   label: string;
   subtitle?: string;
   onPress?: () => void;
+  onLongPress?: () => void;
   destructive?: boolean;
   rightText?: string;
 }
 
-function SettingRow({ label, subtitle, onPress, destructive, rightText }: SettingRowProps) {
+function SettingRow({ label, subtitle, onPress, onLongPress, destructive, rightText }: SettingRowProps) {
   return (
-    <TouchableOpacity style={styles.settingRow} onPress={onPress} activeOpacity={onPress ? 0.7 : 1} disabled={!onPress} accessibilityRole="button" accessibilityLabel={`${label}${subtitle ? ` — ${subtitle}` : ''}`}>
+    <TouchableOpacity style={styles.settingRow} onPress={onPress} onLongPress={onLongPress} activeOpacity={onPress ? 0.7 : 1} disabled={!onPress && !onLongPress} accessibilityRole="button" accessibilityLabel={`${label}${subtitle ? ` — ${subtitle}` : ''}`}>
       <View style={styles.settingContent}>
         <Text style={[styles.settingLabel, destructive && styles.settingLabelDestructive]}>
           {label}
@@ -280,6 +281,34 @@ export default function SettingsScreen() {
                 label="Saint Match Pro"
                 subtitle="Unlimited matches & novenas"
                 rightText="Active"
+                onLongPress={() => {
+                  Alert.alert(
+                    'Reset Pro Status?',
+                    'This will reset your pro subscription for testing. If you have an active subscription, it will be restored on next app launch.',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Reset',
+                        style: 'destructive',
+                        onPress: async () => {
+                          try {
+                            await resetProStatus();
+                            if (isSupabaseConfigured() && session?.user?.id) {
+                              await supabase
+                                .from('profiles')
+                                .update({ is_pro: false })
+                                .eq('id', session.user.id);
+                            }
+                            setIsPro(false);
+                            showToast('Pro status reset');
+                          } catch {
+                            showToast('Failed to reset pro status');
+                          }
+                        },
+                      },
+                    ]
+                  );
+                }}
               />
               <View style={styles.divider} />
               <SettingRow
