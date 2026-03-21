@@ -116,9 +116,19 @@ export async function purchasePro(packageIdentifier: string): Promise<boolean> {
 
   try {
     const offerings = await Purchases.getOfferings();
+
+    // Map UI identifiers to RevenueCat package types
+    const TYPE_MAP: Record<string, string> = {
+      pro_annual: 'ANNUAL',
+      pro_monthly: 'MONTHLY',
+    };
+    const targetType = TYPE_MAP[packageIdentifier];
+
     const pkg = offerings.current?.availablePackages.find(
-      (p: PurchasesPackage) => p.identifier === packageIdentifier ||
-        p.product.identifier === packageIdentifier
+      (p: PurchasesPackage) =>
+        p.identifier === packageIdentifier ||
+        p.product.identifier === packageIdentifier ||
+        (targetType && p.packageType === targetType)
     );
 
     if (!pkg) {

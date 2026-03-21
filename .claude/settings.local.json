@@ -48,7 +48,8 @@
       "Bash(where supabase:*)",
       "Bash(find /c/Users/cguid/saint-match -type f \\\\\\(-name *pdf* -o -name *export* -o -name *report* \\\\\\))",
       "Bash(find . -name *.ts -type f -exec grep -l functions.invoke.*delete-account {})",
-      "Bash(2)"
+      "Bash(2)",
+      "Bash(find /c/Users/cguid/saint-match/app -type f \\\\\\(-name *.tsx -o -name *.ts \\\\\\) ! -path */node_modules/*)"
     ],
     "deny": [],
     "ask": []
