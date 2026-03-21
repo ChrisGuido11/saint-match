@@ -14,7 +14,7 @@ import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 import { IconNavNovenas } from '../../../components/icons';
 
 export default function NovenasScreen() {
-  const { userNovenas, refreshAll, abandonNovena, isPro } = useApp();
+  const { userNovenas, refreshAll, abandonNovena, isPro, setIsPro } = useApp();
   const [refreshing, setRefreshing] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -214,6 +214,7 @@ export default function NovenasScreen() {
         reason="novenas"
         onPurchaseSuccess={() => {
           setShowPaywall(false);
+          setIsPro(true);
           refreshAll();
         }}
       />

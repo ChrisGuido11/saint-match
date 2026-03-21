@@ -24,7 +24,7 @@ import { useApp } from '../../context/AppContext';
 import { PaywallBottomSheet } from '../../components/PaywallBottomSheet';
 
 export default function ChooseIntentionScreen() {
-  const { userNovenas, isPro, refreshAll } = useApp();
+  const { userNovenas, isPro, refreshAll, setIsPro } = useApp();
   const activeNovenaCount = userNovenas.filter((n) => !n.completed).length;
   const isNovenaLimited = !isPro && activeNovenaCount >= 1;
   const [showPaywall, setShowPaywall] = useState(false);
@@ -226,6 +226,7 @@ export default function ChooseIntentionScreen() {
         reason="novenas"
         onPurchaseSuccess={() => {
           setShowPaywall(false);
+          setIsPro(true);
           refreshAll();
         }}
       />

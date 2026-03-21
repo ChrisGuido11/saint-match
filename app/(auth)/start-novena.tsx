@@ -33,7 +33,7 @@ export default function StartNovenaScreen() {
     intention?: string;
     matchReason?: string;
   }>();
-  const { startNovena, refreshAll } = useApp();
+  const { startNovena, refreshAll, setIsPro } = useApp();
   const [showPaywall, setShowPaywall] = useState(false);
 
   const novena = novenaId ? getNovenaById(novenaId) : null;
@@ -272,6 +272,7 @@ export default function StartNovenaScreen() {
         reason="novenas"
         onPurchaseSuccess={() => {
           setShowPaywall(false);
+          setIsPro(true);
           refreshAll();
         }}
       />

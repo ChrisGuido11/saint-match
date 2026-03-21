@@ -79,7 +79,7 @@ function formatReminderTime(hour: number, minute: number): string {
 }
 
 export default function SettingsScreen() {
-  const { refreshAll, session, isPro, displayEmail } = useApp();
+  const { refreshAll, session, isPro, displayEmail, setIsPro } = useApp();
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [showNotifModal, setShowNotifModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -386,6 +386,7 @@ export default function SettingsScreen() {
         reason="upgrade"
         onPurchaseSuccess={() => {
           setShowPaywall(false);
+          setIsPro(true);
           showToast('Pro unlocked! Enjoy unlimited matches and novenas.');
           refreshAll();
         }}

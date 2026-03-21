@@ -49,7 +49,7 @@ function deriveSaintId(slug: string): string {
 }
 
 export default function BrowseNovenasScreen() {
-  const { userNovenas, isPro, refreshAll } = useApp();
+  const { userNovenas, isPro, refreshAll, setIsPro } = useApp();
   const isNovenaLimited = !isPro && userNovenas.filter((n) => !n.completed).length >= 1;
   const [showPaywall, setShowPaywall] = useState(false);
   const [catalog, setCatalog] = useState<NovenaEntry[]>([]);
@@ -238,6 +238,7 @@ export default function BrowseNovenasScreen() {
         reason="novenas"
         onPurchaseSuccess={() => {
           setShowPaywall(false);
+          setIsPro(true);
           refreshAll();
         }}
       />

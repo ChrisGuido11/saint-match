@@ -15,7 +15,7 @@ import { WeeklyMiniCalendar } from '../../../components/WeeklyMiniCalendar';
 import { DayDetailBottomSheet } from '../../../components/DayDetailBottomSheet';
 
 export default function PortfolioScreen() {
-  const { completions, streak, discoveredSaints, activeChallenge, isPro, refreshAll, userNovenas } = useApp();
+  const { completions, streak, discoveredSaints, activeChallenge, isPro, refreshAll, setIsPro, userNovenas } = useApp();
   const [isExporting, setIsExporting] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -376,6 +376,7 @@ export default function PortfolioScreen() {
         reason="export"
         onPurchaseSuccess={() => {
           setShowPaywall(false);
+          setIsPro(true);
           refreshAll();
         }}
       />

@@ -113,7 +113,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const refreshAll = useCallback(async () => {
     // Fast path: load from AsyncStorage
-    const [streakResult, usageData, challenge, comps, onboarded, novenas, discovered, logEntries] = await Promise.all([
+    const [streakResult, usageData, challenge, comps, onboarded, novenas, discovered, logEntries, proStatus] = await Promise.all([
       getStreakDataWithResetCheck(),
       getUsageData(),
       getActiveChallenge(),
@@ -122,7 +122,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       getUserNovenas(),
       getDiscoveredSaints(),
       getChallengeLog(),
+      checkProStatus().catch(() => false),
     ]);
+    setIsPro(proStatus);
     const { streakData, resetInfo } = streakResult;
     setStreak(streakData);
     setStreakResetInfo(resetInfo);
