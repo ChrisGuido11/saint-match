@@ -29,6 +29,10 @@ interface PaywallBottomSheetProps {
   onPurchaseSuccess: () => void;
   streakAtRisk?: number;
   reason?: 'matches' | 'novenas' | 'export' | 'upgrade';
+  /** When true, a rewarded ad is loaded and a "bonus match" option is offered. */
+  watchAdAvailable?: boolean;
+  /** Present the rewarded ad to earn a bonus match. */
+  onWatchAd?: () => void;
 }
 
 export function PaywallBottomSheet({
@@ -37,7 +41,12 @@ export function PaywallBottomSheet({
   onPurchaseSuccess,
   streakAtRisk,
   reason,
+  watchAdAvailable,
+  onWatchAd,
 }: PaywallBottomSheetProps) {
+  // Offer the rewarded "bonus match" only at the weekly match limit.
+  const showWatchAd =
+    !!watchAdAvailable && !!onWatchAd && !streakAtRisk && (!reason || reason === 'matches');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
 
@@ -165,6 +174,27 @@ export function PaywallBottomSheet({
               <Text style={styles.ctaText}>Upgrade to Pro</Text>
             )}
           </TouchableOpacity>
+
+          {/* Rewarded bonus match — free alternative to upgrading */}
+          {showWatchAd && (
+            <>
+              <View style={styles.orDivider}>
+                <View style={styles.orLine} />
+                <Text style={styles.orText}>or</Text>
+                <View style={styles.orLine} />
+              </View>
+              <TouchableOpacity
+                style={styles.watchAdButton}
+                onPress={onWatchAd}
+                disabled={isLoading}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityLabel="Watch a short video to earn one bonus saint match"
+              >
+                <Text style={styles.watchAdText}>{'\u{1F381}'}  Watch a video for a bonus match</Text>
+              </TouchableOpacity>
+            </>
+          )}
 
           {/* Restore */}
           <TouchableOpacity onPress={handleRestore} style={styles.restoreButton} accessibilityRole="button" accessibilityLabel="Restore purchases">
@@ -329,6 +359,36 @@ const styles = StyleSheet.create({
   ctaText: {
     ...Typography.buttonLarge,
     color: Colors.white,
+  },
+  orDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: Spacing.md,
+    marginBottom: Spacing.sm,
+    gap: Spacing.sm,
+  },
+  orLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.creamDark,
+  },
+  orText: {
+    ...Typography.caption,
+    color: Colors.charcoalSubtle,
+  },
+  watchAdButton: {
+    width: '100%',
+    paddingVertical: 16,
+    backgroundColor: Colors.sageMuted,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1.5,
+    borderColor: Colors.sage,
+    alignItems: 'center',
+  },
+  watchAdText: {
+    ...Typography.button,
+    color: Colors.sageDark,
   },
   restoreButton: {
     marginTop: Spacing.sm,

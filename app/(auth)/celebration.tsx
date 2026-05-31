@@ -18,6 +18,7 @@ import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { ConfettiAnimation } from '../../components/ConfettiAnimation';
 import { isMilestoneStreak } from '../../constants/saints';
 import { IconNavNovenas } from '../../components/icons';
+import { useInterstitial } from '../../lib/ads';
 
 const MESSAGES: Record<number, string> = {
   1: "The journey of a thousand miles begins with a single step.",
@@ -43,6 +44,7 @@ export default function CelebrationScreen() {
   }>();
   const count = parseInt(streakCount ?? '0', 10);
   const [showConfetti, setShowConfetti] = useState(true);
+  const { showInterstitial } = useInterstitial();
 
   const isMilestone = isMilestoneStreak(count);
   const message = MESSAGES[count] || DEFAULT_MESSAGES[Math.floor(Math.random() * DEFAULT_MESSAGES.length)];
@@ -79,6 +81,9 @@ export default function CelebrationScreen() {
   const handleDone = () => {
     hapticImpact(ImpactFeedbackStyle.Light);
     router.replace('/(auth)/(tabs)');
+    // Interstitial at the transition back to home (no-op for Pro / when capped
+    // / not ready). The 30s gap prevents stacking with an accept-challenge ad.
+    showInterstitial('celebration');
   };
 
   return (

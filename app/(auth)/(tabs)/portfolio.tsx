@@ -13,6 +13,7 @@ import FlippableSaintCard from '../../../components/FlippableSaintCard';
 import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 import { WeeklyMiniCalendar } from '../../../components/WeeklyMiniCalendar';
 import { DayDetailBottomSheet } from '../../../components/DayDetailBottomSheet';
+import { AdBanner } from '../../../components/AdBanner';
 
 export default function PortfolioScreen() {
   const { completions, streak, discoveredSaints, activeChallenge, isPro, refreshAll, setIsPro, userNovenas } = useApp();
@@ -246,6 +247,7 @@ export default function PortfolioScreen() {
   };
 
   return (
+    <View style={styles.screen}>
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
@@ -381,10 +383,16 @@ export default function PortfolioScreen() {
         }}
       />
     </ScrollView>
+      <AdBanner placement="banner_portfolio" />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: Colors.cream,
+  },
   container: {
     flex: 1,
     backgroundColor: Colors.cream,

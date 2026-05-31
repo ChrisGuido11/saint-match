@@ -12,6 +12,7 @@ import { SaintMatch as SaintMatchType, Mood } from '../../types';
 import { getMoodById } from '../../constants/saints';
 import { IconClose } from '../../components/icons';
 import { NovenaSuggestionCard } from '../../components/NovenaSuggestionCard';
+import { useInterstitial } from '../../lib/ads';
 
 export default function SaintMatchScreen() {
   const { matchData, selectedMood, customMoodText } = useLocalSearchParams<{
@@ -21,6 +22,7 @@ export default function SaintMatchScreen() {
   }>();
   const { acceptChallenge, userNovenas, isPro } = useApp();
   const [isAccepting, setIsAccepting] = useState(false);
+  const { showInterstitial } = useInterstitial();
 
   const selectedMoodData = selectedMood ? getMoodById(selectedMood) : null;
 
@@ -53,6 +55,9 @@ export default function SaintMatchScreen() {
         moodText,
       );
       router.replace('/(auth)/(tabs)');
+      // Interstitial at the natural transition back to home (no-op for Pro /
+      // when capped / not ready). Shown over the destination screen.
+      showInterstitial('accept_challenge');
     } catch {
       Alert.alert('Error', 'Could not accept challenge. Please try again.');
     } finally {

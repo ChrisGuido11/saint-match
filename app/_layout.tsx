@@ -19,6 +19,7 @@ import {
 } from '@expo-google-fonts/dm-sans';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppProvider } from '../context/AppContext';
+import { AdsController } from '../components/AdsController';
 import { Colors } from '../constants/colors';
 
 SplashScreen.preventAutoHideAsync();
@@ -75,6 +76,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AppProvider>
+        <AdsController />
         <StatusBar style="dark" />
         <Stack
           screenOptions={{

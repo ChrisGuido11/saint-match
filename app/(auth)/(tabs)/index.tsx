@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { router } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
@@ -13,10 +13,12 @@ import { StreakResetBanner } from '../../../components/StreakResetBanner';
 import { ChallengeCard } from '../../../components/ChallengeCard';
 import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 
-import { Mood } from '../../../types';
-import { getSaintMatch, getSaintMatchCustom } from '../../../lib/claude';
+import { Mood, Emotion } from '../../../types';
+import { getSaintMatch, getSaintMatchCustom, getBonusSaintMatch, guessEmotion } from '../../../lib/claude';
 import { getEmotionFromMood } from '../../../constants/saints';
 import { IconCompleted, IconMatching } from '../../../components/icons';
+import { AdBanner } from '../../../components/AdBanner';
+import { useRewarded } from '../../../lib/ads';
 export default function HomeScreen() {
   const {
     streak,
@@ -47,6 +49,33 @@ export default function HomeScreen() {
 
   const isAtLimit = !isPro && usage.matchesUsedThisWeek >= usage.weeklyLimit;
 
+  // Rewarded "bonus match": when at the weekly limit, the user can watch a
+  // rewarded ad to earn one extra match. Bonus matches are generated locally
+  // (getBonusSaintMatch) so they bypass the server-enforced weekly limit.
+  const pendingBonusRef = useRef<{ emotion: Emotion; mood?: Mood; moodText?: string } | null>(null);
+
+  const handleBonusEarned = useCallback(async () => {
+    const pending = pendingBonusRef.current;
+    pendingBonusRef.current = null;
+    setShowPaywall(false);
+    if (!pending) return;
+    try {
+      const match = await getBonusSaintMatch(pending.emotion);
+      router.push({
+        pathname: '/(auth)/saint-match',
+        params: {
+          matchData: JSON.stringify(match),
+          ...(pending.mood ? { selectedMood: pending.mood } : {}),
+          ...(pending.moodText && !pending.mood ? { customMoodText: pending.moodText } : {}),
+        },
+      });
+    } catch {
+      Alert.alert('Bonus match unavailable', 'Please try again in a moment.');
+    }
+  }, []);
+
+  const { isReady: rewardedReady, show: showRewarded } = useRewarded(handleBonusEarned);
+
   const handleMatchError = (error: unknown) => {
     const message = error instanceof Error ? error.message : '';
     if (message === 'USAGE_LIMIT_REACHED') {
@@ -64,13 +93,16 @@ export default function HomeScreen() {
   };
 
   const handleMoodSelect = async (mood: Mood) => {
+    const emotion = getEmotionFromMood(mood);
+    // Remember the intent so a rewarded bonus match can reuse it.
+    pendingBonusRef.current = { emotion, mood };
+
     // Pre-flight: check usage before making API call
     if (isAtLimit) {
       setShowPaywall(true);
       return;
     }
 
-    const emotion = getEmotionFromMood(mood);
     setIsMatching(true);
     try {
       const match = await getSaintMatch(emotion);
@@ -90,6 +122,9 @@ export default function HomeScreen() {
   };
 
   const handleCustomMoodSubmit = async (text: string) => {
+    // Remember the intent so a rewarded bonus match can reuse it.
+    pendingBonusRef.current = { emotion: guessEmotion(text), moodText: text };
+
     // Pre-flight: check usage before making API call
     if (isAtLimit) {
       setShowPaywall(true);
@@ -209,10 +244,15 @@ export default function HomeScreen() {
 
     </ScrollView>
 
+      {/* Anchored adaptive banner — sits above the tab bar, clear of tap targets */}
+      <AdBanner placement="banner_home" />
+
       <PaywallBottomSheet
         visible={showPaywall}
         onClose={() => setShowPaywall(false)}
         onPurchaseSuccess={handlePurchaseSuccess}
+        watchAdAvailable={rewardedReady}
+        onWatchAd={showRewarded}
       />
     </KeyboardAvoidingView>
   );

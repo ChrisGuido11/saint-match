@@ -1,5 +1,5 @@
 import { Emotion, Saint, SaintMatch } from '../types';
-import { SAINTS } from '../constants/saints';
+import { SAINTS, MICRO_ACTIONS } from '../constants/saints';
 import { isSupabaseConfigured } from './supabase';
 import { getMatchHistory, addToMatchHistory } from './storage';
 import { getValidAccessToken, refreshAccessToken } from './authHelpers';
@@ -168,7 +168,54 @@ export async function getSaintMatchCustom(moodText: string): Promise<SaintMatch>
   return match;
 }
 
-function guessEmotion(text: string): Emotion {
+/**
+ * Generate a saint match entirely from the embedded local data — no Edge
+ * Function call, so it does NOT count against the server-enforced weekly match
+ * limit. Used for rewarded "bonus match" unlocks (the user watched an ad), and
+ * as a safe offline fallback. Returns a curated saint + micro-action, avoiding
+ * recently-seen saints when possible.
+ */
+export async function getBonusSaintMatch(emotion: Emotion): Promise<SaintMatch> {
+  const history = await getMatchHistory();
+  const recent = new Set(history.slice(0, 15).map((n) => n.toLowerCase()));
+
+  // Curated micro-actions matching the emotion (fall back to all if none).
+  let candidates = MICRO_ACTIONS.filter((a) => a.emotion === emotion);
+  if (candidates.length === 0) candidates = MICRO_ACTIONS;
+
+  const saintById = new Map(SAINTS.map((s) => [s.id, s]));
+
+  // Prefer saints the user hasn't seen recently.
+  const fresh = candidates.filter((a) => {
+    const saint = saintById.get(a.saintId);
+    return saint != null && !recent.has(saint.name.toLowerCase());
+  });
+  const pool = fresh.length > 0 ? fresh : candidates;
+
+  const chosen = pool[Math.floor(Math.random() * pool.length)];
+  const saint = saintById.get(chosen.saintId);
+  if (!saint) {
+    throw new Error('MATCH_UNAVAILABLE');
+  }
+
+  const match: SaintMatch = {
+    saint,
+    microAction: {
+      id: `bonus-${Date.now()}`,
+      saintId: saint.id,
+      emotion,
+      actionText: chosen.actionText,
+      estimatedMinutes: chosen.estimatedMinutes,
+    },
+    matchedAt: new Date().toISOString(),
+    matchReason: `${saint.name} walked a path much like yours. Let their example steady you today.`,
+  };
+
+  addToMatchHistory(saint.name).catch(() => {});
+  return match;
+}
+
+export function guessEmotion(text: string): Emotion {
   const lower = text.toLowerCase();
   const map: [Emotion, string[]][] = [
     ['anxious', ['worry', 'anxious', 'anxiety', 'nervous', 'fear', 'stress', 'panic']],

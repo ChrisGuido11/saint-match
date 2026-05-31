@@ -12,6 +12,7 @@ import { NovenaProgressDots } from '../../../components/NovenaProgressDots';
 import { NovenaInfoModal } from '../../../components/NovenaInfoModal';
 import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 import { IconNavNovenas } from '../../../components/icons';
+import { AdBanner } from '../../../components/AdBanner';
 
 export default function NovenasScreen() {
   const { userNovenas, refreshAll, abandonNovena, isPro, setIsPro } = useApp();
@@ -62,6 +63,7 @@ export default function NovenasScreen() {
   };
 
   return (
+    <View style={styles.screen}>
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
@@ -219,10 +221,16 @@ export default function NovenasScreen() {
         }}
       />
     </ScrollView>
+      <AdBanner placement="banner_novenas" />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: Colors.cream,
+  },
   container: {
     flex: 1,
     backgroundColor: Colors.cream,
