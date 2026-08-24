@@ -8,13 +8,13 @@ Create a marketing landing page and three legal compliance pages for **Saint Mat
 
 - **App Name:** Saint Match
 - **Tagline:** Daily wisdom from the saints for your modern life
-- **Description:** Saint Match helps Catholics practice daily virtue through personalized challenges inspired by Catholic saints — "Duolingo for becoming a better person." Each day, share how you're feeling, get matched with a saint who walked a similar path, and receive a simple micro-challenge you can complete in minutes. Start guided 9-day novenas with AI-personalized prayers for any saint you discover. Currently free during beta with all features unlocked.
+- **Description:** Saint Match helps Catholics practice daily virtue through personalized challenges inspired by Catholic saints — "Duolingo for becoming a better person." Each day, share how you're feeling, get matched with a saint who walked a similar path, and receive a simple micro-challenge you can complete in minutes. Start guided 9-day novenas with AI-personalized prayers for any saint you discover. Free to download on iPhone. Monthly Pro $4.99. Yearly Pro $39.99. Matching a struggle to a saint is included.
 - **Killer Feature:** AI-powered saint matching — tell the app how you're feeling (or type it in your own words) and get matched with a saint whose life and virtues speak directly to your situation, along with a personalized micro-action inspired by their example. Plus guided novenas with AI-generated prayers tailored to your personal intention.
 - **Target Users:** Catholics (and those curious about the faith) who want to grow in virtue through small daily practices, guided by the wisdom of the saints
-- **Pricing Model:** Completely free during beta (all features unlocked, no limits). Future plans: Free tier (3 matches/week), Pro Monthly ($7.99/mo), Pro Annual ($79/yr) with unlimited matches, full Virtue Portfolio analytics, and streak protection.
+- **Pricing Model:** Free to download on iPhone. Matching a struggle to a saint is included. Saint Match Pro is live: Monthly Pro $4.99, Yearly Pro $39.99 — unlimited matches, full Virtue Portfolio analytics, and streak protection.
 - **Support Email:** support@saintmatch.app
 - **Platform:** iOS & Android (React Native / Expo)
-- **Third-Party Services:** Supabase (authentication, database, edge functions), Anthropic Claude API (AI saint matching & novena prayer generation), RevenueCat (in-app purchases — dormant during beta), Expo Notifications
+- **Third-Party Services:** Supabase (authentication, database, edge functions), Anthropic Claude API (AI saint matching & novena prayer generation), RevenueCat (in-app purchases for Saint Match Pro), Expo Notifications
 
 **Domain-Specific Disclaimers:** Saint Match is a devotional tool and is not affiliated with, endorsed by, or a substitute for the Catholic Church, its sacraments, or pastoral guidance. AI-generated content (saint matches, novena prayers) is intended for personal reflection and should not be considered official Church teaching. Always consult your parish priest or spiritual director for matters of faith and morals.
 
@@ -44,15 +44,15 @@ Warm, contemplative, and inviting. Cream backgrounds with sage green and terraco
 ### Hero Section
 
 - **Headline:** Meet the Saint Who Gets You
-- **Subheadline:** AI-powered saint matching, daily virtue challenges & guided novenas — completely free during beta
-- **Description:** Share how you're feeling. Get matched with a saint who walked your path. Accept a micro-challenge to grow in virtue. Start a 9-day novena with AI-personalized prayers. All free, no limits.
-- **Primary CTA:** Download Free — Join the Beta
+- **Subheadline:** AI-powered saint matching, daily virtue challenges & guided novenas — free to download on iPhone
+- **Description:** Share how you're feeling. Get matched with a saint who walked your path. Accept a micro-challenge to grow in virtue. Start a 9-day novena with AI-personalized prayers. Matching a struggle to a saint is included.
+- **Primary CTA:** Download on the App Store
 - **Secondary CTA:** See How It Works
 - **Hero Image:** A warm illustration of a phone screen showing the saint match interface, with soft sage and terracotta gradients radiating outward, surrounded by subtle cross and halo motifs
 
 ### Features Section
 
-**Title:** Everything You Need to Grow in Virtue — Free During Beta
+**Title:** Everything You Need to Grow in Virtue
 
 **Features:**
 
@@ -77,33 +77,39 @@ Warm, contemplative, and inviting. Cream backgrounds with sage green and terraco
 
 **Problem → Solution pairs:**
 
-- "I want to grow spiritually but don't know where to start" → Saint Match gives you one simple, concrete step each day — no overwhelm, just growth. And it's completely free during beta.
+- "I want to grow spiritually but don't know where to start" → Saint Match gives you one simple, concrete step each day — no overwhelm, just growth. Matching a struggle to a saint is included.
 - "I feel disconnected from the saints — they seem distant and unreachable" → Meet saints who struggled with the exact same emotions you're feeling right now, and walk with them through a 9-day novena.
 - "I can never keep up with long devotional programs" → Micro-challenges take just 5–15 minutes. Novenas break prayer into manageable daily moments. Build a streak at your own pace with built-in streak freezes.
 - "Generic devotional apps don't speak to what I'm going through today" → AI-powered matching ensures every saint, challenge, and novena prayer is personally relevant to your current state of heart.
 
-### Free Beta Section
+### Pricing Section
 
-**Title:** 100% Free During Beta — Every Feature Unlocked
+**Title:** Free to Download. Go Deeper with Pro.
 
-**Content:** We're building Saint Match with our community. During the beta, every feature is completely free — no paywalls, no limits, no credit card required. Help us shape the future of daily virtue practice.
+**Content:** Saint Match is free to download on iPhone. Matching a struggle to a saint is included. Monthly Pro is $4.99. Yearly Pro is $39.99.
 
-**Features list:**
-- Unlimited AI saint matches
-- Guided novenas with AI-personalized prayers
-- Full Virtue Portfolio with PDF export
-- Streak tracking with weekly freeze
+**Included on download:**
+- Matching a struggle to a saint
+- Daily streak tracking
 - Custom mood input — describe how you feel in your own words
 - Offline mode — works without internet
 - Cross-device sync via email linking
 
-**CTA:** Download Free — Join the Beta
+**Saint Match Pro:**
+- Monthly Pro $4.99
+- Yearly Pro $39.99
+- Unlimited AI saint matches
+- Guided novenas with AI-personalized prayers
+- Full Virtue Portfolio with PDF export
+- Streak tracking with weekly freeze
+
+**CTA:** Download on the App Store
 
 ### Final CTA Section
 
 - **Headline:** Your Journey Starts with One Small Step
-- **Subheadline:** Join Catholics growing in virtue — one saint, one challenge, one novena at a time. Free during beta.
-- **CTA Button:** Download Saint Match Free
+- **Subheadline:** Join Catholics growing in virtue — one saint, one challenge, one novena at a time. Free to download on the App Store.
+- **CTA Button:** Download on the App Store
 
 ### Footer
 
@@ -119,11 +125,11 @@ Warm, contemplative, and inviting. Cream backgrounds with sage green and terraco
 
 ### App Overview
 
-Saint Match helps you grow in virtue through daily, personalized challenges inspired by Catholic saints. Each day, share how you're feeling, get matched with a saint, accept a micro-challenge, and build your streak. You can also start guided 9-day novenas with AI-personalized prayers for any saint you discover. The app is completely free during the beta period with all features unlocked.
+Saint Match helps you grow in virtue through daily, personalized challenges inspired by Catholic saints. Each day, share how you're feeling, get matched with a saint, accept a micro-challenge, and build your streak. You can also start guided 9-day novenas with AI-personalized prayers for any saint you discover. Saint Match is free to download on iPhone. Matching a struggle to a saint is included. Monthly Pro is $4.99. Yearly Pro is $39.99.
 
 ### Getting Started
 
-1. Download Saint Match from the App Store or Google Play — it's free during beta
+1. Download Saint Match from the App Store — it's free to download on iPhone
 2. Open the app and complete the brief onboarding (3 slides)
 3. On the Home screen, select a mood that matches how you're feeling — or tap "What's on Your Heart?" to describe it in your own words
 4. Review your saint match, read their story, and tap "Accept Challenge"
@@ -151,8 +157,8 @@ Saint Match helps you grow in virtue through daily, personalized challenges insp
 
 ### FAQ
 
-**Q: Is Saint Match really free?**
-A: Yes! Saint Match is completely free during the beta period — every feature is fully unlocked with no limits. No credit card required. In the future, we may introduce a free tier (3 matches/week) and a Pro subscription for unlimited access.
+**Q: Is Saint Match free?**
+A: Saint Match is free to download on iPhone. Matching a struggle to a saint is included. Saint Match Pro is optional: Monthly Pro $4.99 or Yearly Pro $39.99 for unlimited matches, full Virtue Portfolio analytics, and more.
 
 **Q: Is Saint Match affiliated with the Catholic Church?**
 A: No. Saint Match is an independent devotional tool. It is not affiliated with, endorsed by, or a substitute for the Catholic Church, its sacraments, or pastoral guidance. Always consult your parish priest or spiritual director for matters of faith and morals.
@@ -183,13 +189,13 @@ For questions, feedback, or support, email us at support@saintmatch.app. We typi
 
 ## Page 3: Terms of Service (/terms)
 
-**Last Updated:** February 11, 2026
+**Last Updated:** August 24, 2026
 
 **1. Acceptance of Terms**
 By downloading, installing, or using Saint Match ("the App"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the App. We may update these Terms from time to time, and your continued use of the App after changes are posted constitutes acceptance of the updated Terms.
 
 **2. Description of Service**
-Saint Match is a mobile application that provides daily virtue-building challenges inspired by Catholic saints. The App uses artificial intelligence to match users with saints based on their emotional state, provides personalized micro-challenges, streak tracking, guided 9-day novenas with AI-generated prayers, and a virtue portfolio. The App is currently offered free during the beta period. The App is a devotional tool and is not affiliated with, endorsed by, or a substitute for the Catholic Church, its sacraments, or pastoral guidance.
+Saint Match is a mobile application that provides daily virtue-building challenges inspired by Catholic saints. The App uses artificial intelligence to match users with saints based on their emotional state, provides personalized micro-challenges, streak tracking, guided 9-day novenas with AI-generated prayers, and a virtue portfolio. The App is free to download on iPhone. Matching a struggle to a saint is included. Optional Saint Match Pro subscriptions are available. The App is a devotional tool and is not affiliated with, endorsed by, or a substitute for the Catholic Church, its sacraments, or pastoral guidance.
 
 **3. User Accounts**
 The App creates an anonymous account on your behalf using Supabase Authentication when you first open the App. No personal information is required to start using the App. You may optionally link an email address to enable cross-device synchronization. You are responsible for maintaining the confidentiality of your account and any linked credentials.
@@ -198,7 +204,7 @@ The App creates an anonymous account on your behalf using Supabase Authenticatio
 You agree to use the App only for its intended purpose of personal spiritual growth and reflection. You may not: (a) reverse-engineer, decompile, or disassemble the App; (b) attempt to gain unauthorized access to our servers or databases; (c) use the App to transmit harmful, offensive, or illegal content; (d) use the App for any commercial purpose without our prior written consent; (e) interfere with or disrupt the App's functionality or servers.
 
 **5. Payment Terms**
-Saint Match is currently offered free of charge during the beta period with all features unlocked. Future pricing may include a free tier with limited features and paid Pro subscriptions (monthly at $7.99/mo and annual at $79/yr). In-app purchases, when available, will be processed through Apple App Store or Google Play Store and are subject to their respective terms. Subscription management, cancellations, and refunds are handled through RevenueCat and the respective app store. All prices are in USD unless otherwise stated.
+Saint Match is free to download on iPhone. Matching a struggle to a saint is included. Optional Saint Match Pro subscriptions are available: Monthly Pro $4.99 and Yearly Pro $39.99. In-app purchases are processed through the Apple App Store and are subject to its terms. Subscription management, cancellations, and refunds are handled through RevenueCat and the App Store. All prices are in USD unless otherwise stated.
 
 **6. AI-Generated Content Disclaimer**
 The App uses artificial intelligence (Anthropic Claude) to generate saint matches, match explanations, and novena prayers. This AI-generated content may contain inaccuracies regarding saints' lives, virtues, feast days, or Catholic teaching. All AI-generated content is intended for personal devotional reflection only and should not be considered official Catholic teaching, theological advice, or pastoral guidance. We do not guarantee the theological accuracy, completeness, or reliability of any AI-generated content. Always consult qualified religious authorities for matters of faith and morals.
@@ -228,7 +234,7 @@ For questions about these Terms, contact us at support@saintmatch.app.
 
 ## Page 4: Privacy Policy (/privacy)
 
-**Last Updated:** February 11, 2026
+**Last Updated:** August 24, 2026
 
 **1. Introduction**
 Saint Match ("we," "our," "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your information when you use the Saint Match mobile application ("the App"). By using the App, you consent to the practices described in this policy.
@@ -267,7 +273,7 @@ Saint Match ("we," "our," "us") is committed to protecting your privacy. This Pr
 **5. Third-Party Services**
 - **Supabase:** Authentication, database, and serverless functions. [Supabase Privacy Policy](https://supabase.com/privacy)
 - **Anthropic (Claude API):** AI-powered saint matching and novena prayer generation. Your mood input, novena intentions, and saint data are sent to Anthropic's API for processing. [Anthropic Privacy Policy](https://www.anthropic.com/privacy)
-- **RevenueCat:** In-app purchase management (dormant during beta). [RevenueCat Privacy Policy](https://www.revenuecat.com/privacy)
+- **RevenueCat:** In-app purchase management for Saint Match Pro. [RevenueCat Privacy Policy](https://www.revenuecat.com/privacy)
 - **Expo / EAS:** App distribution and over-the-air updates. [Expo Privacy Policy](https://expo.dev/privacy)
 - We do not share your personal data with any other third parties.
 

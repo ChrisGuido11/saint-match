@@ -121,7 +121,7 @@ export function PaywallBottomSheet({
               onPress={() => setSelectedPlan('annual')}
               activeOpacity={0.8}
               accessibilityRole="button"
-              accessibilityLabel="Yearly plan — $79 per year, save 17%"
+              accessibilityLabel="Yearly plan — $39.99 per year, save 33%"
               accessibilityState={{ selected: selectedPlan === 'annual' }}
             >
               <View style={styles.saveBadge}>
@@ -137,7 +137,7 @@ export function PaywallBottomSheet({
               onPress={() => setSelectedPlan('monthly')}
               activeOpacity={0.8}
               accessibilityRole="button"
-              accessibilityLabel="Monthly plan — $7.99 per month"
+              accessibilityLabel="Monthly plan — $4.99 per month"
               accessibilityState={{ selected: selectedPlan === 'monthly' }}
             >
               <Text style={styles.planName}>Monthly</Text>
