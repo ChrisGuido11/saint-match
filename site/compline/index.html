@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Compline — Night Prayer</title>
+  <meta name="description" content="Put the phone down. Pray the night. Compline, the Church's night prayer.">
+  <meta name="theme-color" content="#070503">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="art/icon.png">
+  <link rel="apple-touch-icon" href="art/icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Compline">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+  <div id="progress" aria-hidden="true"><div id="progress-fill"></div></div>
+  <button id="back" class="back hidden" aria-label="Go back">&#8249;</button>
+
+  <main id="app">
+
+    <!-- HOME -->
+    <section class="screen active" id="s-home">
+      <div class="scroll">
+        <div class="stack home-stack">
+          <div class="ornament">&#10022;</div>
+          <h1 class="wordmark">Compline</h1>
+          <p class="kicker">Night Prayer</p>
+          <div class="rule"></div>
+          <p class="hook">Put the phone down.<br>Pray the night.</p>
+          <p class="epigraph">In peace I will lie down and fall asleep,<br>
+            for you alone, <span class="sc">Lord</span>, make me secure.</p>
+          <p class="cite">Psalm 4:9</p>
+          <button class="btn gold" data-next="s-opening">Begin</button>
+          <p class="foot">Scripture texts from the New American Bible,<br>Revised Edition &copy; CCD. Used with permission.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPENING -->
+    <section class="screen" id="s-opening">
+      <div class="scroll">
+        <div class="stack">
+          <p class="kicker">I &middot; The Opening</p>
+          <div class="rule"></div>
+          <p class="verse"><span class="v">V.</span> O God, come to my assistance.</p>
+          <p class="verse resp"><span class="v">R.</span> O Lord, make haste to help me.</p>
+          <p class="prayer">Glory to the Father, and to the Son,<br>
+            and to the Holy Spirit:<br>
+            as it was in the beginning, is now,<br>
+            and will be for ever. <span class="amen-inline">Amen.</span></p>
+          <div class="rule dim"></div>
+          <p class="rubric">In silence, look back over the day.<br>
+            Give thanks. Ask pardon. Let it go.</p>
+          <button class="btn ghost" data-next="s-psalm">Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PSALM 4 -->
+    <section class="screen" id="s-psalm">
+      <div class="scroll">
+        <div class="stack">
+          <p class="kicker">II &middot; Psalm 4</p>
+          <div class="rule"></div>
+          <p class="antiphon">Have mercy, Lord, and hear my prayer.</p>
+          <div class="psalm">
+            <p><span class="vn">2</span>Answer me when I call, my saving God.<br>
+              When troubles hem me in, set me free;<br>
+              take pity on me, hear my prayer.</p>
+            <p><span class="vn">3</span>How long, O people, will you be hard of heart?<br>
+              Why do you love what is worthless, chase after lies?</p>
+            <p><span class="vn">4</span>Know that the <span class="sc">Lord</span> works wonders for his faithful one;<br>
+              the <span class="sc">Lord</span> hears when I call out to him.</p>
+            <p><span class="vn">5</span>Tremble and sin no more;<br>
+              weep bitterly within your hearts,<br>
+              wail upon your beds,</p>
+            <p><span class="vn">6</span>Offer fitting sacrifices<br>
+              and trust in the <span class="sc">Lord</span>.</p>
+            <p><span class="vn">7</span>Many say, &ldquo;May we see better times!<br>
+              <span class="sc">Lord</span>, show us the light of your face!&rdquo;</p>
+            <p><span class="vn">8</span>But you have given my heart more joy<br>
+              than they have when grain and wine abound.</p>
+            <p><span class="vn">9</span>In peace I will lie down and fall asleep,<br>
+              for you alone, <span class="sc">Lord</span>, make me secure.</p>
+          </div>
+          <p class="prayer dimmer">Glory to the Father, and to the Son,<br>
+            and to the Holy Spirit:<br>
+            as it was in the beginning, is now,<br>
+            and will be for ever. Amen.</p>
+          <p class="antiphon">Have mercy, Lord, and hear my prayer.</p>
+          <p class="cite">Psalm 4:2&ndash;9 &middot; NABRE</p>
+          <button class="btn ghost" data-next="s-hands">Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTO YOUR HANDS -->
+    <section class="screen" id="s-hands">
+      <div class="scroll">
+        <div class="stack">
+          <p class="kicker">III &middot; Responsory</p>
+          <div class="rule"></div>
+          <p class="verse"><span class="v">V.</span> Into your hands, Lord, I commend my spirit.</p>
+          <p class="verse resp"><span class="v">R.</span> Into your hands, Lord, I commend my spirit.</p>
+          <p class="verse"><span class="v">V.</span> You have redeemed us, Lord, God of truth.</p>
+          <p class="verse resp"><span class="v">R.</span> I commend my spirit.</p>
+          <p class="verse"><span class="v">V.</span> Glory to the Father, and to the Son, and to the Holy Spirit.</p>
+          <p class="verse resp"><span class="v">R.</span> Into your hands, Lord, I commend my spirit.</p>
+          <button class="btn ghost" data-next="s-nunc">Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NUNC DIMITTIS -->
+    <section class="screen" id="s-nunc">
+      <div class="scroll">
+        <div class="stack">
+          <p class="kicker">IV &middot; Nunc Dimittis</p>
+          <div class="rule"></div>
+          <p class="antiphon">Protect us, Lord, as we stay awake;<br>
+            watch over us as we sleep,<br>
+            that awake, we may keep watch with Christ,<br>
+            and asleep, rest in his peace.</p>
+          <div class="psalm">
+            <p><span class="vn">29</span>&ldquo;Now, Master, you may let your servant go<br>
+              in peace, according to your word,</p>
+            <p><span class="vn">30</span>for my eyes have seen your salvation,</p>
+            <p><span class="vn">31</span>which you prepared in sight of all the peoples,</p>
+            <p><span class="vn">32</span>a light for revelation to the Gentiles,<br>
+              and glory for your people Israel.&rdquo;</p>
+          </div>
+          <p class="prayer dimmer">Glory to the Father, and to the Son,<br>
+            and to the Holy Spirit:<br>
+            as it was in the beginning, is now,<br>
+            and will be for ever. Amen.</p>
+          <p class="antiphon">Protect us, Lord, as we stay awake;<br>
+            watch over us as we sleep,<br>
+            that awake, we may keep watch with Christ,<br>
+            and asleep, rest in his peace.</p>
+          <p class="cite">Luke 2:29&ndash;32 &middot; NABRE</p>
+          <button class="btn ghost" data-next="s-blessing">Continue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLESSING -->
+    <section class="screen" id="s-blessing">
+      <div class="scroll">
+        <div class="stack">
+          <p class="kicker">V &middot; The Blessing</p>
+          <div class="rule"></div>
+          <p class="blessing">May the all-powerful Lord<br>
+            grant us a restful night<br>
+            and a peaceful death.</p>
+          <button class="btn gold amen-btn" data-next="s-candle">Amen</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CANDLE -->
+    <section class="screen" id="s-candle">
+      <div class="candle-wrap" id="candle-wrap">
+        <button id="candle" aria-label="Blow out the candle">
+          <video id="candle-video" src="art/candle-loop.mp4" muted loop playsinline preload="auto"></video>
+          <div class="flame-fallback" aria-hidden="true">
+            <div class="halo"></div>
+            <div class="flame"></div>
+            <div class="wick"></div>
+            <div class="wax"></div>
+          </div>
+        </button>
+        <p class="candle-line" id="candle-line">The prayer is ended.<br>Put the phone down.</p>
+        <p class="candle-hint" id="candle-hint">Tap the candle to blow it out</p>
+        <p class="goodnight hidden" id="goodnight">Goodnight.</p>
+        <button class="btn ghost tiny hidden" id="again">Begin again</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
