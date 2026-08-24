@@ -4,7 +4,7 @@
 
 **App Name:** Saint Match
 **Tagline:** "Daily wisdom from the saints for your modern life"
-**One-liner:** "Duolingo for becoming a better person" — Catholic virtue-building through daily saint-inspired micro-challenges.
+**One-liner:** Catholic virtue-building through daily saint-inspired micro-challenges.
 **Description:** Match with a saint who walked a similar path, receive a personal micro-challenge you can do in just a few minutes, and grow in virtue—one small step at a time.
 **Target User:** Catholics (and spiritually curious people) who want a practical, daily way to grow in virtue and connect with the saints.
 **Support Email:** cguido85@icloud.com
@@ -64,10 +64,7 @@ Create a visually striking, marketing-quality landing page that sells the app:
 - **Step 3: "Grow in Virtue"** — "Complete your challenge, build your daily streak, and track your spiritual growth in your Virtue Portfolio. Small, consistent steps lead to lasting transformation."
 
 ### Social Proof Section
-- **Testimonial 1:** "Saint Match has become my favorite part of the morning. The challenges are so simple but they've genuinely changed how I treat people throughout my day." — *Maria T., Catholic mom*
-- **Testimonial 2:** "I've always wanted to learn about the saints but didn't know where to start. Now I feel like I have a personal patron for every mood." — *James R., college student*
-- **Testimonial 3:** "The novenas are beautiful and easy to keep up with. I finally finished a full 9 days of prayer." — *Anna L., parish volunteer*
-- **Stats row:** "12,000+ Novena Days Prayed" · "5,000+ Daily Challenges Completed" · "4.8 ★ App Store Rating" · "150+ Saints in Our Library"
+Omit invented testimonials and unverified usage counts. Do not show "12,000+ Novena Days," "5,000+ Daily Challenges," "4.8 ★," "150+ Saints," or similar placeholder stats. Public App Store rating is not large enough to feature as social proof. If a proof strip is needed later, use only numbers that can be verified from the live store.
 
 ### Pricing Section
 - **Section Heading:** "Free to Download. Go Deeper with Pro."
@@ -91,7 +88,7 @@ Create a visually striking, marketing-quality landing page that sells the app:
 
 ### Final CTA Section
 - **Headline:** "Ready to Walk with the Saints?"
-- **Body:** "Join thousands of Catholics building virtue one small challenge at a time. Saint Match is free to download on iPhone. Monthly Pro is $4.99. Yearly Pro is $39.99. Matching a struggle to a saint is included."
+- **Body:** "Build virtue one small challenge at a time. Saint Match is free to download on iPhone. Monthly Pro is $4.99. Yearly Pro is $39.99. Matching a struggle to a saint is included."
 - **CTA Button:** "Download on the App Store" (terracotta)
 
 ### Footer
@@ -109,7 +106,7 @@ Create a visually striking, marketing-quality landing page that sells the app:
 **Header:** Consistent navigation bar with logo ("Saint Match") and links to [Home](/) · [Terms](/terms) · [Privacy](/privacy)
 
 ### App Overview
-Saint Match is a Catholic virtue-building app that matches you with a saint based on your current mood, then gives you a personalized micro-challenge inspired by that saint's life and virtues. Think of it as "Duolingo for becoming a better person" — daily, bite-sized actions that help you grow in patience, kindness, gratitude, and other virtues, guided by the wisdom of the Catholic saints.
+Saint Match is a Catholic virtue-building app that matches you with a saint based on your current mood, then gives you a personalized micro-challenge inspired by that saint's life and virtues. Daily, bite-sized actions help you grow in patience, kindness, gratitude, and other virtues, guided by the wisdom of the Catholic saints.
 
 ### Getting Started Guide
 1. **Download & Open** — When you first open Saint Match, you'll see a brief onboarding that explains how the app works. No account creation is required — you can start immediately.
