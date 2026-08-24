@@ -1,0 +1,25 @@
+{
+  "name": "Compline — Night Prayer",
+  "short_name": "Compline",
+  "description": "Put the phone down. Pray the night.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#070503",
+  "theme_color": "#070503",
+  "icons": [
+    {
+      "src": "art/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "art/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
