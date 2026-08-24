@@ -47,7 +47,7 @@ Create a visually striking, marketing-quality landing page that sells the app:
 - **Headline:** "Grow in Virtue, One Saint at a Time"
 - **Subheadline:** "Daily wisdom from the saints for your modern life"
 - **Description:** "Saint Match pairs you with a Catholic saint based on how you're feeling each day. Receive a personalized micro-challenge — a simple, practical action inspired by your saint that takes just 5–15 minutes. Then go deeper with guided 9‑day novenas that help you pray consistently and grow in virtue with the saints."
-- **Primary CTA button:** "Begin Your Journey" (terracotta background `#C96B55`, warm white text)
+- **Primary CTA button:** "Download on the App Store" (terracotta background `#C96B55`, warm white text)
 - **Secondary CTA:** "See How It Works" (outlined in sage `#7A8F70`)
 - Hero area should have a warm, contemplative illustration placeholder — perhaps a subtle cross, saints silhouette, or stained-glass-inspired geometric pattern using the mood colors
 
@@ -70,29 +70,29 @@ Create a visually striking, marketing-quality landing page that sells the app:
 - **Stats row:** "12,000+ Novena Days Prayed" · "5,000+ Daily Challenges Completed" · "4.8 ★ App Store Rating" · "150+ Saints in Our Library"
 
 ### Pricing Section
-- **Section Heading:** "Start Free, Go Deeper with Pro"
+- **Section Heading:** "Free to Download. Go Deeper with Pro."
 - **Free Tier:**
-  - 3 saint matches per week
+  - Matching a struggle to a saint is included
   - Daily streak tracking
   - Basic Virtue Portfolio
   - Access to curated novenas
-  - Price: **Free forever**
-  - CTA: "Get Started Free"
+  - Price: **Free to download on iPhone**
+  - CTA: "Download on the App Store"
 - **Pro Tier (Recommended — highlight this one):**
   - Unlimited daily saint matches
   - Full Virtue Portfolio analytics
   - Weekly streak freeze protection
   - PDF export for spiritual director
   - AI-personalized novena prayers
-  - Monthly: **$7.99/mo**
-  - Annual: **$79/yr (save 17%)**
+  - Monthly Pro: **$4.99**
+  - Yearly Pro: **$39.99 (save 33%)**
   - CTA: "Upgrade to Pro"
 - Style the Pro card with a subtle terracotta border/glow and a "Most Popular" or "Recommended" badge
 
 ### Final CTA Section
 - **Headline:** "Ready to Walk with the Saints?"
-- **Body:** "Join thousands of Catholics building virtue one small challenge at a time. Your first three matches are free — no credit card required."
-- **CTA Button:** "Begin Your Journey" (terracotta)
+- **Body:** "Join thousands of Catholics building virtue one small challenge at a time. Saint Match is free to download on iPhone. Monthly Pro is $4.99. Yearly Pro is $39.99. Matching a struggle to a saint is included."
+- **CTA Button:** "Download on the App Store" (terracotta)
 
 ### Footer
 - **App name:** Saint Match
@@ -165,7 +165,7 @@ Saint Match is a Catholic virtue-building app that matches you with a saint base
    Free users get 3 saint matches per week, daily streak tracking, a basic Virtue Portfolio, and access to curated novenas. That's plenty to build a meaningful daily practice.
 
 5. **What does Pro include?**
-   Pro ($7.99/mo or $79/yr) unlocks unlimited daily matches, full Virtue Portfolio analytics, weekly streak freeze protection, PDF export for spiritual directors, and AI-personalized novena prayers.
+   Pro (Monthly Pro $4.99 or Yearly Pro $39.99) unlocks unlimited daily matches, full Virtue Portfolio analytics, weekly streak freeze protection, PDF export for spiritual directors, and AI-personalized novena prayers.
 
 6. **Can I use Saint Match offline?**
    Yes! The app works fully offline using locally stored saint data. AI-powered matches require an internet connection, but if you're offline, the app will match you with a saint from the built-in library.
@@ -185,7 +185,7 @@ Saint Match is a Catholic virtue-building app that matches you with a saint base
 
 **Header:** Consistent navigation bar with logo ("Saint Match") and links to [Home](/) · [Support](/support) · [Privacy](/privacy)
 
-**Last Updated:** February 7, 2026
+**Last Updated:** August 24, 2026
 
 ### 1. Acceptance of Terms
 By downloading, installing, or using Saint Match ("the App"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use the App.
@@ -214,7 +214,7 @@ You agree not to:
 
 ### 5. Payment Terms
 - **Free Tier:** Saint Match offers a free tier that includes 3 saint matches per week, streak tracking, basic Virtue Portfolio, and curated novenas at no cost.
-- **Pro Subscription:** Available as a monthly subscription ($7.99/month) or annual subscription ($79/year). Payment is processed through Apple's App Store.
+- **Pro Subscription:** Available as Monthly Pro ($4.99) or Yearly Pro ($39.99). Payment is processed through Apple's App Store.
 - **Billing:** Subscriptions are billed in advance on a recurring basis (monthly or annually). Your subscription will automatically renew unless canceled at least 24 hours before the end of the current billing period.
 - **Cancellation:** You may cancel your subscription at any time through your Apple ID subscription settings. Cancellation takes effect at the end of the current billing period. No partial refunds are provided for unused portions of a billing period.
 - **Refunds:** Refund requests are handled by Apple in accordance with their App Store refund policies.
@@ -262,7 +262,7 @@ For questions about these Terms of Service, contact us at **cguido85@icloud.com*
 
 **Header:** Consistent navigation bar with logo ("Saint Match") and links to [Home](/) · [Support](/support) · [Terms](/terms)
 
-**Last Updated:** February 7, 2026
+**Last Updated:** August 24, 2026
 
 ### 1. Information We Collect
 
