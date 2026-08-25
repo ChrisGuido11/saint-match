@@ -21,7 +21,8 @@
       },
       "infoPlist": {
         "NSUserNotificationsUsageDescription": "Saint Match sends daily reminders and novena prayer notifications to support your spiritual journey."
-      }
+      },
+      "buildNumber": "15"
     },
     "android": {
       "adaptiveIcon": {
