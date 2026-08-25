@@ -18,8 +18,10 @@ import { useApp } from '../../context/AppContext';
 import { getNovenaById } from '../../constants/novenas';
 import {
   getTraditionalNovenaById,
+  hasPublishedDailyPrayers,
   isTraditionalNovenaId,
   splitAtRequestPlaceholder,
+  REQUEST_PLACEHOLDER,
 } from '../../constants/traditionalNovenas';
 import { SAINTS } from '../../constants/saints';
 import { NovenaProgressDots } from '../../components/NovenaProgressDots';
@@ -127,32 +129,53 @@ export default function NovenaPrayerScreen() {
           </Animated.View>
         ) : null}
 
-        {/* Traditional published novena: same text every day, no accordion */}
+        {/* Traditional published novena: verbatim text, no accordion */}
         {traditional ? (
           <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-            <Text style={styles.traditionalHeading}>Novena Prayer</Text>
-            <Text style={styles.traditionalSubheading}>Nine days of the same published prayer</Text>
-            <View style={styles.prayerContent}>
-              {(() => {
-                const split = splitAtRequestPlaceholder(traditional.novenaPrayer);
-                const request = userNovena.personalIntention?.trim();
-                if (!split || !request) {
-                  return <Text style={styles.prayerText}>{traditional.novenaPrayer}</Text>;
-                }
-                return (
+            {hasPublishedDailyPrayers(traditional) ? (
+              <>
+                <Text style={styles.traditionalHeading}>Day {userNovena.currentDay} Prayer</Text>
+                <Text style={styles.traditionalSubheading}>A different published prayer each day</Text>
+                <View style={styles.prayerContent}>
                   <Text style={styles.prayerText}>
-                    {split.before}
-                    <Text style={styles.prayerRequest}>{request}</Text>
-                    {split.after}
+                    {traditional.publishedDailyPrayers![Math.min(Math.max(dayIndex, 0), 8)]}
                   </Text>
-                );
-              })()}
-            </View>
+                </View>
+              </>
+            ) : (
+              <>
+                <Text style={styles.traditionalHeading}>Novena Prayer</Text>
+                <Text style={styles.traditionalSubheading}>Nine days of the same published prayer</Text>
+                <View style={styles.prayerContent}>
+                  {(() => {
+                    const split = splitAtRequestPlaceholder(
+                      traditional.novenaPrayer,
+                      traditional.requestPlaceholder === undefined ? REQUEST_PLACEHOLDER : traditional.requestPlaceholder
+                    );
+                    const request = userNovena.personalIntention?.trim();
+                    if (!split || !request) {
+                      return <Text style={styles.prayerText}>{traditional.novenaPrayer}</Text>;
+                    }
+                    return (
+                      <Text style={styles.prayerText}>
+                        {split.before}
+                        <Text style={styles.prayerRequest}>{request}</Text>
+                        {split.after}
+                      </Text>
+                    );
+                  })()}
+                </View>
+              </>
+            )}
 
-            <Text style={styles.traditionalHeading}>Prayer</Text>
-            <View style={styles.prayerContent}>
-              <Text style={styles.prayerText}>{traditional.prayerBlock}</Text>
-            </View>
+            {traditional.prayerBlock ? (
+              <>
+                <Text style={styles.traditionalHeading}>Prayer</Text>
+                <View style={styles.prayerContent}>
+                  <Text style={styles.prayerText}>{traditional.prayerBlock}</Text>
+                </View>
+              </>
+            ) : null}
 
             {traditional.commons.map((common) => (
               <View key={common.label}>
