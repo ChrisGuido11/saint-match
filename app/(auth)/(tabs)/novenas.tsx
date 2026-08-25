@@ -62,11 +62,8 @@ export default function NovenasScreen() {
     router.push({ pathname: '/(auth)/choose-intention' });
   };
 
+  // Traditional published novenas sit outside the Pro paywall.
   const handleTraditional = () => {
-    if (!isPro && activeNovenas.length >= 1) {
-      setShowPaywall(true);
-      return;
-    }
     router.push({ pathname: '/(auth)/traditional-novenas' });
   };
 

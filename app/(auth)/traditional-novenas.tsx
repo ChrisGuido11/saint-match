@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { hapticSelection } from '@/lib/haptics';
@@ -15,25 +15,16 @@ import {
 } from '../../constants/traditionalNovenas';
 import { SAINTS } from '../../constants/saints';
 import { IconChevronLeft, IconNavNovenas } from '../../components/icons';
-import { useApp } from '../../context/AppContext';
-import { PaywallBottomSheet } from '../../components/PaywallBottomSheet';
 
 function saintNameFor(novena: TraditionalNovena): string {
   return SAINTS.find((s) => s.id === novena.saintId)?.name ?? novena.title.replace(/ Novena$/, '');
 }
 
 export default function TraditionalNovenasScreen() {
-  const { userNovenas, isPro, refreshAll, setIsPro } = useApp();
-  const isNovenaLimited = !isPro && userNovenas.filter((n) => !n.completed).length >= 1;
-  const [showPaywall, setShowPaywall] = useState(false);
-
   const novenas = listTraditionalNovenas();
 
+  // Traditional published novenas sit outside the Pro paywall.
   const handleSelect = (novena: TraditionalNovena) => {
-    if (isNovenaLimited) {
-      setShowPaywall(true);
-      return;
-    }
     hapticSelection();
     router.push({
       pathname: '/(auth)/start-novena',
@@ -100,17 +91,6 @@ export default function TraditionalNovenasScreen() {
           );
         })}
       </ScrollView>
-
-      <PaywallBottomSheet
-        visible={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        reason="novenas"
-        onPurchaseSuccess={() => {
-          setShowPaywall(false);
-          setIsPro(true);
-          refreshAll();
-        }}
-      />
     </View>
   );
 }

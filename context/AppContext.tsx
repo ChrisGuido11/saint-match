@@ -336,16 +336,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [isPro]);
 
   const startNovena = useCallback(async (novenaId: string, saintId: string, saintName: string, saintBio: string, personalIntention: string, source?: NovenaSource): Promise<UserNovena> => {
-    // Gate: free users limited to 1 active novena
-    if (!isPro) {
+    // Traditional novenas ship their published text in the app, so nothing is generated.
+    const isTraditional = source === 'traditional' || isTraditionalNovenaId(novenaId);
+
+    // Gate: free users limited to 1 active generated novena.
+    // Traditional published novenas sit outside the Pro paywall.
+    if (!isPro && !isTraditional) {
       const activeCount = userNovenas.filter((n) => !n.completed).length;
       if (activeCount >= 1) {
         throw new Error('NOVENA_LIMIT_REACHED');
       }
     }
-
-    // Traditional novenas ship their published text in the app, so nothing is generated.
-    const isTraditional = source === 'traditional' || isTraditionalNovenaId(novenaId);
     const traditional = isTraditional ? getTraditionalNovenaById(novenaId) : undefined;
 
     let generatedPrayers: GeneratedPrayers | null = null;

@@ -90,11 +90,8 @@ export default function ChooseIntentionScreen() {
     router.push({ pathname: '/(auth)/browse-novenas' });
   };
 
+  // Traditional published novenas sit outside the Pro paywall.
   const handleTraditional = () => {
-    if (isNovenaLimited) {
-      setShowPaywall(true);
-      return;
-    }
     hapticSelection();
     router.push({ pathname: '/(auth)/traditional-novenas' });
   };

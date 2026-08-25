@@ -134,11 +134,9 @@ export default function BrowseNovenasScreen() {
   }, [search]);
 
   // Traditional entries skip generation entirely: the published text ships with the app.
+  // Traditional published novenas are never paywalled — free users may start one
+  // even with a generated novena already active.
   const handleSelectTraditional = useCallback((novena: TraditionalNovena) => {
-    if (isNovenaLimited) {
-      setShowPaywall(true);
-      return;
-    }
     hapticSelection();
     const saintName = SAINTS.find((s) => s.id === novena.saintId)?.name ?? novena.title.replace(/ Novena$/, '');
     router.push({
@@ -150,7 +148,7 @@ export default function BrowseNovenasScreen() {
         source: 'traditional',
       },
     });
-  }, [isNovenaLimited]);
+  }, []);
 
   const renderTraditionalItem = useCallback(({ item, index }: { item: TraditionalNovena; index: number }) => (
     <Animated.View entering={FadeInDown.delay(Math.min(index * 30, 300)).duration(300)}>
