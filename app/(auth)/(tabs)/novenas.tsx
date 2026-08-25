@@ -84,6 +84,19 @@ export default function NovenasScreen() {
         </TouchableOpacity>
       </Animated.View>
 
+      {/* Traditional published prayers: always visible, never paywalled */}
+      <Animated.View entering={FadeInDown.delay(50).duration(400)}>
+        <TouchableOpacity
+          style={styles.traditionalButton}
+          onPress={handleTraditional}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel="Traditional published prayers"
+        >
+          <Text style={styles.traditionalButtonText}>Traditional published prayers</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
       {activeNovenas.length === 0 && completedNovenas.length === 0 ? (
         <Animated.View entering={FadeInDown.delay(100).duration(500)} style={styles.emptyState}>
           <IconNavNovenas size={64} color={Colors.charcoalSubtle} />
@@ -419,6 +432,17 @@ const styles = StyleSheet.create({
   addButtonText: {
     ...Typography.button,
     color: Colors.sage,
+  },
+  traditionalButton: {
+    paddingVertical: Spacing.sm + 2,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.sage,
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  traditionalButtonText: {
+    ...Typography.button,
+    color: Colors.white,
   },
   traditionalLink: {
     alignItems: 'center',

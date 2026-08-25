@@ -130,6 +130,20 @@ export default function ChooseIntentionScreen() {
 
         {/* Preset Intentions */}
         <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.intentionsSection}>
+          {/* Traditional published prayer: separate catalog, never paywalled */}
+          <TouchableOpacity
+            style={[styles.intentionChip, styles.traditionalChip]}
+            onPress={handleTraditional}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Traditional published prayer"
+          >
+            <Text style={[styles.intentionChipText, styles.traditionalChipText]}>
+              Traditional published prayer
+            </Text>
+            <Text style={styles.traditionalChipHint}>St. Jude novena. Free.</Text>
+          </TouchableOpacity>
+
           {PRESET_INTENTIONS.map((preset) => (
             <TouchableOpacity
               key={preset}
@@ -155,20 +169,6 @@ export default function ChooseIntentionScreen() {
               </Text>
             </TouchableOpacity>
           ))}
-
-          {/* Traditional published prayer: separate catalog, never paywalled */}
-          <TouchableOpacity
-            style={[styles.intentionChip, styles.traditionalChip]}
-            onPress={handleTraditional}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityLabel="Traditional published prayer"
-          >
-            <Text style={[styles.intentionChipText, styles.traditionalChipText]}>
-              Traditional published prayer
-            </Text>
-            <Text style={styles.traditionalChipHint}>St. Jude novena. Free.</Text>
-          </TouchableOpacity>
 
           {/* Custom Intention */}
           <TouchableOpacity

@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -53,14 +53,7 @@ export default function RootLayout() {
         const update = await Updates.checkForUpdateAsync();
         if (update.isAvailable) {
           await Updates.fetchUpdateAsync();
-          Alert.alert(
-            'Update Available',
-            'A new version has been downloaded. Restart to apply?',
-            [
-              { text: 'Later', style: 'cancel' },
-              { text: 'Restart', onPress: () => Updates.reloadAsync() },
-            ]
-          );
+          await Updates.reloadAsync();
         }
       } catch (_) {
         // Silent fail — network offline or dev build
