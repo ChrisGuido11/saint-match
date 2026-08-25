@@ -90,6 +90,15 @@ export default function ChooseIntentionScreen() {
     router.push({ pathname: '/(auth)/browse-novenas' });
   };
 
+  const handleTraditional = () => {
+    if (isNovenaLimited) {
+      setShowPaywall(true);
+      return;
+    }
+    hapticSelection();
+    router.push({ pathname: '/(auth)/traditional-novenas' });
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -216,6 +225,25 @@ export default function ChooseIntentionScreen() {
             accessibilityLabel="View full novena catalog"
           >
             <Text style={styles.catalogLinkText}>View Full Catalog</Text>
+          </TouchableOpacity>
+
+          <View style={styles.pathDivider}>
+            <View style={styles.pathDividerLine} />
+            <Text style={styles.pathDividerText}>or</Text>
+            <View style={styles.pathDividerLine} />
+          </View>
+
+          <TouchableOpacity
+            style={styles.traditionalButton}
+            onPress={handleTraditional}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Pray a traditional published novena"
+          >
+            <Text style={styles.traditionalButtonTitle}>Traditional published prayer</Text>
+            <Text style={styles.traditionalButtonSubtitle}>
+              St. Jude novena. Starts Oct 19, last prayer day Oct 27, feast day Oct 28.
+            </Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
@@ -348,5 +376,41 @@ const styles = StyleSheet.create({
   catalogLinkText: {
     ...Typography.body,
     color: Colors.sage,
+  },
+  pathDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  pathDividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.creamDark,
+  },
+  pathDividerText: {
+    ...Typography.caption,
+    color: Colors.charcoalSubtle,
+  },
+  traditionalButton: {
+    width: '100%',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.sage,
+    backgroundColor: Colors.white,
+    alignItems: 'center',
+  },
+  traditionalButtonTitle: {
+    ...Typography.button,
+    color: Colors.sage,
+    marginBottom: Spacing.xxs,
+  },
+  traditionalButtonSubtitle: {
+    ...Typography.caption,
+    color: Colors.charcoalMuted,
+    textAlign: 'center',
   },
 });

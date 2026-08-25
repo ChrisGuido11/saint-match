@@ -124,6 +124,48 @@ export async function scheduleNovenaReminders(
   }
 }
 
+// Traditional novena start reminders (local date trigger, no push provider).
+// TODO: When an Expo push channel is set up for production, the seasonal
+// start reminder could be sent server side instead. Local scheduling needs
+// no APNs key and is intentionally the only mechanism for now.
+export async function scheduleTraditionalNovenaStartReminder(
+  novenaId: string,
+  saintName: string,
+  startDate: Date,
+  hour: number = 9,
+  minute: number = 0
+): Promise<void> {
+  await cancelTraditionalNovenaStartReminder(novenaId);
+
+  const triggerDate = new Date(startDate);
+  triggerDate.setHours(hour, minute, 0, 0);
+  if (triggerDate <= new Date()) return;
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: `${saintName} novena starts today`,
+      body: 'Open Saint Match to pray day one of the published prayer.',
+      data: { type: 'traditional_novena_start', novenaId },
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: triggerDate,
+    },
+  });
+}
+
+export async function cancelTraditionalNovenaStartReminder(novenaId: string): Promise<void> {
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  for (const notification of scheduled) {
+    if (
+      notification.content.data?.type === 'traditional_novena_start' &&
+      notification.content.data?.novenaId === novenaId
+    ) {
+      await Notifications.cancelScheduledNotificationAsync(notification.identifier);
+    }
+  }
+}
+
 export async function cancelNovenaNotifications(userNovenaId: string): Promise<void> {
   const scheduled = await Notifications.getAllScheduledNotificationsAsync();
   for (const notification of scheduled) {

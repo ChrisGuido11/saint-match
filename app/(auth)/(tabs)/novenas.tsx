@@ -62,6 +62,14 @@ export default function NovenasScreen() {
     router.push({ pathname: '/(auth)/choose-intention' });
   };
 
+  const handleTraditional = () => {
+    if (!isPro && activeNovenas.length >= 1) {
+      setShowPaywall(true);
+      return;
+    }
+    router.push({ pathname: '/(auth)/traditional-novenas' });
+  };
+
   return (
     <View style={styles.screen}>
     <ScrollView
@@ -94,6 +102,15 @@ export default function NovenasScreen() {
             accessibilityLabel="Start a novena"
           >
             <Text style={styles.startButtonText}>Start a Novena</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleTraditional}
+            style={styles.traditionalLink}
+            activeOpacity={0.7}
+            accessibilityRole="link"
+            accessibilityLabel="Traditional published prayer"
+          >
+            <Text style={styles.traditionalLinkText}>Traditional published prayer</Text>
           </TouchableOpacity>
         </Animated.View>
       ) : (
@@ -204,6 +221,15 @@ export default function NovenasScreen() {
             accessibilityLabel="Start another novena"
           >
             <Text style={styles.addButtonText}>Start Another Novena</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleTraditional}
+            style={styles.traditionalLink}
+            activeOpacity={0.7}
+            accessibilityRole="link"
+            accessibilityLabel="Traditional published prayer"
+          >
+            <Text style={styles.traditionalLinkText}>Traditional published prayer</Text>
           </TouchableOpacity>
         </>
       )}
@@ -395,6 +421,14 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     ...Typography.button,
+    color: Colors.sage,
+  },
+  traditionalLink: {
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+  },
+  traditionalLinkText: {
+    ...Typography.bodySmall,
     color: Colors.sage,
   },
 });

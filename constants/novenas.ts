@@ -1,5 +1,8 @@
 import { Novena } from '../types';
+import { getTraditionalNovenaById } from './traditionalNovenas';
 
+// Composed novenas written for this app. These are NOT traditional published
+// texts; see constants/traditionalNovenas.ts for those.
 export const NOVENAS: Novena[] = [
   {
     id: 'novena-st-benedict',
@@ -138,8 +141,9 @@ export const NOVENAS: Novena[] = [
   },
 ];
 
+/** Resolves both the composed novenas above and the traditional published ones. */
 export function getNovenaById(id: string): Novena | undefined {
-  return NOVENAS.find((n) => n.id === id);
+  return NOVENAS.find((n) => n.id === id) ?? getTraditionalNovenaById(id);
 }
 
 export function getNovenaBySaintId(saintId: string): Novena | undefined {

@@ -36,6 +36,10 @@ export default function AuthLayout() {
         options={{ animation: 'slide_from_right' }}
       />
       <Stack.Screen
+        name="traditional-novenas"
+        options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
         name="novena-celebration"
         options={{ animation: 'fade', gestureEnabled: false }}
       />

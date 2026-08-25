@@ -11,6 +11,7 @@ import {
   UserNovena,
 } from '../types';
 import { format, startOfWeek, addDays } from 'date-fns';
+import { isTraditionalNovenaId } from '../constants/traditionalNovenas';
 
 const MIGRATION_KEY = '@saint_match_supabase_migrated_v2';
 const SYNC_QUEUE_KEY = '@saint_match_sync_queue';
@@ -412,6 +413,8 @@ export async function fetchServerNovenas(userId: string): Promise<UserNovena[] |
     completedAt: row.completed_at,
     reflection: row.reflection,
     generatedPrayers: row.generated_prayers ?? null,
+    // No source column on the server; infer from the novena id so older rows default to generated.
+    source: isTraditionalNovenaId(row.novena_id) ? 'traditional' : 'generated',
   }));
 }
 

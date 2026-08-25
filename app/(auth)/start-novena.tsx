@@ -18,12 +18,13 @@ import { Typography, FontFamily } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { useApp } from '../../context/AppContext';
 import { getNovenaById } from '../../constants/novenas';
+import { getTraditionalNovenaById, isTraditionalNovenaId, describeCalendar } from '../../constants/traditionalNovenas';
 import { SAINTS } from '../../constants/saints';
 import { IconClose, IconNavNovenas } from '../../components/icons';
 import { PaywallBottomSheet } from '../../components/PaywallBottomSheet';
 
 export default function StartNovenaScreen() {
-  const { novenaId, saintId, saintName: saintNameParam, saintBio: saintBioParam, novenaTitle, novenaDescription, intention: passedIntention, matchReason } = useLocalSearchParams<{
+  const { novenaId, saintId, saintName: saintNameParam, saintBio: saintBioParam, novenaTitle, novenaDescription, intention: passedIntention, matchReason, source } = useLocalSearchParams<{
     novenaId?: string;
     saintId: string;
     saintName?: string;
@@ -32,11 +33,14 @@ export default function StartNovenaScreen() {
     novenaDescription?: string;
     intention?: string;
     matchReason?: string;
+    source?: string;
   }>();
   const { startNovena, refreshAll, setIsPro } = useApp();
   const [showPaywall, setShowPaywall] = useState(false);
 
   const novena = novenaId ? getNovenaById(novenaId) : null;
+  const isTraditional = source === 'traditional' || isTraditionalNovenaId(novenaId);
+  const traditional = isTraditional && novenaId ? getTraditionalNovenaById(novenaId) : undefined;
   const saint = saintId ? SAINTS.find((s) => s.id === saintId) : null;
 
   // Resolve saint name and bio — prefer local saint data, fall back to route params
@@ -102,7 +106,8 @@ export default function StartNovenaScreen() {
         saintId,
         resolvedSaintName,
         resolvedSaintBio,
-        intention
+        intention,
+        isTraditional ? 'traditional' : 'generated'
       );
       router.replace({
         pathname: '/(auth)/novena-prayer',
@@ -154,6 +159,13 @@ export default function StartNovenaScreen() {
           </View>
           <Text style={styles.novenaTitle}>{displayTitle}</Text>
           <Text style={styles.novenaDescription}>{displayDescription}</Text>
+          {traditional ? (
+            <View style={styles.traditionalNote}>
+              <Text style={styles.traditionalBadge}>Traditional published prayer</Text>
+              <Text style={styles.traditionalCalendar}>{describeCalendar(traditional.calendar)}</Text>
+              <Text style={styles.traditionalSource}>Source: {traditional.sourceName}</Text>
+            </View>
+          ) : null}
         </Animated.View>
 
         {/* Why this saint? */}
@@ -260,7 +272,9 @@ export default function StartNovenaScreen() {
             accessibilityLabel="Start 9-day novena"
           >
             <Text style={styles.startButtonText}>
-              {isStarting ? 'Generating your novena...' : 'Start 9-Day Novena'}
+              {isStarting
+                ? (isTraditional ? 'Starting your novena...' : 'Generating your novena...')
+                : 'Start 9-Day Novena'}
             </Text>
           </TouchableOpacity>
         </Animated.View>
@@ -340,6 +354,29 @@ const styles = StyleSheet.create({
     color: Colors.charcoalMuted,
     textAlign: 'center',
     maxWidth: 320,
+  },
+  traditionalNote: {
+    alignItems: 'center',
+    marginTop: Spacing.sm,
+  },
+  traditionalBadge: {
+    ...Typography.caption,
+    color: Colors.sageDark,
+    backgroundColor: Colors.sageMuted,
+    borderRadius: BorderRadius.sm,
+    paddingVertical: 3,
+    paddingHorizontal: Spacing.xs,
+    marginBottom: Spacing.xs,
+  },
+  traditionalCalendar: {
+    ...Typography.bodySmall,
+    color: Colors.terracotta,
+    textAlign: 'center',
+  },
+  traditionalSource: {
+    ...Typography.caption,
+    color: Colors.charcoalSubtle,
+    marginTop: Spacing.xxs,
   },
   reasonSection: {
     backgroundColor: Colors.sageMuted,
