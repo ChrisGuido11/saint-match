@@ -18,22 +18,16 @@ import { Typography, FontFamily } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { fetchNovenaCatalog, getCachedCatalog, NovenaEntry } from '../../lib/novenaCatalog';
 import { resolveSaintName } from '../../lib/novenaMatch';
-import {
-  listTraditionalNovenas,
-  describeCalendar,
-  TraditionalNovena,
-} from '../../constants/traditionalNovenas';
-import { SAINTS } from '../../constants/saints';
+import { TRADITIONAL_NOVENAS } from '../../constants/traditionalNovenas';
 import { IconChevronLeft } from '../../components/icons';
 import { useApp } from '../../context/AppContext';
 import { PaywallBottomSheet } from '../../components/PaywallBottomSheet';
 
-type SourceMode = 'generated' | 'traditional';
-
-const SOURCE_MODES: { key: SourceMode; label: string }[] = [
-  { key: 'generated', label: 'Matched or generated' },
-  { key: 'traditional', label: 'Traditional' },
-];
+// Generated catalog only. Traditional published novenas live on their own
+// screen (traditional-novenas.tsx), so their catalog slugs are hidden here.
+const TRADITIONAL_SLUGS = new Set(
+  TRADITIONAL_NOVENAS.flatMap((n) => [n.saintId, ...n.catalogSlugs]),
+);
 
 type CategoryFilter = 'all' | 'saints' | 'marian' | 'holy-days' | 'intentions';
 
@@ -69,7 +63,6 @@ export default function BrowseNovenasScreen() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all');
-  const [sourceMode, setSourceMode] = useState<SourceMode>('generated');
 
   useEffect(() => {
     let mounted = true;
@@ -94,7 +87,7 @@ export default function BrowseNovenasScreen() {
   }, []);
 
   const filtered = useMemo(() => {
-    let items = catalog;
+    let items = catalog.filter((n) => !TRADITIONAL_SLUGS.has(n.slug));
 
     if (activeCategory !== 'all') {
       items = items.filter((n) => n.category === activeCategory);
@@ -125,52 +118,6 @@ export default function BrowseNovenasScreen() {
       },
     });
   }, [isNovenaLimited]);
-
-  const traditionalNovenas = useMemo(() => {
-    const items = listTraditionalNovenas();
-    if (!search.trim()) return items;
-    const q = search.trim().toLowerCase();
-    return items.filter((n) => n.title.toLowerCase().includes(q));
-  }, [search]);
-
-  // Traditional entries skip generation entirely: the published text ships with the app.
-  // Traditional published novenas are never paywalled — free users may start one
-  // even with a generated novena already active.
-  const handleSelectTraditional = useCallback((novena: TraditionalNovena) => {
-    hapticSelection();
-    const saintName = SAINTS.find((s) => s.id === novena.saintId)?.name ?? novena.title.replace(/ Novena$/, '');
-    router.push({
-      pathname: '/(auth)/start-novena',
-      params: {
-        novenaId: novena.id,
-        saintId: novena.saintId,
-        saintName,
-        source: 'traditional',
-      },
-    });
-  }, []);
-
-  const renderTraditionalItem = useCallback(({ item, index }: { item: TraditionalNovena; index: number }) => (
-    <Animated.View entering={FadeInDown.delay(Math.min(index * 30, 300)).duration(300)}>
-      <TouchableOpacity
-        style={styles.novenaCard}
-        onPress={() => handleSelectTraditional(item)}
-        activeOpacity={0.8}
-        accessibilityRole="button"
-        accessibilityLabel={`Start ${item.title}`}
-      >
-        <View style={styles.cardContent}>
-          <View style={styles.cardTitleColumn}>
-            <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.cardCalendar}>{describeCalendar(item.calendar)}</Text>
-          </View>
-          <View style={[styles.categoryBadge, { backgroundColor: Colors.sage + '18' }]}>
-            <Text style={[styles.categoryBadgeText, { color: Colors.sage }]}>Published</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
-  ), [handleSelectTraditional]);
 
   const renderItem = useCallback(({ item, index }: { item: NovenaEntry; index: number }) => (
     <Animated.View entering={FadeInDown.delay(Math.min(index * 30, 300)).duration(300)}>
@@ -226,50 +173,6 @@ export default function BrowseNovenasScreen() {
         />
       </Animated.View>
 
-      {/* Traditional vs Matched or generated */}
-      <Animated.View entering={FadeInDown.delay(120).duration(400)} style={styles.sourceToggle}>
-        {SOURCE_MODES.map((mode) => (
-          <TouchableOpacity
-            key={mode.key}
-            style={[styles.sourceTab, sourceMode === mode.key && styles.sourceTabActive]}
-            onPress={() => {
-              setSourceMode(mode.key);
-              hapticSelection();
-            }}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityState={{ selected: sourceMode === mode.key }}
-          >
-            <Text style={[styles.sourceTabText, sourceMode === mode.key && styles.sourceTabTextActive]}>
-              {mode.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </Animated.View>
-
-      {sourceMode === 'traditional' ? (
-        <>
-          <View style={styles.resultsBar}>
-            <Text style={styles.resultsCount}>
-              {`${traditionalNovenas.length} published novena${traditionalNovenas.length !== 1 ? 's' : ''}. Same prayer each of the nine days.`}
-            </Text>
-          </View>
-          {traditionalNovenas.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>{`No published novenas matching "${search}"`}</Text>
-            </View>
-          ) : (
-            <FlatList
-              data={traditionalNovenas}
-              keyExtractor={(item) => item.id}
-              renderItem={renderTraditionalItem}
-              contentContainerStyle={styles.listContent}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
-        </>
-      ) : (
-      <>
       {/* Category tabs */}
       <Animated.View entering={FadeInDown.delay(150).duration(400)}>
         <FlatList
@@ -335,8 +238,6 @@ export default function BrowseNovenasScreen() {
           maxToRenderPerBatch={15}
         />
       )}
-      </>
-      )}
 
       <PaywallBottomSheet
         visible={showPaywall}
@@ -391,40 +292,6 @@ const styles = StyleSheet.create({
     color: Colors.charcoal,
     borderWidth: 1,
     borderColor: Colors.creamDark,
-  },
-  sourceToggle: {
-    flexDirection: 'row',
-    marginHorizontal: Spacing.lg,
-    marginBottom: Spacing.sm,
-    backgroundColor: Colors.creamDark,
-    borderRadius: BorderRadius.md,
-    padding: 3,
-  },
-  sourceTab: {
-    flex: 1,
-    paddingVertical: Spacing.xs + 2,
-    borderRadius: BorderRadius.sm,
-    alignItems: 'center',
-  },
-  sourceTabActive: {
-    backgroundColor: Colors.white,
-    ...Shadows.subtle,
-  },
-  sourceTabText: {
-    ...Typography.buttonSmall,
-    color: Colors.charcoalMuted,
-  },
-  sourceTabTextActive: {
-    color: Colors.charcoal,
-  },
-  cardTitleColumn: {
-    flex: 1,
-    marginRight: Spacing.sm,
-  },
-  cardCalendar: {
-    ...Typography.caption,
-    color: Colors.charcoalSubtle,
-    marginTop: 2,
   },
   categoryList: {
     paddingHorizontal: Spacing.lg,
