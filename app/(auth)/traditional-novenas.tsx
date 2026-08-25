@@ -8,9 +8,13 @@ import { Typography } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import {
   listTraditionalNovenas,
+  listTraditionalNovenasOnNow,
+  listTraditionalNovenasUpcoming,
   describeCalendar,
   nextStartYear,
   formatCalendarDay,
+  isOnNow,
+  daysUntilStart,
   TraditionalNovena,
 } from '../../constants/traditionalNovenas';
 import { SAINTS } from '../../constants/saints';
@@ -21,7 +25,16 @@ function saintNameFor(novena: TraditionalNovena): string {
 }
 
 export default function TraditionalNovenasScreen() {
-  const novenas = listTraditionalNovenas();
+  // "On now" first, then "Coming up" (sorted by next start), then anything else.
+  const onNow = listTraditionalNovenasOnNow();
+  const upcoming = listTraditionalNovenasUpcoming();
+  const seen = new Set([...onNow, ...upcoming].map((n) => n.id));
+  const rest = listTraditionalNovenas().filter((n) => !seen.has(n.id));
+  const sections: { title: string; data: TraditionalNovena[] }[] = [
+    { title: 'On now', data: onNow },
+    { title: 'Coming up', data: upcoming },
+    { title: 'All traditional novenas', data: rest },
+  ].filter((section) => section.data.length > 0);
 
   // Traditional published novenas sit outside the Pro paywall.
   const handleSelect = (novena: TraditionalNovena) => {
@@ -59,37 +72,56 @@ export default function TraditionalNovenasScreen() {
           </Text>
         </Animated.View>
 
-        {novenas.map((novena, index) => {
-          const year = nextStartYear(novena.calendar);
-          return (
-            <Animated.View key={novena.id} entering={FadeInDown.delay(150 + index * 80).duration(400)}>
-              <TouchableOpacity
-                style={styles.card}
-                onPress={() => handleSelect(novena)}
-                activeOpacity={0.85}
-                accessibilityRole="button"
-                accessibilityLabel={`Start ${novena.title}`}
-              >
-                <View style={styles.cardHeader}>
-                  <IconNavNovenas size={24} color={Colors.sage} />
-                  <Text style={styles.cardTitle}>{novena.title}</Text>
-                </View>
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>Traditional published prayer</Text>
-                </View>
-                <Text style={styles.cardDescription}>{novena.description}</Text>
-                <Text style={styles.calendarText}>{describeCalendar(novena.calendar)}</Text>
-                <Text style={styles.calendarSub}>
-                  Next window begins {formatCalendarDay(novena.calendar.startMonth, novena.calendar.startDay)} {year}. You can pray it any time of year.
-                </Text>
-                <Text style={styles.sourceText}>Source: {novena.sourceName}</Text>
-                <View style={styles.startButton}>
-                  <Text style={styles.startButtonText}>Choose this novena</Text>
-                </View>
-              </TouchableOpacity>
-            </Animated.View>
-          );
-        })}
+        {sections.map((section) => (
+          <View key={section.title}>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
+            {section.data.map((novena, index) => {
+              const year = nextStartYear(novena.calendar);
+              const onNowNovena = isOnNow(novena.calendar);
+              const days = daysUntilStart(novena.calendar);
+              return (
+                <Animated.View key={novena.id} entering={FadeInDown.delay(150 + index * 80).duration(400)}>
+                  <TouchableOpacity
+                    style={[styles.card, onNowNovena && styles.cardOnNow]}
+                    onPress={() => handleSelect(novena)}
+                    activeOpacity={0.85}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Start ${novena.title}`}
+                  >
+                    <View style={styles.cardHeader}>
+                      <IconNavNovenas size={24} color={Colors.sage} />
+                      <Text style={styles.cardTitle}>{novena.title}</Text>
+                    </View>
+                    <View style={styles.badgeRow}>
+                      <View style={styles.badge}>
+                        <Text style={styles.badgeText}>Traditional published prayer</Text>
+                      </View>
+                      {onNowNovena ? (
+                        <View style={[styles.badge, styles.badgeOnNow]}>
+                          <Text style={[styles.badgeText, styles.badgeOnNowText]}>On now</Text>
+                        </View>
+                      ) : null}
+                    </View>
+                    <Text style={styles.cardDescription}>{novena.description}</Text>
+                    <Text style={styles.calendarText}>{describeCalendar(novena.calendar)}</Text>
+                    <Text style={styles.calendarSub}>
+                      {onNowNovena
+                        ? 'The published window is on right now.'
+                        : days === 0
+                          ? 'The published window begins today.'
+                          : `Next window begins ${formatCalendarDay(novena.calendar.startMonth, novena.calendar.startDay)} ${year}, in ${days} ${days === 1 ? 'day' : 'days'}.`}
+                      {' '}You can pray it any time of year.
+                    </Text>
+                    <Text style={styles.sourceText}>Source: {novena.sourceName}</Text>
+                    <View style={styles.startButton}>
+                      <Text style={styles.startButtonText}>Choose this novena</Text>
+                    </View>
+                  </TouchableOpacity>
+                </Animated.View>
+              );
+            })}
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
@@ -131,6 +163,30 @@ const styles = StyleSheet.create({
     color: Colors.charcoalMuted,
     marginBottom: Spacing.lg,
   },
+  sectionTitle: {
+    ...Typography.caption,
+    color: Colors.charcoalSubtle,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: Spacing.sm,
+    marginTop: Spacing.xs,
+  },
+  cardOnNow: {
+    borderWidth: 1,
+    borderColor: Colors.terracotta,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  badgeOnNow: {
+    backgroundColor: Colors.terracotta,
+    marginBottom: 0,
+  },
+  badgeOnNowText: {
+    color: Colors.white,
+  },
   card: {
     backgroundColor: Colors.white,
     borderRadius: BorderRadius.lg,
@@ -155,7 +211,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
     paddingVertical: 3,
     paddingHorizontal: Spacing.xs,
-    marginBottom: Spacing.sm,
   },
   badgeText: {
     ...Typography.caption,

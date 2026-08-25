@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { Saint, StreakData, StreakResetInfo, UsageData, ActiveChallenge, Completion, UserNovena, ChallengeLogEntry, NovenaSource, GeneratedPrayers } from '../types';
-import { getTraditionalNovenaById, isTraditionalNovenaId, nextStartDate } from '../constants/traditionalNovenas';
+import { getTraditionalNovenaById, isTraditionalNovenaId, nextStartDate, listTraditionalNovenas } from '../constants/traditionalNovenas';
 import { getStreakData, getStreakDataWithResetCheck, incrementStreak as incrementStreakData, useStreakFreeze as applyStreakFreezeStorage, acknowledgeStreakReset, canUseStreakFreeze } from '../lib/streak';
 import {
   getUsageData,
@@ -36,7 +36,7 @@ import {
 } from '../lib/sync';
 import { generateNovenaPrayers } from '../lib/novenaGenerate';
 import { getNotificationPreferences } from '../lib/storage';
-import { scheduleNovenaReminders, cancelNovenaNotifications, scheduleTraditionalNovenaStartReminder } from '../lib/notifications';
+import { scheduleNovenaReminders, cancelNovenaNotifications, scheduleTraditionalNovenaStartReminder, scheduleTraditionalSeasonReminders, hasNotificationPermission } from '../lib/notifications';
 import { loadHapticPreference } from '../lib/haptics';
 import type { Session } from '@supabase/supabase-js';
 
@@ -75,6 +75,13 @@ interface AppContextType {
 }
 
 const AppContext = createContext<AppContextType | null>(null);
+
+async function scheduleSeasonRemindersIfAllowed(): Promise<void> {
+  const prefs = await getNotificationPreferences();
+  if (!prefs.novenaReminderEnabled) return;
+  if (!(await hasNotificationPermission())) return;
+  await scheduleTraditionalSeasonReminders(listTraditionalNovenas());
+}
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [streak, setStreak] = useState<StreakData>({
@@ -218,6 +225,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       await refreshAll();
       setIsLoading(false);
+
+      // Traditional novena season reminders: only if the user already granted
+      // notification permission (never prompt from here) and the novena
+      // reminder preference is on. Fire-and-forget.
+      scheduleSeasonRemindersIfAllowed().catch(() => {});
     }
     init();
 

@@ -16,10 +16,12 @@ export const ST_JUDE_CATALOG_SLUG = 'st-jude-novena';
 export const REQUEST_PLACEHOLDER = '(make your request here)';
 
 export interface NovenaCalendar {
-  startMonth: number;     // 1 to 12
+  startMonth: number;       // 1 to 12
   startDay: number;
-  lastPrayerDay: number;  // same month as startMonth
-  feastDay: number;       // same month as startMonth
+  lastPrayerMonth: number;  // may differ from startMonth (windows can cross a month boundary)
+  lastPrayerDay: number;
+  feastMonth: number;       // may differ from startMonth
+  feastDay: number;
 }
 
 export interface LabeledPrayer {
@@ -73,7 +75,7 @@ export const TRADITIONAL_ST_JUDE: TraditionalNovena = {
   novenaPrayer: ST_JUDE_NOVENA_PRAYER,
   prayerBlock: ST_JUDE_PRAYER_BLOCK,
   commons: [OUR_FATHER, HAIL_MARY],
-  calendar: { startMonth: 10, startDay: 19, lastPrayerDay: 27, feastDay: 28 },
+  calendar: { startMonth: 10, startDay: 19, lastPrayerMonth: 10, lastPrayerDay: 27, feastMonth: 10, feastDay: 28 },
   sourceName: 'EWTN',
   sourceUrl: 'https://www.ewtn.com/catholicism/devotions/novena-to-st-jude--desperate-situations-and-hopeless-cases-305',
   catalogSlugs: [ST_JUDE_CATALOG_SLUG],
@@ -118,16 +120,70 @@ export function splitAtRequestPlaceholder(prayer: string): { before: string; aft
   };
 }
 
+function localMidnight(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/**
+ * The novena window whose start falls in `year`, at local midnight. If the
+ * last prayer day or feast day falls in an earlier month than the start
+ * (e.g. a late-December start), they roll into the following year.
+ */
+export function calendarWindow(
+  calendar: NovenaCalendar,
+  year: number
+): { start: Date; lastPrayer: Date; feast: Date } {
+  const start = new Date(year, calendar.startMonth - 1, calendar.startDay);
+  const lastPrayerYear = calendar.lastPrayerMonth < calendar.startMonth ? year + 1 : year;
+  const lastPrayer = new Date(lastPrayerYear, calendar.lastPrayerMonth - 1, calendar.lastPrayerDay);
+  const feastYear = calendar.feastMonth < calendar.startMonth ? year + 1 : year;
+  const feast = new Date(feastYear, calendar.feastMonth - 1, calendar.feastDay);
+  return { start, lastPrayer, feast };
+}
+
+/** True if today falls between start and last prayer day inclusive. */
+export function isOnNow(calendar: NovenaCalendar, now: Date = new Date()): boolean {
+  const today = localMidnight(now);
+  // Check the current year's window and the previous year's (which may
+  // still be running if the window crossed a year boundary).
+  for (const year of [today.getFullYear(), today.getFullYear() - 1]) {
+    const { start, lastPrayer } = calendarWindow(calendar, year);
+    if (today >= start && today <= lastPrayer) return true;
+  }
+  return false;
+}
+
 /** Year of the next start date (today counts as still upcoming). */
 export function nextStartYear(calendar: NovenaCalendar, now: Date = new Date()): number {
   const year = now.getFullYear();
-  const startThisYear = new Date(year, calendar.startMonth - 1, calendar.startDay);
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return today <= startThisYear ? year : year + 1;
+  const { start } = calendarWindow(calendar, year);
+  const today = localMidnight(now);
+  return today <= start ? year : year + 1;
 }
 
 export function nextStartDate(calendar: NovenaCalendar, now: Date = new Date()): Date {
-  return new Date(nextStartYear(calendar, now), calendar.startMonth - 1, calendar.startDay);
+  return calendarWindow(calendar, nextStartYear(calendar, now)).start;
+}
+
+/** Whole days until the next start. 0 if the novena is on now or starts today. */
+export function daysUntilStart(calendar: NovenaCalendar, now: Date = new Date()): number {
+  if (isOnNow(calendar, now)) return 0;
+  const today = localMidnight(now);
+  const start = nextStartDate(calendar, now);
+  return Math.max(0, Math.round((start.getTime() - today.getTime()) / MS_PER_DAY));
+}
+
+export function listTraditionalNovenasOnNow(now: Date = new Date()): TraditionalNovena[] {
+  return TRADITIONAL_NOVENAS.filter((n) => isOnNow(n.calendar, now));
+}
+
+/** Novenas not currently on, sorted by soonest next start. */
+export function listTraditionalNovenasUpcoming(now: Date = new Date()): TraditionalNovena[] {
+  return TRADITIONAL_NOVENAS
+    .filter((n) => !isOnNow(n.calendar, now))
+    .sort((a, b) => nextStartDate(a.calendar, now).getTime() - nextStartDate(b.calendar, now).getTime());
 }
 
 export function nextJudeStartYear(now: Date = new Date()): number {
@@ -142,6 +198,5 @@ export function formatCalendarDay(month: number, day: number): string {
 
 /** Short window copy for cards, e.g. "Starts Oct 19. Last prayer day Oct 27. Feast day Oct 28." */
 export function describeCalendar(calendar: NovenaCalendar): string {
-  const m = calendar.startMonth;
-  return `Starts ${formatCalendarDay(m, calendar.startDay)}. Last prayer day ${formatCalendarDay(m, calendar.lastPrayerDay)}. Feast day ${formatCalendarDay(m, calendar.feastDay)}.`;
+  return `Starts ${formatCalendarDay(calendar.startMonth, calendar.startDay)}. Last prayer day ${formatCalendarDay(calendar.lastPrayerMonth, calendar.lastPrayerDay)}. Feast day ${formatCalendarDay(calendar.feastMonth, calendar.feastDay)}.`;
 }

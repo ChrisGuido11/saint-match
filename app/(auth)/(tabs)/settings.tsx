@@ -23,7 +23,8 @@ import { resetAllData } from '../../../lib/streak';
 import { resetProStatus, restorePurchases } from '../../../lib/purchases';
 import { PaywallBottomSheet } from '../../../components/PaywallBottomSheet';
 import { signOut, isSupabaseConfigured, deleteUserAccount, supabase } from '../../../lib/supabase';
-import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder } from '../../../lib/notifications';
+import { requestNotificationPermission, scheduleDailyReminder, cancelDailyReminder, hasNotificationPermission, scheduleTraditionalSeasonReminders, cancelAllTraditionalNovenaStartReminders } from '../../../lib/notifications';
+import { listTraditionalNovenas } from '../../../constants/traditionalNovenas';
 import * as Notifications from 'expo-notifications';
 import { LinkAccountModal } from '../../../components/LinkAccountModal';
 import { NotificationSettingsModal } from '../../../components/NotificationSettingsModal';
@@ -203,6 +204,18 @@ export default function SettingsScreen() {
       }
     } else {
       await cancelDailyReminder();
+    }
+
+    // Traditional novena season starts follow the existing novena reminder
+    // toggle. Never prompt for permission from here.
+    try {
+      if (prefs.novenaReminderEnabled && (await hasNotificationPermission())) {
+        await scheduleTraditionalSeasonReminders(listTraditionalNovenas());
+      } else if (!prefs.novenaReminderEnabled) {
+        await cancelAllTraditionalNovenaStartReminders();
+      }
+    } catch {
+      // Scheduling is best-effort
     }
 
     showToast('Notification settings saved');
