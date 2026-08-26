@@ -62,11 +62,6 @@ export default function NovenasScreen() {
     router.push({ pathname: '/(auth)/choose-intention' });
   };
 
-  // Traditional published novenas sit outside the Pro paywall.
-  const handleTraditional = () => {
-    router.push({ pathname: '/(auth)/traditional-novenas' });
-  };
-
   return (
     <View style={styles.screen}>
     <ScrollView
@@ -81,19 +76,6 @@ export default function NovenasScreen() {
         <Text style={styles.title}>My Novenas</Text>
         <TouchableOpacity onPress={() => setShowInfo(true)} accessibilityRole="button" accessibilityLabel="What's a novena?">
           <Text style={styles.infoLink}>What's a Novena?</Text>
-        </TouchableOpacity>
-      </Animated.View>
-
-      {/* Traditional published prayers: always visible, never paywalled */}
-      <Animated.View entering={FadeInDown.delay(50).duration(400)}>
-        <TouchableOpacity
-          style={styles.traditionalButton}
-          onPress={handleTraditional}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel="Traditional published prayers"
-        >
-          <Text style={styles.traditionalButtonText}>Traditional published prayers</Text>
         </TouchableOpacity>
       </Animated.View>
 
@@ -112,15 +94,6 @@ export default function NovenasScreen() {
             accessibilityLabel="Start a novena"
           >
             <Text style={styles.startButtonText}>Start a Novena</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleTraditional}
-            style={styles.traditionalLink}
-            activeOpacity={0.7}
-            accessibilityRole="link"
-            accessibilityLabel="Traditional published prayer"
-          >
-            <Text style={styles.traditionalLinkText}>Traditional published prayer</Text>
           </TouchableOpacity>
         </Animated.View>
       ) : (
@@ -231,15 +204,6 @@ export default function NovenasScreen() {
             accessibilityLabel="Start another novena"
           >
             <Text style={styles.addButtonText}>Start Another Novena</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleTraditional}
-            style={styles.traditionalLink}
-            activeOpacity={0.7}
-            accessibilityRole="link"
-            accessibilityLabel="Traditional published prayer"
-          >
-            <Text style={styles.traditionalLinkText}>Traditional published prayer</Text>
           </TouchableOpacity>
         </>
       )}
@@ -431,25 +395,6 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     ...Typography.button,
-    color: Colors.sage,
-  },
-  traditionalButton: {
-    paddingVertical: Spacing.sm + 2,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.sage,
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  traditionalButtonText: {
-    ...Typography.button,
-    color: Colors.white,
-  },
-  traditionalLink: {
-    alignItems: 'center',
-    paddingVertical: Spacing.md,
-  },
-  traditionalLinkText: {
-    ...Typography.bodySmall,
     color: Colors.sage,
   },
 });
