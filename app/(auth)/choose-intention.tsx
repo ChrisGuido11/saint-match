@@ -136,12 +136,12 @@ export default function ChooseIntentionScreen() {
             onPress={handleTraditional}
             activeOpacity={0.7}
             accessibilityRole="button"
-            accessibilityLabel="Traditional published prayer"
+            accessibilityLabel="Verified published prayer"
           >
             <Text style={[styles.intentionChipText, styles.traditionalChipText]}>
-              Traditional published prayer
+              Verified published prayer
             </Text>
-            <Text style={styles.traditionalChipHint}>St. Jude novena. Free.</Text>
+            <Text style={styles.traditionalChipHint}>Original source. Free.</Text>
           </TouchableOpacity>
 
           {PRESET_INTENTIONS.map((preset) => (
