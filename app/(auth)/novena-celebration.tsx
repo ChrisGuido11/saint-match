@@ -71,7 +71,7 @@ export default function NovenaCelebrationScreen() {
 
   const handleDone = () => {
     hapticImpact(ImpactFeedbackStyle.Light);
-    router.replace('/(auth)/(tabs)');
+    router.replace('/(auth)/(tabs)/novenas');
   };
 
   return (
