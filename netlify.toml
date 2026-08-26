@@ -1,9 +1,8 @@
-# Saint Match marketing site — static HTML in /site, no build step.
+# Saint Match marketing site. Static HTML in /site, no build step.
 [build]
   publish = "site"
 
-# Pretty paths for App Store sellerUrl and in-app legal links
-# (currently saint-match.lovable.app/terms and /privacy).
+# Pretty paths for App Store sellerUrl and in-app legal links.
 [[redirects]]
   from = "/terms"
   to = "/terms.html"
@@ -17,6 +16,21 @@
 [[redirects]]
   from = "/support"
   to = "/support.html"
+  status = 200
+
+[[redirects]]
+  from = "/subscriptions"
+  to = "/subscriptions.html"
+  status = 200
+
+[[redirects]]
+  from = "/delete-account"
+  to = "/delete-account.html"
+  status = 200
+
+[[redirects]]
+  from = "/account-deletion"
+  to = "/delete-account.html"
   status = 200
 
 [[headers]]
