@@ -18,9 +18,16 @@ import { Typography, FontFamily } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { fetchNovenaCatalog, getCachedCatalog, NovenaEntry } from '../../lib/novenaCatalog';
 import { resolveSaintName } from '../../lib/novenaMatch';
+import { TRADITIONAL_NOVENAS } from '../../constants/traditionalNovenas';
 import { IconChevronLeft } from '../../components/icons';
 import { useApp } from '../../context/AppContext';
 import { PaywallBottomSheet } from '../../components/PaywallBottomSheet';
+
+// Generated catalog only. Traditional published novenas live on their own
+// screen (traditional-novenas.tsx), so their catalog slugs are hidden here.
+const TRADITIONAL_SLUGS = new Set(
+  TRADITIONAL_NOVENAS.flatMap((n) => [n.saintId, ...n.catalogSlugs]),
+);
 
 type CategoryFilter = 'all' | 'saints' | 'marian' | 'holy-days' | 'intentions';
 
@@ -80,7 +87,7 @@ export default function BrowseNovenasScreen() {
   }, []);
 
   const filtered = useMemo(() => {
-    let items = catalog;
+    let items = catalog.filter((n) => !TRADITIONAL_SLUGS.has(n.slug));
 
     if (activeCategory !== 'all') {
       items = items.filter((n) => n.category === activeCategory);
@@ -110,7 +117,7 @@ export default function BrowseNovenasScreen() {
         novenaDescription: `Nine days of prayer: ${entry.title}`,
       },
     });
-  }, []);
+  }, [isNovenaLimited]);
 
   const renderItem = useCallback(({ item, index }: { item: NovenaEntry; index: number }) => (
     <Animated.View entering={FadeInDown.delay(Math.min(index * 30, 300)).duration(300)}>

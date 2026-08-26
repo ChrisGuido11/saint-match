@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
-import { Saint, StreakData, StreakResetInfo, UsageData, ActiveChallenge, Completion, UserNovena, ChallengeLogEntry } from '../types';
+import { Saint, StreakData, StreakResetInfo, UsageData, ActiveChallenge, Completion, UserNovena, ChallengeLogEntry, NovenaSource, GeneratedPrayers } from '../types';
+import { getTraditionalNovenaById, isTraditionalNovenaId, nextStartDate, listTraditionalNovenas } from '../constants/traditionalNovenas';
 import { getStreakData, getStreakDataWithResetCheck, incrementStreak as incrementStreakData, useStreakFreeze as applyStreakFreezeStorage, acknowledgeStreakReset, canUseStreakFreeze } from '../lib/streak';
 import {
   getUsageData,
@@ -35,7 +36,7 @@ import {
 } from '../lib/sync';
 import { generateNovenaPrayers } from '../lib/novenaGenerate';
 import { getNotificationPreferences } from '../lib/storage';
-import { scheduleNovenaReminders, cancelNovenaNotifications } from '../lib/notifications';
+import { scheduleNovenaReminders, cancelNovenaNotifications, scheduleTraditionalNovenaStartReminder, scheduleTraditionalSeasonReminders, hasNotificationPermission } from '../lib/notifications';
 import { loadHapticPreference } from '../lib/haptics';
 import type { Session } from '@supabase/supabase-js';
 
@@ -67,13 +68,20 @@ interface AppContextType {
   refreshAll: () => Promise<void>;
   dismissStreakReset: () => Promise<void>;
   applyStreakFreeze: () => Promise<boolean>;
-  startNovena: (novenaId: string, saintId: string, saintName: string, saintBio: string, personalIntention: string) => Promise<UserNovena>;
+  startNovena: (novenaId: string, saintId: string, saintName: string, saintBio: string, personalIntention: string, source?: NovenaSource) => Promise<UserNovena>;
   markNovenaDayPrayed: (userNovenaId: string) => Promise<{ alreadyPrayed: boolean; completed: boolean }>;
   saveNovenaReflection: (userNovenaId: string, reflection: string) => Promise<void>;
   abandonNovena: (userNovenaId: string) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
+
+async function scheduleSeasonRemindersIfAllowed(): Promise<void> {
+  const prefs = await getNotificationPreferences();
+  if (!prefs.novenaReminderEnabled) return;
+  if (!(await hasNotificationPermission())) return;
+  await scheduleTraditionalSeasonReminders(listTraditionalNovenas());
+}
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [streak, setStreak] = useState<StreakData>({
@@ -217,6 +225,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       await refreshAll();
       setIsLoading(false);
+
+      // Traditional novena season reminders: only if the user already granted
+      // notification permission (never prompt from here) and the novena
+      // reminder preference is on. Fire-and-forget.
+      scheduleSeasonRemindersIfAllowed().catch(() => {});
     }
     init();
 
@@ -334,19 +347,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [isPro]);
 
-  const startNovena = useCallback(async (novenaId: string, saintId: string, saintName: string, saintBio: string, personalIntention: string): Promise<UserNovena> => {
-    // Gate: free users limited to 1 active novena
-    if (!isPro) {
+  const startNovena = useCallback(async (novenaId: string, saintId: string, saintName: string, saintBio: string, personalIntention: string, source?: NovenaSource): Promise<UserNovena> => {
+    // Traditional novenas ship their published text in the app, so nothing is generated.
+    const isTraditional = source === 'traditional' || isTraditionalNovenaId(novenaId);
+
+    // Gate: free users limited to 1 active generated novena.
+    // Traditional published novenas sit outside the Pro paywall.
+    if (!isPro && !isTraditional) {
       const activeCount = userNovenas.filter((n) => !n.completed).length;
       if (activeCount >= 1) {
         throw new Error('NOVENA_LIMIT_REACHED');
       }
     }
+    const traditional = isTraditional ? getTraditionalNovenaById(novenaId) : undefined;
 
-    // Generate AI prayers — thrown error means API failure (propagates to UI)
-    const generatedPrayers = await generateNovenaPrayers(saintName, saintBio, personalIntention);
-    if (!generatedPrayers) {
-      throw new Error('PRAYER_GENERATION_FAILED');
+    let generatedPrayers: GeneratedPrayers | null = null;
+    if (!isTraditional) {
+      // Generate AI prayers — thrown error means API failure (propagates to UI)
+      generatedPrayers = await generateNovenaPrayers(saintName, saintBio, personalIntention);
+      if (!generatedPrayers) {
+        throw new Error('PRAYER_GENERATION_FAILED');
+      }
     }
 
     const newNovena: UserNovena = {
@@ -363,6 +384,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       completedAt: null,
       reflection: null,
       generatedPrayers,
+      source: isTraditional ? 'traditional' : 'generated',
     };
     await storeUserNovena(newNovena);
     setUserNovenas((prev) => [newNovena, ...prev]);
@@ -371,8 +393,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Schedule novena reminders if enabled
     getNotificationPreferences()
       .then((prefs) => {
-        if (prefs.novenaReminderEnabled) {
-          scheduleNovenaReminders(newNovena, saintName).catch(() => {});
+        if (!prefs.novenaReminderEnabled) return;
+        scheduleNovenaReminders(newNovena, saintName).catch(() => {});
+        if (traditional) {
+          scheduleTraditionalNovenaStartReminder(
+            traditional.id,
+            saintName,
+            nextStartDate(traditional.calendar)
+          ).catch(() => {});
         }
       })
       .catch(() => {});

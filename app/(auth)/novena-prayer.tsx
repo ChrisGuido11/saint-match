@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Linking,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { hapticImpact, hapticSelection, ImpactFeedbackStyle } from '@/lib/haptics';
@@ -15,6 +16,13 @@ import { Typography, FontFamily } from '../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../constants/spacing';
 import { useApp } from '../../context/AppContext';
 import { getNovenaById } from '../../constants/novenas';
+import {
+  getTraditionalNovenaById,
+  hasPublishedDailyPrayers,
+  isTraditionalNovenaId,
+  splitAtRequestPlaceholder,
+  REQUEST_PLACEHOLDER,
+} from '../../constants/traditionalNovenas';
 import { SAINTS } from '../../constants/saints';
 import { NovenaProgressDots } from '../../components/NovenaProgressDots';
 import { IconChevronLeft, IconNavNovenas } from '../../components/icons';
@@ -25,6 +33,8 @@ export default function NovenaPrayerScreen() {
 
   const userNovena = userNovenas.find((n) => n.id === userNovenaId);
   const novena = userNovena ? getNovenaById(userNovena.novenaId) : null;
+  const isTraditional = !!userNovena && (userNovena.source === 'traditional' || isTraditionalNovenaId(userNovena.novenaId));
+  const traditional = isTraditional && userNovena ? getTraditionalNovenaById(userNovena.novenaId) : undefined;
   const saint = userNovena ? SAINTS.find((s) => s.id === userNovena.saintId) : null;
   const saintName = saint?.name ?? userNovena?.saintName ?? 'Saint';
 
@@ -119,8 +129,79 @@ export default function NovenaPrayerScreen() {
           </Animated.View>
         ) : null}
 
+        {/* Traditional published novena: verbatim text, no accordion */}
+        {traditional ? (
+          <Animated.View entering={FadeInDown.delay(300).duration(400)}>
+            {hasPublishedDailyPrayers(traditional) ? (
+              <>
+                <Text style={styles.traditionalHeading}>Day {userNovena.currentDay} Prayer</Text>
+                <Text style={styles.traditionalSubheading}>A different published prayer each day</Text>
+                <View style={styles.prayerContent}>
+                  <Text style={styles.prayerText}>
+                    {traditional.publishedDailyPrayers![Math.min(Math.max(dayIndex, 0), 8)]}
+                  </Text>
+                </View>
+              </>
+            ) : (
+              <>
+                <Text style={styles.traditionalHeading}>Novena Prayer</Text>
+                <Text style={styles.traditionalSubheading}>Nine days of the same published prayer</Text>
+                <View style={styles.prayerContent}>
+                  {(() => {
+                    const split = splitAtRequestPlaceholder(
+                      traditional.novenaPrayer,
+                      traditional.requestPlaceholder === undefined ? REQUEST_PLACEHOLDER : traditional.requestPlaceholder
+                    );
+                    const request = userNovena.personalIntention?.trim();
+                    if (!split || !request) {
+                      return <Text style={styles.prayerText}>{traditional.novenaPrayer}</Text>;
+                    }
+                    return (
+                      <Text style={styles.prayerText}>
+                        {split.before}
+                        <Text style={styles.prayerRequest}>{request}</Text>
+                        {split.after}
+                      </Text>
+                    );
+                  })()}
+                </View>
+              </>
+            )}
+
+            {traditional.prayerBlock ? (
+              <>
+                <Text style={styles.traditionalHeading}>Prayer</Text>
+                <View style={styles.prayerContent}>
+                  <Text style={styles.prayerText}>{traditional.prayerBlock}</Text>
+                </View>
+              </>
+            ) : null}
+
+            {traditional.commons.map((common) => (
+              <View key={common.label}>
+                <Text style={styles.traditionalHeading}>{common.label}</Text>
+                <View style={styles.prayerContent}>
+                  <Text style={styles.prayerText}>{common.text}</Text>
+                </View>
+              </View>
+            ))}
+
+            <View style={styles.sourceCard}>
+              <Text style={styles.sourceLabel}>SOURCE</Text>
+              <Text style={styles.sourceText}>Novena text from {traditional.sourceName}</Text>
+              <TouchableOpacity
+                onPress={() => Linking.openURL(traditional.sourceUrl).catch(() => {})}
+                accessibilityRole="link"
+                accessibilityLabel={`Open the ${traditional.sourceName} source page`}
+              >
+                <Text style={styles.sourceLink}>{traditional.sourceUrl}</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        ) : null}
+
         {/* Fallback when no prayers are available */}
-        {!openingPrayer && !dailyPrayer && !closingPrayer ? (
+        {!traditional && !openingPrayer && !dailyPrayer && !closingPrayer ? (
           <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.missingPrayersCard}>
             <Text style={styles.missingPrayersTitle}>Prayers Unavailable</Text>
             <Text style={styles.missingPrayersText}>
@@ -132,7 +213,8 @@ export default function NovenaPrayerScreen() {
           </Animated.View>
         ) : null}
 
-        {/* Prayer Sections */}
+        {/* Prayer Sections (composed and generated novenas) */}
+        {!traditional ? (
         <Animated.View entering={FadeInDown.delay(300).duration(400)}>
           {/* Opening Prayer */}
           <TouchableOpacity
@@ -185,6 +267,7 @@ export default function NovenaPrayerScreen() {
             </View>
           ) : null}
         </Animated.View>
+        ) : null}
 
         {/* Progress */}
         <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.progressSection}>
@@ -295,6 +378,46 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 30,
     color: Colors.charcoal,
+  },
+  traditionalHeading: {
+    ...Typography.h3,
+    color: Colors.charcoal,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.creamDark,
+  },
+  traditionalSubheading: {
+    ...Typography.caption,
+    color: Colors.charcoalSubtle,
+    marginTop: Spacing.xs,
+  },
+  prayerRequest: {
+    fontFamily: FontFamily.serif,
+    fontStyle: 'italic',
+    color: Colors.sageDark,
+  },
+  sourceCard: {
+    backgroundColor: Colors.white,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginTop: Spacing.lg,
+    ...Shadows.subtle,
+  },
+  sourceLabel: {
+    ...Typography.label,
+    color: Colors.charcoalSubtle,
+    marginBottom: Spacing.xxs,
+  },
+  sourceText: {
+    ...Typography.bodySmall,
+    color: Colors.charcoalMuted,
+    marginBottom: Spacing.xxs,
+  },
+  sourceLink: {
+    ...Typography.caption,
+    color: Colors.sage,
+    textDecorationLine: 'underline',
   },
   progressSection: {
     marginTop: Spacing.xl,

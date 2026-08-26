@@ -85,6 +85,10 @@ export interface ActiveChallenge {
 }
 
 // Novena types
+// 'traditional' = published prayer text shipped verbatim in the app.
+// 'generated' (default) = composed in constants/novenas.ts or produced by the AI edge function.
+export type NovenaSource = 'traditional' | 'generated';
+
 export interface Novena {
   id: string;
   saintId: string;
@@ -94,6 +98,7 @@ export interface Novena {
   dailyPrayers: string[];
   closingPrayer: string;
   intentionSuggestions: string[];
+  source?: NovenaSource;
 }
 
 export interface GeneratedPrayers {
@@ -116,6 +121,7 @@ export interface UserNovena {
   completedAt: string | null;
   reflection: string | null;
   generatedPrayers: GeneratedPrayers | null;
+  source?: NovenaSource;
 }
 
 export interface NotificationPreferences {

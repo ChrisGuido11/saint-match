@@ -90,6 +90,12 @@ export default function ChooseIntentionScreen() {
     router.push({ pathname: '/(auth)/browse-novenas' });
   };
 
+  // Traditional published novenas sit outside the Pro paywall.
+  const handleTraditional = () => {
+    hapticSelection();
+    router.push({ pathname: '/(auth)/traditional-novenas' });
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -124,6 +130,20 @@ export default function ChooseIntentionScreen() {
 
         {/* Preset Intentions */}
         <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.intentionsSection}>
+          {/* Traditional published prayer: separate catalog, never paywalled */}
+          <TouchableOpacity
+            style={[styles.intentionChip, styles.traditionalChip]}
+            onPress={handleTraditional}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Verified published prayer"
+          >
+            <Text style={[styles.intentionChipText, styles.traditionalChipText]}>
+              Verified published prayer
+            </Text>
+            <Text style={styles.traditionalChipHint}>Original source. Free.</Text>
+          </TouchableOpacity>
+
           {PRESET_INTENTIONS.map((preset) => (
             <TouchableOpacity
               key={preset}
@@ -217,6 +237,7 @@ export default function ChooseIntentionScreen() {
           >
             <Text style={styles.catalogLinkText}>View Full Catalog</Text>
           </TouchableOpacity>
+
         </Animated.View>
       </ScrollView>
 
@@ -303,6 +324,17 @@ const styles = StyleSheet.create({
   },
   intentionChipTextSelected: {
     color: Colors.sageDark,
+  },
+  traditionalChip: {
+    borderColor: Colors.sage,
+  },
+  traditionalChipText: {
+    color: Colors.sageDark,
+  },
+  traditionalChipHint: {
+    ...Typography.caption,
+    color: Colors.charcoalMuted,
+    marginTop: 2,
   },
   customInput: {
     backgroundColor: Colors.white,
