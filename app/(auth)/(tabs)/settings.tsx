@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { router } from 'expo-router';
+import Constants from 'expo-constants';
 import { Colors } from '../../../constants/colors';
 import { Typography, FontFamily } from '../../../constants/typography';
 import { Spacing, BorderRadius, Shadows } from '../../../constants/spacing';
@@ -392,7 +393,7 @@ export default function SettingsScreen() {
       {/* App info */}
       <Animated.View entering={FadeIn.delay(550).duration(400)} style={styles.appInfo}>
         <Text style={styles.appName}>Saint Match</Text>
-        <Text style={styles.appVersion}>Version 1.1.0</Text>
+        <Text style={styles.appVersion}>Version {Constants.expoConfig?.version ?? '1.1.1'}</Text>
         <Text style={styles.appTagline}>Daily virtue challenges from the saints</Text>
       </Animated.View>
 
