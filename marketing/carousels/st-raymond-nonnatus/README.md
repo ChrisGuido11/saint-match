@@ -1,8 +1,21 @@
-# St Raymond Nonnatus — Instagram carousel
+# St Raymond Nonnatus — carousel
 
-A five-slide Instagram carousel (1080 × 1351, 4:5) for the feast of St Raymond
-Nonnatus, 31 August. White Cormorant Garamond set over cropped details of three
-seventeenth-century Spanish paintings of the saint.
+A five-slide carousel for the feast of St Raymond Nonnatus, 31 August. White
+Cormorant Garamond set over cropped details of three seventeenth-century Spanish
+paintings of the saint.
+
+## Deliverables
+
+| Set | Size | Where it goes |
+| --- | --- | --- |
+| `slides/` | 1080 × 1351 (4:5) | Instagram feed and X. **The primary set.** |
+| `slides-vertical/` | 1080 × 1920 (9:16) | TikTok Photo Mode and Instagram / Facebook Stories, both of which accept image carousels natively and frame at 9:16. |
+| `st-raymond-nonnatus-vertical.mp4` | 1080 × 1920, 17.6 s | YouTube Shorts. Silent, H.264, faststart. |
+
+The 9:16 stills are the 4:5 slides placed uncropped and centred on a blurred,
+darkened blow-up of their own artwork — no slide is re-cropped and no type falls
+outside the 4:5 plate. The MP4 is those same 9:16 stills in order, about 3.4 s
+each with a 0.6 s cross-dissolve between them.
 
 ## Files
 
@@ -16,6 +29,35 @@ seventeenth-century Spanish paintings of the saint.
 | `Invocation.dc.html` | Slide 5 — invocation |
 | `canvas.json` | Canvas layout: the five artboards in a row, launching on the canvas view |
 | `*.jpg` | The five cropped artwork plates, one per slide |
+| `build.mjs` | Renders the artboards to `slides/` and `slides-vertical/` |
+| `build-video.sh` | Builds the vertical MP4 from `slides-vertical/` |
+| `site/` | Netlify-ready asset page. See `site/DEPLOY.md`. **Not deployed.** |
+
+## Building
+
+The `.dc.html` artboards are static — no `{{holes}}`, no `data-dc-script` logic —
+so `build.mjs` renders them without the Design Components runtime: it lifts the
+`<helmet><style>` into `<head>`, unwraps `<x-dc>` into `<body>`, drops the
+`support.js` reference, and screenshots at exactly 1080 × 1351 with
+`deviceScaleFactor: 1`.
+
+```bash
+PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers \
+PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
+node build.mjs
+```
+
+`build.mjs` also asserts that the embedded Cormorant Garamond actually renders:
+it force-loads all three faces, checks `document.fonts.check` for each, and
+measures a test string against the fallback serif stack. It exits non-zero if
+any face silently fell back.
+
+```bash
+FFMPEG=/path/to/ffmpeg ./build-video.sh
+```
+
+The MP4 needs an ffmpeg with **libx264**. The ffmpeg bundled with Playwright
+only ships `png` and `libvpx` encoders and will not work.
 
 Each `.dc.html` is self-contained: it embeds a subset of Cormorant Garamond
 (weights 400/700 roman and 400 italic, with the real `smcp` small-caps feature)
@@ -25,6 +67,24 @@ fallback.
 Slide typography is uniform: 42px body copy on 56px leading, attributions in
 19px small caps tracked at 0.08em. Legibility over the paintings comes entirely
 from crop placement — there are no scrims, gradients or overlays anywhere.
+
+Measured against the artwork underneath, every line on every slide now clears
+3.5:1 against white, above the 3:1 floor for large text. The weakest are slide 1
+"to give up their lives," at 3.6:1 and slide 4's opening line at 3.7:1, both of
+which sit on mid-tone passages and read cleanly.
+
+## Slide 5 was relaid out
+
+The first render put "patron saint of childbirth and the falsely accused," on a
+single 830px line ending at x = 1014, which ran the tail straight across the lit
+putto on the right of the Espinosa — that stretch measured **1.4:1** and was
+genuinely unreadable. The source JPEGs are pre-cropped to exactly 1080 × 1351,
+so there was no crop slack to pan away from it.
+
+The line is now broken in two and the block sits in the dark column and sky on
+the left. All four lines measure 12:1 or better. If you prefer the original
+staggered composition, the change is confined to the four `<div>`s in
+`Invocation.dc.html` — but the tail will be illegible again.
 
 ## The logo slot
 
