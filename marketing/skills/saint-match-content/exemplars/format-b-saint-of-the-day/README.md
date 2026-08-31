@@ -4,7 +4,7 @@
 posts.** It is a distinct format from the themed long-form posts in the parent
 `exemplars/` directory — not a shortened version of them.
 
-> **Five of the six files here are THIRD-PARTY REFERENCE SPECIMENS, held for
+> **Six of the seven files here are THIRD-PARTY REFERENCE SPECIMENS, held for
 > internal style study only.** They are not Saint Match content, they are not to
 > be reproduced or published, and they are **not to be imitated line-by-line**.
 > What transfers from them is the **mechanic** — the hinge, the numbered promise,
@@ -18,12 +18,14 @@ posts.** It is a distinct format from the themed long-form posts in the parent
 | `01-REFERENCE-ewtn-st-clare.md` | `@ewtnmedia` | **positive**, third-party | **B-1** | 7,131 | 882 | The hinge, isolated: *broadcast* |
 | `02-st-raymond-nonnatus.md` | Saint Match | **positive**, in-house, **unshipped** | **B-1** | — | — | The hinge in our own register |
 | `03-REFERENCE-ewtnparents-st-monica.md` | `@ewtnparents` | **positive**, third-party | **B-2** | 7,194 | **1,306** | The whole B-2 shape; 7-slide carousel |
-| `04-REFERENCE-ewtnmedia-st-joseph-calasanz.md` | `@ewtnmedia` | **negative**, third-party | — | 996 | 69 | Encyclopedia register; no hinge; no invocation; an attribution issue |
+| `04-REFERENCE-ewtnmedia-st-joseph-calasanz.md` | `@ewtnmedia` | **negative**, third-party | — | 996 | 69 | Encyclopedia register; no hinge; no invocation; **Attribution Case 1** |
 | `05-REFERENCE-augustine-institute-st-augustine.md` | `@augustine_institute` | **negative**, third-party | B-1 shape | 156 | 11 | Right shape, stated bridge — the saint as mascot |
 | `06-REFERENCE-ewtnmedia-queenship-of-mary.md` | `@ewtnmedia` | **middle**, third-party | — | 2,871 | 148 | Ends devoutly and is still inert. Disproves the invocation-as-differentiator reading |
+| `07-REFERENCE-ewtnmedia-st-bernard.md` | `@ewtnmedia` | **mixed**, third-party | — | 5,324 | 552 | **Engine (c): a quotable quote.** Opens on the calendar and performs anyway — disproves the opening-formula heuristic. **Attribution Case 2** |
 
-`06` also carries 32 comments and 107 shares; the other rows were supplied as
-likes and saves only, so the table compares those two.
+`06` also carries 32 comments and 107 shares, and `07` carries 66 comments and
+274 shares; the other rows were supplied as likes and saves only, so the table
+compares those two.
 
 ## What separates a strong Format B post
 
@@ -35,38 +37,61 @@ and Monica on likes and ~6× below on saves.
 
 > **Ending on the invocation is necessary but not sufficient — it is table
 > stakes.** It stays mandatory (`SCORER.md` W3). What separates a strong Format B
-> post is that it **gives the reader a reason to stop**: a **numbered promise
-> with a named audience** (variant B-2), or a **hinge carrying the saint's life
-> into what the app does** (variant B-1). A post with neither is inert, however
-> correctly it ends.
+> post is that it **gives the reader a reason to stop** — an **engine**. A post
+> with no engine is inert, however correctly it ends.
 
-| Post | Likes | Saves | Hook or hinge? |
+**The three attested engines.** Read `01`, `03` and `07` together:
+
+- **(a) A caption hinge** — a word or concept carried from the saint's life into
+  what the app does, performed and never explained. `01` Clare, *broadcast*.
+  Variant B-1. `SCORER.md` **W2**.
+- **(b) A hook with a named audience** — a numbered promise plus an explicit
+  audience on the hook slide. `03` Monica. Variant B-2. `SCORER.md` **W6 + W7**.
+- **(c) A genuinely quotable quote** — a line a reader would screenshot or send
+  on. `07` Bernard, where the engine sits on the **image**, not in the caption.
+  **Not a floor check** — "quotable" is a taste judgement and putting one inside
+  the gate is what `SCORER.md` §0.1 forbids. It is an observed engine type,
+  reported qualitatively by the voice score.
+
+| Post | Likes | Saves | Engine |
 | --- | --- | --- | --- |
-| `03` Monica (B-2) | 7,194 | 1,306 | numbered promise + named audience |
-| `01` Clare (B-1) | 7,131 | 882 | hinge word — *broadcast* — into the brand |
-| `06` Queenship | 2,871 | 148 | **neither** |
-| `04` Calasanz | 996 | 69 | **neither**, and no invocation |
+| `03` Monica (B-2) | 7,194 | 1,306 | **(b)** numbered promise + named audience |
+| `01` Clare (B-1) | 7,131 | 882 | **(a)** hinge word — *broadcast* — into the brand |
+| `07` Bernard | 5,324 | 552 | **(c)** a quotable image quote |
+| `06` Queenship | 2,871 | 148 | **none** |
+| `04` Calasanz | 996 | 69 | **none**, and no invocation |
 
-**The opening-line tell.** Both underperformers open by announcing the calendar —
-"August 25 is the feast day of…", "August 22 is the feast day of…". Both strong
-posts open on the reader's situation or straight into the fact. **"Opens by
-announcing the date or the feast" is an anti-pattern marker**, and it **co-occurs
-with encyclopedia register**: the two posts that open that way are the two
-encyclopedic ones. It is the cheapest diagnostic available — if the first six
-words name a date, read the rest for register before anything else. A timeliness
-peg is a reason to post today; it is not a reason for a reader to stop scrolling.
+**The opening-line tell — corrected, and this correction matters.** An earlier
+reading of this folder held that "opens by announcing the date or the feast" was
+**the cheapest available tell** for an inert post, because the only two posts
+that opened that way were the only two underperformers. **`07` refutes that.** It
+opens with the same calendar-announcement formula and places third on likes and
+second on saves in the whole set.
+
+> The opening formula is a **register** marker, not a **performance** predictor.
+> It co-occurred with inertness in `04` and `06` by coincidence of a small
+> sample, and the co-occurrence was read as a mechanism. What predicts
+> performance is the presence of an **engine**.
+
+**What survives:** the calendar opener stays **banned for Saint Match**
+(`best_skill.md` §5.7, `SCORER.md` B1-B) on register grounds, and it remains a
+cheap prompt to reread a draft for encyclopedia register. A timeliness peg is a
+reason to post today, not a reason for a reader to stop scrolling. **What does
+not survive:** citing the opener as evidence that a post will underperform, or
+reading its absence as evidence that a post has an engine. Check for the engine
+directly.
 
 ## How to read the engagement table — read this before citing any number
 
 **Be careful here. These are not four comparable data points, and the table is
 easy to misread as though they were.**
 
-1. **The three EWTN posts are a valid within-account comparison.** `01`, `04` and
-   `06` come from the same brand, to the same audience, at the same scale
-   (`03` is `@ewtnparents`, a sibling account of the same organisation — close,
-   and treated as within-organisation here, but not literally the same follower
-   list). The metric separation between them is meaningful and follower count is
-   substantially controlled.
+1. **The four `@ewtnmedia` posts are a valid within-account comparison.** `01`,
+   `04`, `06` and `07` come from the same brand, to the same audience, at the
+   same scale (`03` is `@ewtnparents`, a sibling account of the same organisation
+   — close, and treated as within-organisation here, but not literally the same
+   follower list). The metric separation between them is meaningful and follower
+   count is substantially controlled.
 
 2. **Within-account controls for follower count. It does NOT control for subject
    salience.** Mary is far better known than Joseph Calasanz. **Part of the 2,871
@@ -82,7 +107,7 @@ easy to misread as though they were.**
    its place as a **craft counter-example only** — the cleanest available case of
    a post that gets the whole shape right and still has no hinge.
 
-4. **So: do not read the table as four comparable data points.** It is three
+4. **So: do not read the table as five comparable data points.** It is four
    within-organisation rows with an uncontrolled salience confound, plus one row
    from a different account that carries no comparative weight at all.
 
@@ -171,8 +196,10 @@ hinge for being spread out — same nameability test, same swap test.
   what the training data holds most of about saints, so it will be produced
   confidently and will not look wrong. It has to be named and refused or it
   arrives by default.
-- **The calendar-announcement opening** (`04`, `06`). Co-occurs with the above.
-  The cheapest tell.
+- **The calendar-announcement opening** (`04`, `06`, and also `07`). Banned on
+  register grounds. **It is not a performance predictor** — `07` opens this way
+  and performs; see "The opening-line tell" above. Use it as a prompt to reread
+  for encyclopedia register, never as evidence about how a post will do.
 - **A stated bridge — the saint as mascot** (`05`). Perfect shape, no hinge.
 - **A timeliness peg standing in for a hinge** (`04`). A reason to post today is
   not a reason to read.
@@ -190,21 +217,43 @@ one-fact count does not apply (each numbered slide has its own graded fact) but
 the grading requirement does, per slide.
 
 **None of the third-party specimens models our sourcing standard.** EWTN and the
-Augustine Institute are under no dossier discipline. `04` carries a live
-**attribution issue** — an image line attributed to Joseph Calasanz that closely
-tracks **Daniel 12:3** and is associated with the Piarists as a motto, flagged as
-requiring verification and asserted neither way — and it is recorded there as
-evidence that **even a large, serious Catholic publisher makes this class of
-error**. `06` shows the contrasting correct *shape*: a quote attributed to a
+Augustine Institute are under no dossier discipline. Two of them carry **verified
+misattributions**, written up as portable teaching cases in
+`ATTRIBUTION-CASES.md`:
+
+- **`04` — Case 1, LOOSE-TO-WRONG.** The image line attributed to Joseph
+  Calasanz **is Daniel 12:3**, which Calasanz did write down — prefaced **"As
+  Scripture says"** — in his *Memoriale al Card. M. A. Tonti* (1621). The
+  breviary marks the scriptural quotation with **italics, not quote marks**, so
+  copying the paragraph into a caption silently deletes the only citation frame
+  it had. (An earlier note here guessed the line was "the Piarist motto"; that is
+  **withdrawn** — the Piarist motto is **"Pietas et Litterae"**.)
+- **`07` — Case 2, MISATTRIBUTED.** "Promotion of the Memorare" is not Bernard
+  of Clairvaux's: the prayer is 15th century and was popularised by **Fr Claude
+  Bernard (1588–1641)**. Note that this claim contains **no quotation marks at
+  all**, so a check that only inspects quoted strings passes it — it fails T1 and
+  T5, not T3. The same post's **image quote is genuine and citable**
+  (*Homiliae super Missus est* II.17, PL 183:70–71; quoted in Pius XII,
+  *Doctor Mellifluus* §31).
+
+Both are recorded as evidence that **even a large, serious Catholic publisher
+makes this class of error** — and `07` shows that one artifact can carry a
+misattribution and a perfect citation side by side, which is the argument for
+grading **claims** rather than sources.
+
+`06` shows the contrasting correct *shape*: a quote attributed to a
 specific documented source (Our Lady to St Faustina, i.e. the *Diary*), which is
 **properly-formed attribution, not verified attribution** — the text still needs
 checking against the *Diary* before Saint Match could use it.
 
 ## This set is thin
 
-**Six specimens: five third-party, two of them negatives and one middling, and
-exactly one Saint Match item — which is unshipped.** For ranking purposes that
-leaves **two referents for variant B-1 and one for variant B-2**.
+**Seven specimens: six third-party — two negatives, one middling and one mixed —
+and exactly one Saint Match item, which is unshipped.** For ranking purposes that
+leaves **two referents for variant B-1 and one for variant B-2**. Adding `07`
+did **not** change that: it is third-party, it carries a misattribution, and its
+opener is one we ban, so it is **not a referent** (`SCORER.md` §9.1). It was
+added for what it *disproves* and for its attribution case, not as gold.
 
 That is enough to fix the *shape* of both variants, which is why W1–W9 are binary
 and confident. It is **not enough to rank on**: a forced ranking against two
@@ -233,10 +282,11 @@ reading rather than counted as referents at all.
   it produces confident, plausible, wrong reasons. **And never score across
   variants**: a B-2 caption ranked against B-1 captions places last for being
   correct. `SCORER.md` §9.1.
-- **The negatives and the middle specimen are not referents.** `04`, `05` and `06`
-  never go into a forced ranking as though they were gold. Their ranking use is
-  as **known-bad anchors for the judge-consistency bar** (`SCORER.md` §9.4): a
-  judge that cannot rank `04` last is a judge whose scores are discarded.
+- **The negatives, the middle specimen and the mixed one are not referents.**
+  `04`, `05`, `06` and `07` never go into a forced ranking as though they were
+  gold. Their ranking use is as **known-bad anchors for the judge-consistency
+  bar** (`SCORER.md` §9.4): a judge that cannot rank `04` last is a judge whose
+  scores are discarded.
 - **The third-party captions are reference, not gold.** They fix the mechanics.
   They are not Saint Match's voice and they are not under Saint Match's sourcing
   discipline.

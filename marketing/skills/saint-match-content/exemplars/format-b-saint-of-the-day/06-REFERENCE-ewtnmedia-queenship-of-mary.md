@@ -93,9 +93,10 @@ a named text by a named writer, which is checkable.
 
 This is the correct **shape** of attribution, and it is exactly what `04`'s image
 lacks: there, "Those who instruct many in justice will shine as stars for all
-eternity" is attributed to Joseph Calasanz while closely tracking **Daniel 12:3**
-and being associated with the Piarists as a motto — an attribution that names a
-person but points at nothing checkable.
+eternity" is attributed to Joseph Calasanz when it is **Daniel 12:3**, which
+Calasanz himself quoted *and explicitly marked as quoted* — an attribution that
+names a person but points at nothing checkable. That case has since been
+verified and closed; see `04` and Case 1 of `ATTRIBUTION-CASES.md`.
 
 **The distinction worth carrying:**
 
@@ -103,8 +104,8 @@ person but points at nothing checkable.
 | --- | --- | --- |
 | Named source | Yes — Our Lady to St Faustina (the *Diary*) | Yes — "St Joseph Calasanz" |
 | **Points at a checkable text** | **Yes** — a specific work by a named writer | **No** — no work, no locus |
-| Verified here? | **No** | **No** |
-| Status | **Properly-formed attribution** | **Attribution issue, flagged** |
+| Verified here? | **No** | **Yes — and it failed.** Daniel 12:3, quoted by the saint under an explicit "As Scripture says" |
+| Status | **Properly-formed attribution** | **LOOSE-TO-WRONG.** Real words, real saint, dropped citation frame |
 
 **Do not read this as verification.** The Faustina citation is **properly formed,
 not confirmed.** Under `best_skill.md` §7.2 and §7.3 and `SCORER.md` **T3**, a

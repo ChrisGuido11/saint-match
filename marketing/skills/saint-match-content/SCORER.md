@@ -179,6 +179,15 @@ Gated on the dossier. Every one of these is binary.
   fluently. A quotation that fits the theme perfectly and has no citation is the
   characteristic signature of invention, not a coincidence. Aptness raises
   suspicion; it never substitutes for a source.
+- **Note — two ways a citation passes T3 and is still wrong.** Both are worked in
+  `ATTRIBUTION-CASES.md`. **(1) A lost formatting frame.** The Liturgy of the
+  Hours marks scriptural quotation with *italics*, not quote marks, so a line
+  copied out of a breviary paragraph can be transcribed perfectly and arrive with
+  its attribution deleted (Case 1: Daniel 12:3 under Joseph Calasanz's name).
+  Require the dossier to name the **formatted** source, not the plain text the
+  writer met. **(2) A well-formed citation that is simply false.** "Points at a
+  checkable text" is the *shape* a citation must have, never a substitute for
+  having made the check.
 
 ### T4 — Scripture integrity
 
@@ -201,6 +210,14 @@ Gated on the dossier. Every one of these is binary.
   appears in the pack but not in the dossier. Includes ranks the saint never
   held — the Raymond Nonnatus cardinalate is the standing example.
 - **Evidence:** each datum as written, next to its dossier line.
+- **Note — "known for" claims land here, not in T3.** A sentence like "known for
+  his devotion to Mary and promotion of the Memorare" has **no quotation marks in
+  it** and so is invisible to T3, and it is still a misattribution: the Memorare
+  postdates Bernard of Clairvaux by ~300 years and was popularised by a different
+  Bernard (Case 2, `ATTRIBUTION-CASES.md`). Treat any claim about what a figure
+  wrote, composed, founded, promoted or is "known for" as a T1/T5 datum requiring
+  its own dossier line. **Name collisions drift toward the more famous name**, so
+  where one is possible, check the dates first.
 
 ### T6 — Exclusions are declared
 
@@ -455,35 +472,45 @@ B-2 only. W2–W5 run on both** — W3 and W4 identically, W2 and W5 with a
 per-variant part.
 
 **What the evidence actually separates.** The set holds engagement figures for
-five third-party posts. The four below are all from the EWTN organisation and so
+six third-party posts. The five below are all from the EWTN organisation and so
 share a follower base; `05` is a much smaller account and is deliberately kept
 out of the table (see the README). The split in them is **not** the invocation:
 
-| Specimen | Likes | Saves | Hook or hinge? |
+| Specimen | Likes | Saves | Engine? |
 | --- | --- | --- | --- |
-| `03` EWTN Parents, St Monica (B-2) | 7,194 | 1,306 | numbered promise + named audience |
-| `01` EWTN, St Clare (B-1) | 7,131 | 882 | hinge word — *broadcast* — into the brand |
-| `06` EWTN, Queenship of Mary | 2,871 | 148 | **neither** (ends devotionally) |
-| `04` EWTN, St Joseph Calasanz | 996 | 69 | **neither**, and no invocation |
+| `03` EWTN Parents, St Monica (B-2) | 7,194 | 1,306 | **(b)** numbered promise + named audience |
+| `01` EWTN, St Clare (B-1) | 7,131 | 882 | **(a)** hinge word — *broadcast* — into the brand |
+| `07` EWTN, St Bernard | 5,324 | 552 | **(c)** a quotable image quote |
+| `06` EWTN, Queenship of Mary | 2,871 | 148 | **none** (ends devotionally) |
+| `04` EWTN, St Joseph Calasanz | 996 | 69 | **none**, and no invocation |
 
 **Ending on the invocation is necessary but not sufficient — it is table
 stakes.** The Queenship post closes devotionally, on a Salve Regina acclamation,
 and still lands ~2.5× below Clare and Monica on likes and ~6× below on saves. So
 W3 stays mandatory and stays a STOP, but passing it is not what makes a post
 work. **What separates a strong Format B post is that it gives the reader a
-reason to stop**: a **numbered promise with a named audience** (B-2, W6+W7), or a
-**hinge carrying the saint's life into what the app does** (B-1, W2). A post with
-neither is inert even when every structural box is ticked — and the floor cannot
-catch that on its own, which is why W2, W6 and W7 are written as hard as they
-are.
+reason to stop — an engine**, and three are attested: **(a)** a hinge carrying
+the saint's life into what the app does (B-1, W2); **(b)** a numbered promise
+with a named audience (B-2, W6+W7); **(c)** a genuinely quotable quote, carried
+on the image (`07`). A post with none is inert even when every structural box is
+ticked — and the floor cannot catch that on its own, which is why W2, W6 and W7
+are written as hard as they are.
 
-Read those four rows with §9.5's caveats attached: they are **not** four
+**Engine (c) is deliberately not a check.** "Genuinely quotable" is a taste
+judgement, and a taste judgement inside the gate is what §0.1 forbids — it would
+be the voice score wearing a floor's clothes. It is recorded as an observed
+engine type and reported qualitatively under §9.2. Note also that engine (c) is
+the one that pulls hardest against T3: the quote that would perform best is the
+quote most likely to be misattributed, and `07` carries a genuine image quote
+next to a misattributed caption clause. See `ATTRIBUTION-CASES.md`.
+
+Read those five rows with §9.5's caveats attached: they are **not** five
 comparable data points. See `exemplars/format-b-saint-of-the-day/README.md`.
 
-Its exemplar set is `exemplars/format-b-saint-of-the-day/`. **That set holds six
-items: three positive, two negative, one middling, and only one of them is Saint
-Match's own.** It is enough to fix both variants' shapes. It is not enough to
-rank on — see §9.5.
+Its exemplar set is `exemplars/format-b-saint-of-the-day/`. **That set holds
+seven items: three positive, two negative, one middling, one mixed, and only one
+of them is Saint Match's own.** It is enough to fix both variants' shapes. It is
+not enough to rank on — see §9.5.
 
 **Format B does not carry Format A's furniture.** No scripture block, no ✝️, no
 🙏🔥, no "Type AMEN", no hashtag wall, no app-mention pair. Their **absence is
@@ -887,17 +914,22 @@ address requirements differ and are split explicitly.**
   most of about saints — so it will be produced confidently and will not look
   wrong. Worked negative: `exemplars/format-b-saint-of-the-day/04-REFERENCE-ewtnmedia-st-joseph-calasanz.md`.
 
-- **The calendar-announcement opening — a diagnostic marker.** "August 25 is the
+- **The calendar-announcement opening — a register marker.** "August 25 is the
   feast day of St Joseph Calasanz…", "August 22 is the feast day of the Queenship
   of Mary…". Opening by announcing the date or the feast is a STOP on both
   variants: it opens on the calendar rather than on the reader or the fact, and
-  the reader has been given no reason to keep reading. **It co-occurs with
-  encyclopedia register** — both specimens that open this way are also
-  encyclopedic, and both are the two underperformers in the set — so treat it as
-  the cheapest available tell: if the first six words name a date, read the rest
-  for encyclopedia register before anything else. A **timeliness peg** is not a
-  hinge; it is a reason to post today, which is a different thing, and it does not
-  substitute for W2, W6 or W7.
+  the reader has been given no reason to keep reading. Treat it as a prompt: if
+  the first six words name a date, read the rest for encyclopedia register before
+  anything else. A **timeliness peg** is not a hinge; it is a reason to post
+  today, which is a different thing, and it does not substitute for W2, W6 or W7.
+  **Correction — do not read it as a performance predictor.** This check
+  previously called it "the cheapest available tell" for an inert post, because
+  the only two specimens that opened this way were the only two underperformers.
+  Specimen `07` (EWTN, St Bernard) opens the same way and places third on likes
+  and second on saves in the set. The **STOP stands** — it is a register rule and
+  this scorer's floors are not engagement-derived (§0) — but the co-occurrence
+  claim is withdrawn. A draft that avoids the opener has **not** thereby earned
+  an engine; that is still W2, or W6 with W7.
 
 - **A stated bridge — the saint as mascot.** "As the patron saint of the X
   Institute, St N. holds a special place in our mission." Third person, right
@@ -1388,7 +1420,7 @@ against each other — never to rank a post against a bar.
 | A — themed long-form | `exemplars/` | 6 |
 | B, variant **B-1** | `01-REFERENCE-ewtn-st-clare`, `02-st-raymond-nonnatus` | 2 — see §9.5 |
 | B, variant **B-2** | `03-REFERENCE-ewtnparents-st-monica` | **1** — see §9.5 |
-| — | `04` Calasanz, `05` Augustine Institute, `06` Queenship | **not referents.** Known-bad / known-middling anchors for the §9.4 consistency bar only |
+| — | `04` Calasanz, `05` Augustine Institute, `06` Queenship, `07` Bernard | **not referents.** Known-bad / known-middling / mixed anchors for the §9.4 consistency bar only |
 
 **Never score a Format B post against the Format A exemplars, or the reverse.**
 The two formats disagree on almost every surface feature — length, person,
@@ -1403,10 +1435,11 @@ fact in it; ranked against the B-1 captions it is last every time, for being
 correct. `format_variant` is recorded in the voice-score block for the same
 after-the-fact reason.
 
-**The negatives are not referents.** `04` and `05` are craft counter-examples and
-`06` is a middling one. Do not put them in a forced ranking as though they were
-gold. Their value is in §9.4: a judge that cannot rank `04` last is a judge whose
-scores are discarded.
+**The negatives are not referents.** `04` and `05` are craft counter-examples,
+`06` is a middling one, and `07` is mixed — a strong performer that carries a
+misattribution and an opener this scorer STOPs. Do not put any of them in a
+forced ranking as though they were gold. Their value is in §9.4: a judge that
+cannot rank `04` last is a judge whose scores are discarded.
 
 ### 9.2 Anchor on exemplars, not on adjectives
 
@@ -1547,12 +1580,13 @@ drive any rulebook edit.**
 
 ### 9.5 Format B's exemplar set is too thin to rank on yet
 
-`exemplars/format-b-saint-of-the-day/` holds **six specimens**, of which **five
+`exemplars/format-b-saint-of-the-day/` holds **seven specimens**, of which **six
 are third-party** references for *shape* only — not Saint Match content and not
-to be imitated line-by-line — and **two are negatives** plus one middling, which
-are not referents at all (§9.1). That leaves **two rankable referents for variant
-B-1 and one for variant B-2**, and exactly **one Saint Match specimen in the whole
-folder**.
+to be imitated line-by-line — and **two are negatives** plus one middling and one
+mixed, which are not referents at all (§9.1). That leaves **two rankable
+referents for variant B-1 and one for variant B-2**, and exactly **one Saint
+Match specimen in the whole folder**. Adding `07` did not change the referent
+count and was not meant to.
 
 That is enough to fix both variants' structure, which is why W1–W9 are binary and
 confident. **It is nowhere near enough to rank on.** A forced ranking against two
@@ -1562,7 +1596,7 @@ circumstances yet** — record `set_maturity: shape-only` and omit the number.
 
 **Engagement figures are not a substitute for referents.** The set now carries
 real like and save counts, and they are genuinely informative about *what*
-separates a strong post (§3B). They are **not** a ranking scale: they are five
+separates a strong post (§3B). They are **not** a ranking scale: they are six
 posts across three accounts of very different sizes, uncontrolled for subject
 salience, and using them to order drafts would import every confound the README
 lists straight into the loop. See

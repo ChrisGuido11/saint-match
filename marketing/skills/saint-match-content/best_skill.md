@@ -109,13 +109,20 @@ it can be corrected rather than silently inherited.
   stakes, not the differentiator**: a fifth specimen ends devoutly and still
   underperforms badly. What separates a strong post is a **hook or a hinge**.
   See §4.4.0 and §4.4.1.
-  Format B's specimen set now holds **six** items — three positive, two negative
-  and one middling, **five of them third-party reference specimens** — and is
-  **still thin for ranking**: only one is Saint Match's own and it is unshipped,
-  and the B-2 shape rests on a single specimen.
+  Format B's specimen set now holds **seven** items — three positive, two
+  negative, one middling and one mixed, **six of them third-party reference
+  specimens** — and is **still thin for ranking**: only one is Saint Match's own
+  and it is unshipped, and the B-2 shape rests on a single specimen.
   `exemplars/format-b-saint-of-the-day/README.md` records what the set can and
-  cannot support, including why the four posts carrying engagement figures are
-  **not** four comparable data points.
+  cannot support, including why the five posts carrying engagement figures are
+  **not** five comparable data points.
+- **CORRECTED — the calendar-announcement opener is a register marker, not a
+  performance predictor.** This file previously called it "the cheapest tell" for
+  an inert post, on the strength of the only two specimens that used it being the
+  only two underperformers. Specimen `07` (EWTN, St Bernard) opens the same way
+  and performs well, which refutes the predictive claim. The **ban stands** on
+  register grounds (§5.7); the **diagnostic claim is withdrawn**. What predicts
+  performance is an engine — see §4.4.0.
 - **NOTE — the seed drafts also lag.** The five packs in `drafts/` were written
   to the old provisional voice: 4:5 format, no emoji, invocation endings, no
   scripture block, no hashtags. They still demonstrate the *source discipline*
@@ -277,7 +284,7 @@ structure — see the conflict note at §4.3.
 | | **Format A — themed long-form** | **Format B — saint of the day** |
 | --- | --- | --- |
 | Spec | §4.1–4.2 structure, §5 voice, §9 CTA | §4.4 structure (two variants, §4.4.1), §5.7 voice |
-| Source | The Notion style bible; six shipped captions | The user's stated spec; six specimens — three positive, two negative, one middling |
+| Source | The Notion style bible; six shipped captions | The user's stated spec; seven specimens — three positive, two negative, one middling, one mixed |
 | Used for | Themed and scriptural posts | **The standard for daily saint posts** |
 | Exemplars | `exemplars/` | `exemplars/format-b-saint-of-the-day/` |
 
@@ -356,12 +363,13 @@ An earlier version of this section treated **ending on the invocation** as the
 format's key differentiator. **That was too simple and the evidence refutes it.**
 The engagement figures held in `exemplars/format-b-saint-of-the-day/`:
 
-| Specimen | Likes | Saves | Hook or hinge? |
+| Specimen | Likes | Saves | Engine? |
 | --- | --- | --- | --- |
-| `03` St Monica (B-2) | 7,194 | 1,306 | numbered promise + named audience |
-| `01` St Clare (B-1) | 7,131 | 882 | hinge word — *broadcast* — into the brand |
-| `06` Queenship of Mary | 2,871 | 148 | **neither** |
-| `04` St Joseph Calasanz | 996 | 69 | **neither**, and no invocation |
+| `03` St Monica (B-2) | 7,194 | 1,306 | **(b)** numbered promise + named audience |
+| `01` St Clare (B-1) | 7,131 | 882 | **(a)** hinge word — *broadcast* — into the brand |
+| `07` St Bernard | 5,324 | 552 | **(c)** a quotable image quote |
+| `06` Queenship of Mary | 2,871 | 148 | **none** |
+| `04` St Joseph Calasanz | 996 | 69 | **none**, and no invocation |
 
 The `06` Queenship post **does** close devotionally — a Salve Regina acclamation
 in the invocation's slot — and still lands ~2.5× below Clare and Monica on likes
@@ -369,27 +377,47 @@ and ~6× below on saves. So:
 
 > **Ending on the invocation is necessary but not sufficient. It is table
 > stakes. What separates a strong Format B post is that it gives the reader a
-> reason to stop: a numbered promise with a named audience (B-2), or a hinge
-> carrying the saint's life into what the app does (B-1). A post with neither is
-> inert, however correctly it ends.**
+> reason to stop — an ENGINE. A post with none is inert, however correctly it
+> ends.**
 
-**The opening-line tell.** Both underperformers open by announcing the calendar —
-"August 25 is the feast day of…", "August 22 is the feast day of…". Both strong
-posts open on the reader's situation or straight into the fact. **"Opens by
-announcing the date or the feast" is an anti-pattern marker**, and it
-**co-occurs with encyclopedia register** (§5.7) — the two specimens that open
-that way are also the two encyclopedic ones. It is the cheapest tell available:
-if the first six words name a date, the post is probably inert. A timeliness peg
-is a reason to post *today*; it is not a reason for the reader to stop scrolling,
-and it does not substitute for a hook or a hinge.
+**The three attested engines**, read off `01`, `03` and `07`:
 
-**Read the table with its caveats attached.** The three EWTN rows are a valid
-within-account comparison; the Augustine Institute post in `05` is a different,
-much smaller account and its numbers are confounded by follower count. And even
-within EWTN, **subject salience is uncontrolled** — Mary is far better known than
-Joseph Calasanz, so part of the 2,871 vs 996 gap is popularity rather than craft.
-`exemplars/format-b-saint-of-the-day/README.md` states this in full; do not cite
-these numbers without it.
+- **(a) A caption hinge** — a word or concept carried from the saint's life into
+  what the app does, performed and never explained (B-1; `SCORER.md` W2).
+- **(b) A hook with a named audience** — a numbered promise plus an explicit
+  audience on the hook slide (B-2; `SCORER.md` W6 + W7).
+- **(c) A genuinely quotable quote** — a line a reader would screenshot or send
+  on, carried on the image rather than in the caption. **This is not a floor
+  check and is not becoming one**: "quotable" is a taste judgement and the gate
+  does not hold those (`SCORER.md` §0.1). And for Saint Match it is the most
+  dangerous of the three, because the pull toward a quotable line is exactly the
+  pressure that manufactures misattribution — §7 and `ATTRIBUTION-CASES.md` are
+  the constraint on it, with no exceptions for the lines that would perform best.
+
+**The opening-line tell — and the correction to it.** Both of the folder's
+underperformers open by announcing the calendar — "August 25 is the feast day
+of…", "August 22 is the feast day of…". So did an earlier version of this
+section, which called that **the cheapest available tell** for an inert post.
+**Specimen `07` refutes the predictive claim**: it opens with the same formula
+and places third on likes and second on saves in the set.
+
+> The calendar opener is a **register** marker, not a **performance** predictor.
+> The ban stands (§5.7) because it opens on the calendar rather than on the
+> reader or the fact, and it is still a cheap prompt to reread a draft for
+> encyclopedia register. It is **no longer evidence that a post will
+> underperform**, and its absence is **not** evidence that a post has an engine.
+> Check for the engine directly.
+
+A timeliness peg is still a reason to post *today*; it is not a reason for the
+reader to stop scrolling, and it does not substitute for an engine.
+
+**Read the table with its caveats attached.** The four `@ewtnmedia` rows are a
+valid within-account comparison; the Augustine Institute post in `05` is a
+different, much smaller account and its numbers are confounded by follower count.
+And even within EWTN, **subject salience is uncontrolled** — Mary is far better
+known than Joseph Calasanz, so part of the 2,871 vs 996 gap is popularity rather
+than craft. `exemplars/format-b-saint-of-the-day/README.md` states this in full;
+do not cite these numbers without it.
 
 #### 4.4.1 Two variants: where the teaching lives
 
@@ -640,8 +668,8 @@ Instagram post on St Clare, held in
 **third-party reference specimen for internal style study only**. It is not
 Saint Match content and is not to be reproduced or imitated line-by-line; what
 transfers is the mechanic, not the text. The same applies to every other
-third-party file in that folder — four more, two of them negatives and one
-middling.
+third-party file in that folder — five more: two negatives, one middling and one
+mixed.
 
 **§5.7 covers both variants.** Everything in it holds on B-1 and B-2 alike
 except the two shape paragraphs below, which are split by variant.
@@ -724,11 +752,14 @@ Three further bans the evidence is specific about:
   and does not substitute.
 - **The calendar-announcement opening.** "August 25 is the feast day of St N…"
   Opening by announcing the date or the feast, on either variant. It opens on the
-  calendar rather than on the reader or the fact, and it is **the cheapest tell
-  for encyclopedia register** — the two specimens that open this way are the two
-  encyclopedic ones and the two underperformers (§4.4.0). Treat it as a marker as
-  well as a ban: if a draft's first six words name a date, reread the whole thing
-  for register before anything else.
+  calendar rather than on the reader or the fact. Treat it as a marker as well as
+  a ban: if a draft's first six words name a date, reread the whole thing for
+  register before anything else.
+  **But do not over-read it.** It is a **register** marker only. Specimen `07`
+  opens this way and performs well, so it is **not** evidence that a post will
+  underperform, and its absence is not evidence that a post has an engine
+  (§4.4.0). The two facts that remain true: the folder's two encyclopedic posts
+  both open this way, and the opener gives the reader nothing.
 - **A stated bridge, i.e. the saint as mascot.** "As the patron saint of X, St N.
   holds a special place in our mission." The shape can be perfect — third person,
   right length, ending on the invocation — and still have no hinge, because the
@@ -846,6 +877,33 @@ ever wrote. It will sound exactly right. "Preach the Gospel at all times; when
 necessary, use words" is not in Francis of Assisi's writings or in any early
 life of him. Aptness is not evidence. If the quote is not in the dossier with a
 source, it does not exist.
+
+**7.7 Three verified cases, and the three additional rules they produce.** The
+worked cases are in `ATTRIBUTION-CASES.md`; each one defeats a check that §7.1–
+§7.6 would otherwise be trusted to catch.
+
+- **Re-open the formatted original.** *(Case 1 — Joseph Calasanz.)* The Liturgy
+  of the Hours marks scriptural quotation with **italics, not quote marks**, so
+  copying a breviary paragraph into a caption deletes the only citation frame it
+  had. Any quotation harvested from a breviary, lectionary, Office of Readings
+  excerpt, devotional reprint, PDF or slide is checked **against the formatted
+  source**, never against the plain text that reached you.
+- **Unquoted claims are attributions too.** *(Case 2 — Bernard of Clairvaux.)*
+  "Known for his promotion of the Memorare" contains no quotation marks and is
+  still a misattribution — the prayer postdates him by ~300 years. It has to be
+  caught as an unsourced **fact** (T1, T5), not as an unsourced quote (T3). And
+  **name collision drifts one way only**: toward the more famous holder of the
+  name. Check the dates.
+- **State the limit of a negative result.** *(Case 3 — Augustine.)* "Not found"
+  is a claim about the search as well as the text. Name the corpus searched, name
+  the corpus skipped, and say which. A finding written as "almost certainly" is
+  auditable and upgradable; the same finding written as "definitively" is a
+  fabrication of certainty.
+
+A fourth, positive rule runs through all three: **when a spurious quote is
+popular, find what it was reaching for.** It is nearly always reaching for
+something the author really wrote, and a replacement is a better outcome than a
+refusal — a refusal leaves the writer with the hole that invited the invention.
 
 ---
 

@@ -90,3 +90,24 @@ does have a saint-matching function and it is very easy to *say* so:
 
 The difference is not politeness or length. It is whether the reader is told
 about the match or shown it happening.
+
+---
+
+## Not this post: the "hard to follow you / impossible to leave you" quote
+
+**Filed here only so it is findable, because it is the other Augustine item in
+this folder's orbit and the two get confused.**
+
+> "Lord, it's hard to follow you, but it's impossible to leave you"
+
+**This line is not from this post.** It circulates on a **different** account
+(`@eovicttor_`). It is **UNVERIFIED and almost certainly MISATTRIBUTED**, and the
+full write-up, including the search that was run, the search that was *not* run,
+and the genuine replacement line, is **Case 3** in `ATTRIBUTION-CASES.md`.
+
+Short version for anyone who meets it in the wild: no hit anywhere in the
+Augustinian corpus that was searched; the Latin *Confessiones* does not contain
+the word `impossibile` **at all**; every circulating copy is a quote-aggregator
+or a social post with no work-or-section citation. The genuine line to reach for
+instead is *Tractates on the Gospel of John* **27.9** — *"Si a te recedimus, ad
+quem ibimus?"*

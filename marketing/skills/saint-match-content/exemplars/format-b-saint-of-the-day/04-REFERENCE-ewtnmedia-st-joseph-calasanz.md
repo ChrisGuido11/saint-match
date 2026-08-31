@@ -72,7 +72,11 @@ name a date, read the rest for this register before anything else.
 
 ---
 
-## Attribution issue on the image — flagged, not adjudicated
+## Attribution on the image — VERIFIED. Verdict: LOOSE-TO-WRONG
+
+**This was previously flagged here as "requiring verification, asserted neither
+way". The verification has been done and the flag is closed.** The full case,
+written up as a portable lesson, is **Case 1** in `ATTRIBUTION-CASES.md`.
 
 The post's image renders the line:
 
@@ -80,28 +84,70 @@ The post's image renders the line:
 
 attributed to **St Joseph Calasanz**.
 
-**This closely tracks Daniel 12:3** — "those who turn many to righteousness [shall
-shine] like the stars for ever and ever" — and the line is **associated with the
-Piarists**, Calasanz's order, as a motto. That association is exactly the
-mechanism by which a scriptural line becomes attributed to the founder who
-adopted it.
+**The line is Daniel 12:3**, near-verbatim Douay-Rheims ("they that instruct many
+to justice, as stars for all eternity").
 
-**Flagged as an attribution issue requiring verification. Not asserted either
-way.** It is entirely possible Calasanz wrote or preached the line himself,
-quoting Daniel as any preacher would; it is equally possible the motto has simply
-migrated onto his name. What is not acceptable is publishing it as his without
-establishing which. Under `best_skill.md` §7 and `SCORER.md` **T3**, a quotation
-whose citation is absent or vague is a STOP regardless of how apt it is — and
-under **T4**, scripture used as though it were a saint's own words is a
-misattribution even when every word is correct.
+**And Calasanz did write it.** It appears in his *Memoriale al Card. M. A. Tonti*
+(1621) — the memorandum defending the free schools — where he prefaces it with
+**"As Scripture says."** Both breviary traditions that carry the Memoriale as the
+second reading for his memorial, ICEL/US and UK/Ireland, **preserve an explicit
+quotation frame**.
 
-**Why it is recorded here rather than quietly fixed:** it is a worked example
-that **even a large, serious Catholic publisher makes this class of error.** The
-lesson is not that EWTN is careless. It is that a quotation which is apt,
-traditional, widely repeated and attached to a saint's order will pass every
-informal smell test and still be misattributed. Aptness is not evidence
-(`best_skill.md` §7.6). This is exactly what a dossier and a graded source list
-exist to catch.
+So the two statements come apart:
+
+| Statement | Verdict |
+| --- | --- |
+| "Calasanz quoted Daniel 12:3" | **Correct.** |
+| The line on an image over "— St. Joseph Calasanz" | **Wrong.** It is Daniel's line, quoted by him and flagged by him as quoted. |
+
+**Verdict: LOOSE-TO-WRONG.** Not an invention — the words are real, the saint
+really wrote them down, and the caption is not fabricating. It is the citation
+frame that has been dropped, which converts a quotation into an attribution.
+
+### The mechanism, which is the reusable part
+
+**The Liturgy of the Hours marks scriptural quotation with *italics*, not with
+quotation marks.** In the breviary the Daniel line sits inside Calasanz's
+paragraph in italic type, and the italics are the *only* marker that it is not
+his own sentence. Copy that paragraph into a caption, a slide, a design tool or a
+plain-text note and **the italics vanish, and with them the entire attribution
+frame.** What survives is a devout sentence sitting under a saint's name.
+
+The confirmation that this is a formatting failure rather than a judgement
+failure is in the same reading: **the next clause is Matthew 25:40**, and nobody
+attributes *that* to Calasanz — because it is famous enough to be recognised on
+sight. The frame was lost for both; only the less recognisable one moved.
+
+**Operationally:** a quotation harvested from a breviary, a lectionary, an Office
+of Readings excerpt or any devotional reprint has to be checked **against the
+formatted original**, not against the plain text that reached you. Losing italics
+is a lossy transcription, and it is lossy in exactly the direction that
+manufactures misattributions.
+
+### Correction to the earlier record
+
+An earlier version of this file said the line was "associated with the Piarists,
+Calasanz's order, **as a motto**", and offered that as the migration mechanism.
+**That was an unconfirmed guess and it is withdrawn.** The **Piarist motto is
+"Pietas et Litterae"** — piety and letters. Daniel 12:3 is not the order's motto.
+The real mechanism is the lost italics above, not motto-drift. Anywhere this
+folder previously said "Piarist motto", read this paragraph instead.
+
+### Why it is recorded here rather than quietly fixed
+
+It is a worked example that **even a large, serious Catholic publisher makes this
+class of error** — and the sharpened version of the lesson is better than the
+original one. The failure is not carelessness about sources. It is that a
+**true** quotation, **correctly** transcribed from a **legitimate** liturgical
+source, becomes a misattribution through nothing more than the loss of a typeface
+in transit. Aptness is not evidence (`best_skill.md` §7.6); neither is
+provenance, if the provenance travelled through a format that could not carry its
+own citation frame.
+
+Under `best_skill.md` §7 and `SCORER.md` **T3**, a quotation whose citation is
+absent or vague is a STOP regardless of how apt it is — and under **T4**,
+scripture used as though it were a saint's own words is a misattribution even
+when every word is correct. This image is the T4 case in its exact form.
 
 Compare `06`, whose image quote is attributed to a **specific documented
 source** — the correct shape for this, even though its text also still needs
