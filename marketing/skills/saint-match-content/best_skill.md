@@ -6,7 +6,14 @@ produces goes to `SCORER.md` first.
 
 Read `BRIEF.md` for why this exists.
 
-**Voice comes from the Notion style bible (§5), not from the Raymond post.**
+**There are two post formats.** **Format A** is the themed long-form post the
+Notion style bible describes (§§4.1–4.3, 5, 9). **Format B** is the
+saint-of-the-day post (§4.4, §5.7) and it is **the standard for daily posts**.
+Every pack declares which it is in the header (§3.1), and the scorer runs a
+different voice floor for each.
+
+**Format A voice comes from the Notion style bible (§5), not from the Raymond
+post.**
 `marketing/carousels/st-raymond-nonnatus/README.md` is still the reference
 specimen for **source discipline** — accuracy grading, exclusions, no invented
 quotes — and only for that. Its caption is off-voice against the style bible in
@@ -69,13 +76,27 @@ it can be corrected rather than silently inherited.
   and the user's own Notion notes support them: on the novena page they reject
   the app inventing a "Saint of the Impossible", noting the Saint of Impossible
   Causes is St Rita — the exact failure §7 exists to prevent.
-- **NOTE — the scorer now lags the rulebook.** `SCORER.md` was written against
-  the old provisional §5/§9 and will STOP posts that are correct under the Notion
-  bible: it fails any emoji (C4), requires a 120–200 word caption closing on the
-  invocation with the hardest line last (C5), and bans "comment AMEN" as
-  engagement bait (C6/C8). Under the style bible all four of those are on-voice.
-  `SCORER.md` is deliberately left untouched here. **Re-aligning it is the next
-  job**, and until it is done a Notion-correct post will fail the gate.
+- **RESOLVED — the scorer has been realigned.** This note previously recorded
+  that `SCORER.md` lagged the rulebook and would STOP correct posts: it failed
+  any emoji, required a 120–200 word caption closing on the invocation with the
+  hardest line last, and banned "comment AMEN" as engagement bait. All of those
+  are on-voice for Format A under the style bible, and all are now fixed. The
+  scorer's voice floor is `SCORER.md` §3A (V1–V7) for Format A and §3B (W1–W5)
+  for Format B, with B1/B2 split per format. Truth (T1–T6) and iconography
+  (I1–I4) were not touched by the realignment.
+  Two things are worth carrying: the old note cited those checks as C4/C5/C6/C8,
+  which were **never their real IDs** — the offending checks were B1, B2 and C2.
+  And one genuine scorer/rulebook conflict is still open: **I4 still forbids text
+  rendered inside the image**, which §8.2 below withdraws. `SCORER.md` §6.5
+  records it; it needs an owner's decision.
+- **CONFIRMED — there are two post formats, and the daily saint post has its
+  own.** The Notion style bible describes **Format A**, themed long-form. The
+  user has since specified **Format B**, the saint-of-the-day post, which is now
+  **the standard for daily posts**: ~40–70 words, third person, one fact, a
+  performed hinge, ending on the invocation, with none of Format A's scripture
+  block, emoji, engagement line, app-mention pair or hashtags. See §4.4 and §5.7.
+  Format B's specimen set holds only two items and is explicitly thin —
+  `exemplars/format-b-saint-of-the-day/README.md`.
 - **NOTE — the seed drafts also lag.** The five packs in `drafts/` were written
   to the old provisional voice: 4:5 format, no emoji, invocation endings, no
   scripture block, no hashtags. They still demonstrate the *source discipline*
@@ -147,11 +168,21 @@ Every pack opens with this, verbatim field names, one per line:
 ```
 draft_id       <YYYY-MM-DD>-<saint-slug>
 skill_version  best_skill.md @ <git commit sha>
+post_format    A-themed | B-saint-of-the-day
 format         carousel | reel
 saint          <full name as used in copy>
 feast_date     <date>
 topic          <struggle topic / theme bridge>
 ```
+
+**`post_format` and `format` are two different axes and both are required.**
+`post_format` is the *editorial* format — which voice, which length, which
+ending — and it selects which floor the scorer runs (§3.0 of `SCORER.md`).
+`format` is the *rendering* — carousel or single image. A daily saint post is
+`post_format: B-saint-of-the-day`; whether it ships as a carousel or a reel is a
+separate decision. **The scorer STOPs a pack with no `post_format` before any
+other check runs**, and it grades the format as declared rather than as it reads,
+so declaring it wrongly produces a loud failure rather than a quiet misgrade.
 
 Why this block exists:
 
@@ -187,8 +218,9 @@ engagement data is an append-only JSONL file in this repo — see `ANALYTICS.md`
 | **Subject–caption alignment** | One internal line, per §8.1. States whether the caption is about a modern experience or a historical one, and therefore whether the image shows a modern person or the historical figure. Written *after* the caption and *before* the image prompt. |
 | **Caption overlay** | The on-image text. One block per slide, each with its highlight word, highlight colour and position. 5–15 words per slide (§4). Quoted material only per §7. |
 | **AI image prompt** | Per slide. 9:16, art-historically anchored, 14 parameters plus the modular negative prompt. Written to §8. |
-| **Soft CTA** | The engagement line plus the two app-mention lines, verbatim from §9. |
-| **Hashtags** | 15–20 niche tags from the three-tier bank, then 3–5 buried trending tags. §9.4. |
+| **Soft CTA** | **Format A only.** The engagement line plus the two app-mention lines, verbatim from §9. Format B has no CTA block — its hinge is the CTA (§5.7), and this row is omitted from the pack entirely. |
+| **Hashtags** | **Format A only.** 15–20 niche tags from the three-tier bank, then 3–5 buried trending tags. §9.4. Omitted from a Format B pack. |
+| **Hinge line** | **Format B only.** One internal line naming the hinge word or concept, the sentence where it belongs to the saint, and the sentence where it does the brand's work. §5.7. |
 | **Source notes** | Every factual claim in the pack, one line each, graded DOCUMENTED / TRADITIONAL / LEGEND, with the source. Plus an explicit list of what was **excluded and why** — the exclusions are the point. |
 
 **Order of work is fixed: caption → alignment decision → image prompt.** Never
@@ -202,13 +234,26 @@ notes are this pipeline's requirement, not the style bible's — see §0.2.)
 
 ---
 
-## 4. Format — per the Notion style bible
+## 4. Format
 
-Everything is **9:16, 1080 × 1920**. Two formats: `carousel` (default) and
-`reel` (single image). This section supersedes the earlier 4:5 five-slide
-liturgical structure — see the conflict note at the end.
+Everything is **9:16, 1080 × 1920**, on both post formats. That is a frame rule
+and it never varies. Two rendering formats: `carousel` (default) and `reel`
+(single image). This section supersedes the earlier 4:5 five-slide liturgical
+structure — see the conflict note at §4.3.
 
-### 4.1 carousel — 5 to 7 slides, 1080 × 1920
+**Two editorial post formats, declared in the header (§3.1):**
+
+| | **Format A — themed long-form** | **Format B — saint of the day** |
+| --- | --- | --- |
+| Spec | §4.1–4.2 structure, §5 voice, §9 CTA | §4.4 structure, §5.7 voice |
+| Source | The Notion style bible; six shipped captions | The user's stated spec; two specimens |
+| Used for | Themed and scriptural posts | **The standard for daily saint posts** |
+| Exemplars | `exemplars/` | `exemplars/format-b-saint-of-the-day/` |
+
+§§4.1–4.3, 5 and 9 below describe **Format A** unless they say otherwise.
+Format B is §4.4 and §5.7. Sections 1, 2, 3, 6, 7, 8 and 10 apply to both.
+
+### 4.1 Format A carousel — 5 to 7 slides, 1080 × 1920
 
 Slide count is not fixed. Count the distinct emotional beats in the finished
 caption, then constrain: fewer than 4 beats → pad to 5; more than 8 → condense
@@ -237,7 +282,7 @@ land. Highlight only the turn, the climax and the call.
 Journey slides may be either the same base scene re-texted, or a new scene per
 slide. Same-scene is cheaper; new-scene is more engaging.
 
-### 4.2 reel — single image, 1080 × 1920
+### 4.2 Format A reel — single image, 1080 × 1920
 
 One image, one overlay block with one highlight word, the description caption
 doing the work. Same caption rules, same ending order.
@@ -255,14 +300,53 @@ real liturgical asset the bible never considered because none of its six worked
 posts is a saint's feast-day post. Keep it available as an option, but it is not
 the default and it does not override the 9:16 frame or the 5–15 word limit.
 
+### 4.4 Format B — the saint-of-the-day post
+
+**This is the standard format for daily saint posts.** It is a distinct form,
+not a compressed Format A, and it exists because none of the style bible's six
+worked posts is a single-saint feast-day post.
+
+The spec, as the user gave it:
+
+- **~40–70 words.** Radically shorter than Format A.
+- **Third person.** Not Format A's sustained direct "you".
+- **One concrete, verifiable fact** about the saint, graded per §2 as usual.
+- **A hinge** — the defining mechanic, §5.7 below.
+- **Ends on the invocation**: "St [Name], pray for us."
+- **No scripture block, no ✝️, no 🙏🔥, no "Type AMEN", no hashtag block.** Those
+  are Format A elements. Their absence here is correct and is not a defect.
+- **The bridge is the CTA.** No separate sales line, no app-mention pair, no
+  product pitch. Naming the app in a pitching register is a STOP.
+
+**Frame and slides.** 9:16 still applies — §4 opens with it and it is
+format-agnostic. The 5–7 slide count and the mandatory cliffhanger of §4.1 do
+**not** apply: a 40–70 word caption cannot carry seven distinct emotional beats,
+and forcing it would produce padding, which is the failure this format avoids.
+The 5–15 words per slide limit still applies to any slide that exists. Beyond
+that, **Format B's slide structure is deliberately unspecified** — it is not yet
+attested, so it is not invented here, and the scorer does not STOP on slide count
+for Format B (`SCORER.md` §3B.0). Record the count so the shape can be settled
+from evidence.
+
+Everything in §§1, 2, 3, 6, 7, 8 and 10 applies unchanged. **Shorter is not
+looser**: the dossier is still the entire permitted factual universe, quotation
+discipline is unchanged, and the iconography rules are unchanged. §2 bites
+*harder* here — with only one fact carrying the post, a LEGEND can never be that
+fact, even attributed, because a legend that is the sole claim is by definition
+load-bearing.
+
 ---
 
-## 5. Voice — from the Notion style bible
+## 5. Voice, Format A — from the Notion style bible
+
+**§§5.1–5.6 describe Format A only.** Format B's voice is §5.7, and it differs
+on person, length, ending and emoji. Do not apply §5.1–5.6 to a daily saint post.
 
 This section **replaces** the earlier provisional voice guidance. It is read off
 six complete shipped captions in "Saint Match content strategy" plus the caption
-architecture rules in "content creation prompts for testing". Where the shipped
-Raymond caption diverges from this, the Raymond caption is the one that is off —
+architecture rules in "content creation prompts for testing", all six of which
+are extracted verbatim into `exemplars/`. Where the shipped Raymond caption
+diverges from this, the Raymond caption is the one that is off for Format A —
 §5.6 says exactly how.
 
 ### 5.1 The register in one line
@@ -400,9 +484,69 @@ ending order of §5.4.
 The bible's six worked posts are all scriptural or thematic — Elijah,
 Gethsemane, the Rosary, St Michael, the desert, a four-saint round-up. **None of
 them is a single-saint feast-day post.** So on the specific shape of a daily
-saint post the bible is genuinely thin, and the Raymond structure is the only
-evidence there is. That is why §4.3 keeps it as a variant rather than deleting
-it.
+saint post the bible is genuinely thin, and the Raymond structure was for a
+while the only evidence there was. That is why §4.3 keeps it as a variant rather
+than deleting it.
+
+**That gap is now filled from a different direction.** Rather than stretch
+Format A to cover the daily post, the user has specified **Format B** (§4.4,
+§5.7) — a much shorter, third-person, invocation-ending form. So §5.6's list of
+Raymond's divergences stands as an account of why Raymond is off-voice **for
+Format A**, and is not an argument that a daily saint post must look like Format
+A. Several Raymond traits the bible rejects — the short length, the distanced
+address, the closing invocation — are, in Format B, correct.
+
+### 5.7 Voice, Format B — the saint-of-the-day post
+
+Modelled on a caption the user picked out and said they liked — an EWTN
+Instagram post on St Clare, held in
+`exemplars/format-b-saint-of-the-day/01-REFERENCE-ewtn-st-clare.md` as a
+**third-party reference specimen for internal style study only**. It is not
+Saint Match content and is not to be reproduced or imitated line-by-line; what
+transfers is the mechanic, not the text.
+
+**The register.** Plain, unhurried, declarative. The saint is the grammatical
+subject. The post reports; it does not exhort. No urgency, no direct address, no
+emoji at all — Format B has neither of the two slots that license one.
+
+**The hinge — the defining mechanic.** A single word or concept from the saint's
+life is **carried over** into what Saint Match does. In the EWTN specimen the
+hinge is literally the word *broadcast*: Clare's miracle is described with it,
+and then the same word does the brand's work. **The bridge is performed, not
+stated.**
+
+Saint Match's hinge is the app's actual function: *the saint carried a specific
+thing, and the app matches a person to the saint who carried theirs.* Worked
+specimen:
+
+> Raymond stayed behind so someone else could go free. He never got to explain
+> why — they padlocked his mouth shut. Some people are carrying something they
+> can't put words to. St Raymond, pray for us.
+
+Hinge: **what can't be put into words**. Saint side, the padlock. App side, the
+reader carrying something wordless. The app is never named.
+
+Rules that follow:
+
+- **Exactly one hinge.** Two carried-over concepts halve each other.
+- **Never explain it.** "Just like Saint Match helps you find…" is the
+  characteristic failure. The reader completes the connection, and that
+  completion is the whole effect. An explained hinge is a dead hinge.
+- **It must survive the swap test of §6.** Substitute another saint: if the hinge
+  still works it was never anchored to this life. "Faith", "courage" and
+  "perseverance" all survive the swap and are therefore not hinges.
+- **The test is nameability.** If a reader cannot name the hinge word or concept
+  in one word or one short phrase, there is no hinge. The scorer treats inability
+  to name it as the STOP itself (`SCORER.md` W2).
+
+**Shape.** Fact → hinge → invocation, in that order, typically three to five
+sentences. Open on the fact, plainly. No summarising or moralising sentence
+between the hinge and the invocation — that flattens the hinge by explaining it.
+Nothing after the invocation.
+
+**Banned register**, in addition to §5.5 which applies in full: sustained second
+person; Format A's urgent exhorting tone; any emoji; any hashtag block; any app
+mention or pitch line; any summarising closer.
 
 ---
 
@@ -626,7 +770,12 @@ attribute is in the prompt and not in that list, the pack fails §8.
 
 ---
 
-## 9. Engagement line, app mention and hashtags
+## 9. Engagement line, app mention and hashtags — Format A only
+
+**This whole section is Format A.** Format B has no engagement line, no
+app-mention pair and no hashtag block; its bridge is its CTA (§4.4, §5.7), and
+lifting any of the blocks below into a Format B post is a STOP. §9.5's banned
+register does apply to both formats.
 
 The CTA is soft because the product is a habit, not a purchase. Someone deciding
 whether to try a virtue app on the feast of a martyr is not to be hurried. But
@@ -646,7 +795,9 @@ One line, immediately after the ✝️ separator. Attested wordings, used verbat
 
 **This supersedes the earlier ban on "Comment AMEN" as engagement bait.** It is
 the user's own shipped convention across every post in the style bible, so it is
-on-voice by definition. `SCORER.md` still fails it — see §0.2.
+on-voice by definition. `SCORER.md` has been realigned to match: V3 now
+**requires** one of these five verbatim on Format A, and C2 explicitly no longer
+flags them.
 
 ### 9.2 The app-mention lines
 
@@ -720,15 +871,31 @@ failures reaching it.
    promises nothing the app does not do (§6.1).
 7. The caption was written before the image prompt, and the subject–caption
    alignment line is present and honoured by the prompt (§8.0).
-8. The caption ending follows §5.4 exactly: scripture block → ✝️ → engagement
+8. The header block is complete, `draft_id` matches the filename, and
+   **`post_format` is declared**. Checks 9–11 below apply to Format A; checks
+   12–14 apply to Format B. Run only the set matching the declared format.
+
+**Format A only:**
+
+9. The caption ending follows §5.4 exactly: scripture block → ✝️ → engagement
    line → two app-mention lines → niche hashtags → buried trending hashtags. The
    app is not named anywhere above those two lines.
-9. Body is 200–500 words, opens on a corrective or a fact rather than a question,
-   sustains second person, and lands affirming rather than punishing. No banned
-   register, §5.5 or §9.5. Emoji only in the slots of §5.2.
-10. Carousel is 5–7 slides at 9:16, one idea and 5–15 words per slide, with at
-    least one cliffhanger and a landing slide that stands alone.
-11. The header block is complete and `draft_id` matches the filename.
+10. Body is 200–500 words, opens on a corrective or a fact rather than a
+    question, sustains second person, and lands affirming rather than punishing.
+    No banned register, §5.5 or §9.5. Emoji only in the slots of §5.2.
+11. Carousel is 5–7 slides at 9:16, one idea and 5–15 words per slide, with at
+    least one cliffhanger at slide 3 or 4 and a landing slide that stands alone.
+
+**Format B only:**
+
+12. Body is 40–70 words, third person, resting on exactly one fact — and that
+    fact is DOCUMENTED and asserted plainly, or TRADITIONAL and attributed. It is
+    never a LEGEND.
+13. There is exactly one hinge, it is named in the internal hinge line, it is
+    performed rather than explained, and it survives the swap test.
+14. The last line is the invocation and nothing follows it. There is no scripture
+    block, no ✝️, no engagement line, no app-mention pair, no hashtags and no
+    emoji, and the app is not pitched anywhere.
 
 If any of 1–5 fails, the correct output is not a fix attempt dressed as a
 draft. Output **`STOP — <check>`** and say what the dossier would need to

@@ -1,5 +1,40 @@
 # drafts/ — worked examples
 
+> ## ⚠ These five packs are NOT voice exemplars
+>
+> They were written against the **old provisional voice**, before the Notion
+> style bible was read and before Format B existed. They are off-voice on
+> **both** current formats, and deliberately so — they have not been rewritten,
+> because rewriting them would destroy what they are actually for.
+>
+> **They remain valid, and are still the reference set, for:**
+> - **Source discipline** — the graded dossier, the DOCUMENTED / TRADITIONAL /
+>   LEGEND convention, and the "excluded, and why" list.
+> - **Truth failures** — draft 03 is still the worked example of an invented
+>   quotation failing T1 and T3 together.
+> - **Iconography failures** — draft 04 is still the worked example of I1–I4.
+> - **CTA and brand failures of the kind that survive the realignment** — draft
+>   05's fake scarcity, hard sell, promised outcome and slogan-bridge are all
+>   still STOPs under the current C2, B3 and G1.
+>
+> **They are NOT evidence for voice, format, length, ending, emoji, CTA wording
+> or hashtags.** For voice, go to:
+> - **`../exemplars/`** — six shipped captions, the **Format A** gold set.
+> - **`../exemplars/format-b-saint-of-the-day/`** — the **Format B** specimens.
+>   Format B is the standard for daily saint posts.
+>
+> Concretely, every one of these five is 4:5 with five fixed liturgical slides,
+> has no emoji, no scripture block, no engagement line and no hashtags, runs
+> ~120–200 words, and closes on the invocation. Under the realigned scorer a
+> Format A pack shaped like that fails V1, V2, V3, V4, V5, V6, V7 and B2-A; it is
+> not a Format B pack either, since it has no hinge. **Do not copy their shape.**
+>
+> Their recorded verdicts also cite check IDs from the pre-realignment scorer.
+> Draft 05's "fails B1, B2, B3, C1, C2, C3, G1" should now be read as: the
+> substance still fails, but B1 and B2 are now format-split and C1's placement
+> clause has changed. The **verdicts are still right**; some of the **citations
+> are stale**.
+
 Five post packs, each graded by `SCORER.md` against `best_skill.md`. Two pass,
 three stop. They exist to show the gate working on realistic material rather
 than on strawmen, and to fix the standard of evidence before the loop starts
@@ -80,7 +115,15 @@ Two calendar points worth carrying forward:
   standard, not a sample of what the frozen writer will actually emit. The real
   PASS rate is unknown until the loop runs.
 - **Every pack here is `carousel-4x5`.** Neither `photo-9x16` nor `short` has a
-  worked example, so their contracts are untested.
+  worked example, so their contracts are untested. 4:5 is itself now wrong — the
+  frame is 9:16 on both formats (`best_skill.md` §4).
+- **No pack here carries a `post_format` field**, which the scorer now requires
+  before any check runs. As written they would STOP at §1. Any regenerated pack
+  must declare `A-themed` or `B-saint-of-the-day`.
+- **There is no worked Format B pack at all**, passing or stopping. The two
+  specimens in `../exemplars/format-b-saint-of-the-day/` are captions, not full
+  packs with dossiers and image prompts, so W1–W5 have never been exercised on a
+  complete artifact. That is the most useful gap in this directory to fill next.
 - **No pack has been graded by an LLM judge**, only by hand. Whether `SCORER.md`
   reproduces these verdicts when handed to a model is the first thing worth
   measuring, and it has not been measured.
