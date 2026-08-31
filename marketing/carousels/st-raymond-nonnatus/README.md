@@ -31,7 +31,12 @@ each with a 0.6 s cross-dissolve between them.
 | `*.jpg` | The five cropped artwork plates, one per slide |
 | `build.mjs` | Renders the artboards to `slides/` and `slides-vertical/` |
 | `build-video.sh` | Builds the vertical MP4 from `slides-vertical/` |
-| `site/` | Netlify-ready asset page. See `site/DEPLOY.md`. **Not deployed.** |
+
+There is no hosting step. An earlier pass built a Netlify asset page to serve
+the slides from a CDN, and a site was deployed from it; that approach was
+abandoned and the deployed site is unmaintained. Buffer takes uploaded media
+directly, so the PNGs and the MP4 in this directory are the deliverables — copy
+them straight into the scheduler.
 
 ## Building
 
