@@ -4,39 +4,83 @@ The rulebook. A frozen writer model reads this file and produces one finished
 post pack per day. It does not publish. It does not grade itself. Everything it
 produces goes to `SCORER.md` first.
 
-Read `BRIEF.md` for why this exists. Read
-`marketing/carousels/st-raymond-nonnatus/README.md` for the one completed post
-produced under this methodology — it is the reference specimen for voice and for
-source discipline, and it is quoted in full below.
+Read `BRIEF.md` for why this exists.
+
+**Voice comes from the Notion style bible (§5), not from the Raymond post.**
+`marketing/carousels/st-raymond-nonnatus/README.md` is still the reference
+specimen for **source discipline** — accuracy grading, exclusions, no invented
+quotes — and only for that. Its caption is off-voice against the style bible in
+several specific ways, itemised in §5.6.
 
 One-line memory: **write what you can prove, stop when you cannot.**
 
 ---
 
-## 0. Working assumptions
+## 0. Working assumptions and sources
 
-These are unconfirmed. They are recorded here so they can be corrected rather
-than silently inherited. Nothing downstream should treat them as settled.
+Some of what follows is now sourced. What is still unconfirmed is labelled, so
+it can be corrected rather than silently inherited.
+
+### 0.1 Sources actually used
+
+- **RESOLVED — voice, structure, image style, CTAs, hashtags.** The Notion style
+  bible **has** been supplied and read. §§4, 5, 8 and 9 are grounded in it. The
+  source pages, all in the user's own Notion workspace:
+  - **"Saint Match content strategy"** — six fully worked, shipped-format posts
+    (Elijah at the Brook Cherith; Jesus in Gethsemane; Every Saint Was Once a
+    Sinner Who Never Gave Up; The Prayer That Shook Empires; The Angel Who Cast
+    Satan From Heaven; The Desert Is Where God Trains His Strongest). Each
+    carries the full description caption, per-slide overlay text, per-slide type
+    spec and image prompt. This is the primary voice evidence: six real captions,
+    not one.
+  - **"content creation prompts for testing"** — the content replication system
+    prompt (v5.0) that generates those posts: caption architecture, the mandatory
+    caption ending order, carousel slide psychology, the 14-parameter image-prompt
+    structure, the hashtag tiering, and the filled configuration used for the
+    March 2026 run.
+  - **"Saint Match"** (Bricko publish-queue entry) — brand context only. One
+    line: Saint Match is the "Duolingo for virtue" Catholic saint matcher.
+  - **"Saint Match Novena generation and tracking"** — product facts that
+    constrain how posts bridge to the app (§6.1), plus the organic marketing
+    strategy, whose governing line is **"Don't market an app — market the
+    spiritual journey."**
+- **Read-only.** Nothing in Notion was created or modified.
+
+### 0.2 Still unconfirmed
 
 - **ASSUMPTION — calendar.** The **General Roman Calendar** governs saint
   selection. On a ferial day with no obligatory memorial, the day is filled from
   a curated fallback list of saints kept outside the GRC. This is not a
   hypothetical: 31 August, the date of the Raymond Nonnatus post already in this
-  repo, has no GRC entry. Raymond came from the fallback, not the calendar.
-- **ASSUMPTION — imagery.** Post imagery is **AI-generated from an
-  art-historically anchored prompt**, per the brief's "AI image prompt, 9:16".
-  It is not a sourced public-domain painting. The Raymond carousel used real
-  Prado paintings; that was a hand-built one-off and is not the daily pipeline.
-  The iconography rules in §8 exist precisely because a generator will
-  confidently invent a habit.
+  repo, has no GRC entry. Raymond came from the fallback, not the calendar. The
+  Notion material is silent on saint selection; it works from trending and
+  liturgical topics, not from a saint-of-the-day calendar.
+- **CONFIRMED — imagery.** Post imagery is **AI-generated from an
+  art-historically anchored prompt**. This is no longer an assumption: the Notion
+  system prompt specifies a 14-parameter prompt structure with named painters, a
+  modular negative prompt, and overlay text rendered *inside* the generated image
+  (§8). The Raymond carousel used real Prado paintings; that was a hand-built
+  one-off and is not the pipeline.
 - **ASSUMPTION — source pack.** The daily **dossier** described in §2 stands in
   for the "approved source pack" of hard rule #1, which does not exist in the
-  repo yet.
-- **PROVISIONAL — voice.** The Notion style bible has **not** been supplied.
-  Every voice rule in §5 is derived by reading back from the Raymond caption —
-  real, shipped Saint Match work — and nothing else. When the style bible
-  arrives, §5 is replaced by it, not merged with it. Do not extend §5 by
-  inference; the brief forbids inventing a brand voice.
+  repo yet. The Notion material is silent on fact sourcing, so §§2, 3.2, 7 and 10
+  remain as written here and are **still provisional** — they are this
+  pipeline's addition, not the style bible's. They are not contradicted by it,
+  and the user's own Notion notes support them: on the novena page they reject
+  the app inventing a "Saint of the Impossible", noting the Saint of Impossible
+  Causes is St Rita — the exact failure §7 exists to prevent.
+- **NOTE — the scorer now lags the rulebook.** `SCORER.md` was written against
+  the old provisional §5/§9 and will STOP posts that are correct under the Notion
+  bible: it fails any emoji (C4), requires a 120–200 word caption closing on the
+  invocation with the hardest line last (C5), and bans "comment AMEN" as
+  engagement bait (C6/C8). Under the style bible all four of those are on-voice.
+  `SCORER.md` is deliberately left untouched here. **Re-aligning it is the next
+  job**, and until it is done a Notion-correct post will fail the gate.
+- **NOTE — the seed drafts also lag.** The five packs in `drafts/` were written
+  to the old provisional voice: 4:5 format, no emoji, invocation endings, no
+  scripture block, no hashtags. They still demonstrate the *source discipline*
+  correctly, which is what they were built to show, but they are no longer voice
+  exemplars. Regenerating them against §5 is a follow-up.
 
 ---
 
@@ -103,7 +147,7 @@ Every pack opens with this, verbatim field names, one per line:
 ```
 draft_id       <YYYY-MM-DD>-<saint-slug>
 skill_version  best_skill.md @ <git commit sha>
-format         carousel-4x5 | photo-9x16 | short
+format         carousel | reel
 saint          <full name as used in copy>
 feast_date     <date>
 topic          <struggle topic / theme bridge>
@@ -139,128 +183,226 @@ engagement data is an append-only JSONL file in this repo — see `ANALYTICS.md`
 | Block | What it is |
 | --- | --- |
 | **Topic + theme bridge** | Two or three sentences, internal. Names the struggle topic and the specific virtue this saint's life exemplifies against it, and how that virtue becomes a 5–15 minute Saint Match micro-action. If you cannot name the micro-action, there is no bridge. |
-| **Caption overlay** | The on-image text. For a carousel, one block per slide with its attribution line. Quoted material only per §7. |
-| **AI image prompt** | One paragraph, 9:16, art-historically anchored. Written to §8. |
-| **Description caption** | The post body. Written to §5. Ends on the invocation line. |
-| **Soft CTA** | One or two lines, drawn from §9. |
+| **Description caption** | The post body. Written to §5, in the mandatory ending order of §5.4. **Written first** — see below. |
+| **Subject–caption alignment** | One internal line, per §8.1. States whether the caption is about a modern experience or a historical one, and therefore whether the image shows a modern person or the historical figure. Written *after* the caption and *before* the image prompt. |
+| **Caption overlay** | The on-image text. One block per slide, each with its highlight word, highlight colour and position. 5–15 words per slide (§4). Quoted material only per §7. |
+| **AI image prompt** | Per slide. 9:16, art-historically anchored, 14 parameters plus the modular negative prompt. Written to §8. |
+| **Soft CTA** | The engagement line plus the two app-mention lines, verbatim from §9. |
+| **Hashtags** | 15–20 niche tags from the three-tier bank, then 3–5 buried trending tags. §9.4. |
 | **Source notes** | Every factual claim in the pack, one line each, graded DOCUMENTED / TRADITIONAL / LEGEND, with the source. Plus an explicit list of what was **excluded and why** — the exclusions are the point. |
 
+**Order of work is fixed: caption → alignment decision → image prompt.** Never
+write an image prompt before the caption is finished. The style bible calls
+reversing this the second most common failure mode, because the caption is what
+determines whether the image should show a modern person or a historical one.
+
 The source notes are not an appendix. They are the artifact the scorer grades
-against. A pack with a beautiful caption and thin source notes fails.
+against. A pack with a beautiful caption and thin source notes fails. (Source
+notes are this pipeline's requirement, not the style bible's — see §0.2.)
 
 ---
 
-## 4. Format
+## 4. Format — per the Notion style bible
 
-Three formats. Default is `carousel-4x5`.
+Everything is **9:16, 1080 × 1920**. Two formats: `carousel` (default) and
+`reel` (single image). This section supersedes the earlier 4:5 five-slide
+liturgical structure — see the conflict note at the end.
 
-### carousel-4x5 — five slides, 1080 × 1351
+### 4.1 carousel — 5 to 7 slides, 1080 × 1920
 
-The shape the Raymond post used, and the one to copy.
+Slide count is not fixed. Count the distinct emotional beats in the finished
+caption, then constrain: fewer than 4 beats → pad to 5; more than 8 → condense
+to 7. 5–7 is the stated sweet spot for faith content; 3–4 is acceptable for a
+punchy message. Fewer strong slides beat more weak ones.
 
-1. **Hook** — a quotation that states the cost, not the comfort. From the
-   saint's order, rule, or constitutions; or from the saint's own writings if
-   they left any.
-2. **Maxim** — scripture. Cited by book, chapter, verse. Read the surrounding
-   verses before using it (§7).
-3. **Challenge** — the sharpest line, usually from a named later author writing
-   about the saint. Guéranger did this job for Raymond.
-4. **Prayer** — the Collect for the feast, from the Roman Missal, lightly
-   line-broken. Never paraphrased.
-5. **Invocation** — "N., patron saint of X, pray for us." Nothing else.
+| Slide | Job |
+| --- | --- |
+| **1 — Hook** | The cover image, the one seen in the grid. Full image prompt, overlay text baked in, one highlight word. Must stop the scroll and open a curiosity gap. If nobody swipes, this slide still delivered the message. |
+| **2 … N-1 — Journey** | One idea, one sentence, one emotional beat each. **5–15 words per slide, maximum.** Each slide must either escalate emotion or reveal something new; a slide that does neither gets cut. Each must read standalone in case someone screenshots it. |
+| **N — Landing** | The scripture, the punchline or the call. The slide people screenshot and share. Quotable on its own. |
 
-Uniform typography: 42px body on 56px leading, attributions 19px small caps at
-0.08em tracking. No scrims, no gradients, no overlays — legibility comes from
-where the type sits on the image. Every line must clear **3.5:1** contrast
-against the artwork beneath it. Leave the 81 × 85px logo slot at the foot of
-each frame.
+Two further rules the bible is explicit about:
 
-### photo-9x16 — single image, 1080 × 1920
+- **At least one cliffhanger slide**, ideally slide 3 or 4 — the attention dip.
+  Its text ends mid-thought on an em dash or ellipsis. "He lost everything. His
+  family. His home. His faith. And then—"
+- **Strongest content sits at slides 1, 5–6 and the last.** Never put the best
+  line at slide 3.
 
-One image, one overlay block, the description caption doing the work. Stories,
-TikTok Photo Mode. Same rules, less room, so the overlay must be shorter than
-you want it to be.
+Typography: slides 2–N may run larger than slide 1, centred, 35–65% from top.
+Same font identity, highlight colour and effects across every slide of a post.
+Use the highlight word **sparingly** — if every slide has one, none of them
+land. Highlight only the turn, the climax and the call.
 
-### short — silent vertical video
+Journey slides may be either the same base scene re-texted, or a new scene per
+slide. Same-scene is cheaper; new-scene is more engaging.
 
-The 9:16 stills in order, ~3.4s each, 0.6s cross-dissolve. No music bed, no
-voiceover, no captions burned beyond the slide text. Silence is the register.
+### 4.2 reel — single image, 1080 × 1920
+
+One image, one overlay block with one highlight word, the description caption
+doing the work. Same caption rules, same ending order.
+
+### 4.3 Conflict with the Raymond carousel
+
+The shipped Raymond post is **4:5, five slides, fixed liturgical roles** —
+hook quotation, scripture maxim, a named later author, the Collect, then the
+invocation — with no highlight words, no cliffhanger and no scripture landing.
+The style bible specifies none of that. Where they differ, follow the bible.
+
+That said, Raymond's slide roles are a legitimate *variant* of the bible's
+arc (hook → journey → landing), and the Collect-then-invocation ending is a
+real liturgical asset the bible never considered because none of its six worked
+posts is a saint's feast-day post. Keep it available as an option, but it is not
+the default and it does not override the 9:16 frame or the 5–15 word limit.
 
 ---
 
-## 5. Voice — PROVISIONAL, derived from the Raymond caption
+## 5. Voice — from the Notion style bible
 
-### 5.1 The reference specimen
+This section **replaces** the earlier provisional voice guidance. It is read off
+six complete shipped captions in "Saint Match content strategy" plus the caption
+architecture rules in "content creation prompts for testing". Where the shipped
+Raymond caption diverges from this, the Raymond caption is the one that is off —
+§5.6 says exactly how.
 
-This is real shipped Saint Match copy. It is the only voice evidence available.
-Read it before writing anything.
+### 5.1 The register in one line
 
-> St Raymond Nonnatus, priest of the Order of the Blessed Virgin Mary of Mercy
->
-> The Mercedarians existed for one purpose: to buy back Christians enslaved in
-> North Africa. Alongside poverty, chastity and obedience they took a fourth
-> vow—to remain behind as hostages themselves, in the place of captives in
-> danger of losing their faith, if the ransom money ran out. Raymond was one of
-> their redeemers. In Algiers, the tradition remembers, the money ran out.
->
-> He stayed. His captors pierced his lips and closed them with a padlock to stop
-> him preaching. Little of his life can be documented with certainty—the Church
-> has kept its shape rather than its dates—but the shape is unmistakable: a man
-> who made himself the currency, and was then denied even the ability to say why.
->
-> His life reminds us that most of us could accept a sacrifice if we were
-> permitted to explain it. The padlock is what remains when the explaining is
-> taken away.
->
-> St Raymond Nonnatus, patron saint of expectant mothers and the falsely
-> accused, pray for us.
+**Direct, warm, urgent, and addressed to one reader who is currently
+struggling.** It preaches to a person, not about a saint. The governing line
+from the marketing page: *don't market an app — market the spiritual journey.*
 
-### 5.2 What that specimen actually does
+### 5.2 What the six captions actually do
 
-Each rule below is read off the text above. Nothing here is invented.
+- **Open on a flat corrective or a bare fact.** Three hook formulas, all
+  attested:
+  1. Name the reader's situation directly — "This post speaks to the prayers
+     that do not feel peaceful. The ones where your hands are shaking and the
+     words barely come out."
+  2. Negate an assumed belief — "The desert wasn't where God forgot about
+     Jesus." / "The Rosary is not a soft prayer." / "You're not addicted to your
+     phone."
+  3. State a surprising fact plainly — "Michael is mentioned by name only four
+     times in Scripture."
 
-- **Reverent and plain.** No devotional inflation. "The Mercedarians existed for
-  one purpose" is how the post opens — a flat statement of fact, no throat
-  clearing.
-- **Short declarative sentences, load-bearing.** "He stayed." Two words holding
-  the whole paragraph. The rhythm is long sentence, long sentence, very short
-  sentence.
-- **Concrete before abstract.** Ransom money, Algiers, a padlock. The abstraction
-  ("the explaining is taken away") is earned late and only once.
-- **Unsentimental.** It does not tell the reader how to feel. It does not use
-  "beautiful", "powerful", "incredible", "inspiring", "journey".
-- **Willing to sit with difficulty.** It says the money ran out. It says the
-  record is thin. It does not resolve either.
-- **The turn is one sentence, and it is about the reader, not about the saint.**
-  "most of us could accept a sacrifice if we were permitted to explain it." One
-  turn per post. Two turns is a sermon.
-- **Ends hard, not soft.** "The padlock is what remains when the explaining is
-  taken away." No consolation, no promise, no takeaway. The last line before the
-  invocation must be the hardest-edged line in the post, not the kindest.
-- **The invocation closes it.** Fixed form: name, patronage, "pray for us."
-- **Em dashes, unspaced.** As in the specimen.
-- Hashtags sit below a run of bullet-point spacers, never inline.
+  Never open with a question. Never open with "Imagine".
+- **Second person, throughout, without apology.** "You are not forgotten in the
+  waiting." "Your agonized prayers are not failures." "Pick it up." Direct
+  address is the spine of this voice, and imperatives to the reader are
+  permitted — as invitation, never as scolding.
+- **Short paragraphs. One to three sentences.** Single-sentence paragraphs are
+  used as beats and carry the most weight: "And God said nothing." / "He won." /
+  "Instead, an angel came to strengthen Him."
+- **Concrete before abstract, with named specifics.** 1571. Lepanto. Pius V.
+  The widow of Zarephath. Twenty-one days. Four mentions. Specificity is what
+  makes the claim feel true, so name the year, the place, the number.
+- **Scripture is woven into the body, cited inline**, then repeated in full in
+  the closing scripture block. Same translation across a whole pack — the
+  captions use NKJV in some posts and ESV in others, never mixed within one.
+- **Rhetorical questions are allowed in the body**, at the turn: "What makes you
+  think it can't change your life?" / "When was the last time you woke up and
+  reached for prayer before you reached for your phone?" Not at the opening.
+- **The turn is toward the reader and it resolves.** The caption lands the
+  ancient story on the reader's current week — "Most of us know this season. The
+  prayer that hits the ceiling." — and then answers it.
+- **Ends affirming and commissioning, not bleak.** "You are being prepared in
+  it." / "God only sends His strongest there." / "He's not retired. He's not
+  symbolic. He's real, he's biblical, and he's still on the battlefield." / "Pick
+  it up."
+- **Zero punishment framing.** This is stated as an explicit quality check on the
+  Notion page: hardship is framed as formation, training or preparation — never
+  as God's discipline for the reader's failure, never as guilt. "Lent is not
+  punishment. It's training."
+- **Contractions are normal.** "wasn't", "you're", "don't", "He's".
+- **Em dashes are spaced.** "Not because technology is evil — but because we've
+  let it become our default companion." "His name — Mikha'el in Hebrew — means…"
+- **Emoji are permitted but confined.** ✝️ is the fixed separator after the
+  scripture block. Emoji otherwise appear only in the engagement line (🙏 🔥 ✝️)
+  and very occasionally at the end of an opening line (🤍). Never scattered
+  through the body.
 
 ### 5.3 Length and shape
 
-Description caption: three or four paragraphs, roughly 120–200 words, then the
-invocation. Opening line names the saint and their state of life. Do not open
-with a question. Do not open with "Imagine".
+Body: **200–500 words**, most captions landing 250–450. Eight to twelve short
+paragraphs. Then the fixed ending in §5.4.
 
-### 5.4 Banned register
+### 5.4 The caption ending order — mandatory, never rearranged
 
-Not stylistic preference — these break the voice as evidenced.
+This is the single most rigid rule in the style bible. Every caption ends:
 
-- Emoji, anywhere.
-- Second-person imperatives at the reader's expense: "You need to…", "Stop
-  scrolling."
+```
+[body ends]
+
+SCRIPTURE:
+"[the verse in full]"
+— [Book Chapter:Verse] ([translation])
+
+✝️
+
+[engagement line]
+
+[app mention line 1]
+[app mention line 2]
+
+[15–20 niche hashtags]
+[3–5 buried trending hashtags]
+```
+
+- The `SCRIPTURE:` label is configurable and is sometimes dropped, with the verse
+  and reference standing alone. The block itself is not optional.
+- The engagement line and the two app-mention lines are used **verbatim** from
+  §9. Do not invent variants.
+- **The app is never named in the body or in any on-image text** — only in the
+  two app-mention lines at the very end.
+
+### 5.5 Banned register
+
+- Naming the app anywhere except the two app-mention lines.
+- Punishment or guilt framing of the reader's hardship.
+- Scolding imperatives: "Stop scrolling", "You need to do better."
 - Superlatives and hype: "the most incredible saint", "mind-blowing".
-- Therapy-adjacent filler: "hold space", "your journey", "show up for yourself".
-- Rhetorical question openers.
-- Claims about what the saint "would say" today.
-- Any suggestion that a devotion, a novena, or the app produces an outcome.
-  Never "pray this and X will happen".
+- Therapy-adjacent filler: "hold space", "show up for yourself".
+- Rhetorical question as the opening line; opening with "Imagine".
+- Claims about what a saint "would say" today.
+- Any promise that a devotion, a novena, or the app produces an outcome. Never
+  "pray this and X will happen". The captions come close to this line — "This
+  prayer has made empires kneel. What makes you think it can't change your
+  life?" — and it is the one place the bible is doing something the brief's hard
+  rules restrain. Assert what happened; do not promise what will.
 - Modern political framing of a pre-modern life.
+- Emoji outside the slots named in §5.2.
+
+### 5.6 Where the shipped Raymond caption diverges from the style bible
+
+Recorded because it is useful signal, not to be quietly reconciled. On the
+bible's own terms the Raymond post is **off-voice in seven specific ways**:
+
+| Raymond does | The style bible does |
+| --- | --- |
+| No emoji at all | ✝️ separator required; emoji in the engagement line |
+| ~190 words | 200–500 words |
+| Distanced address — "most of us", once | Sustained direct "you" from the first line |
+| Ends hard and unresolved: "The padlock is what remains when the explaining is taken away." | Ends affirming and commissioning: "You are being prepared in it." |
+| Closes on the invocation — "N., patron saint of X, pray for us." | Closes on scripture block → ✝️ → engagement line → app mention → hashtags. There is no invocation slot |
+| No scripture block, no engagement line, no hashtags | All three mandatory |
+| Unspaced em dashes — "a fourth vow—to remain" | Spaced — "evil — but because" |
+
+Where Raymond and the bible **agree**, and these survive: short declarative
+sentences used as beats, concrete before abstract, named specifics, no invented
+quotes, and plain reverence without devotional inflation.
+
+Two Raymond qualities are **kept as additions** to the bible, because the bible
+is silent on them rather than opposed: (a) saying plainly when the historical
+record is thin — "Little of his life can be documented with certainty" — which
+§2 requires anyway; and (b) the invocation line, which stays available as the
+final carousel slide on a feast-day post (§4.3) but never displaces the caption
+ending order of §5.4.
+
+The bible's six worked posts are all scriptural or thematic — Elijah,
+Gethsemane, the Rosary, St Michael, the desert, a four-saint round-up. **None of
+them is a single-saint feast-day post.** So on the specific shape of a daily
+saint post the bible is genuinely thin, and the Raymond structure is the only
+evidence there is. That is why §4.3 keeps it as a variant rather than deleting
+it.
 
 ---
 
@@ -285,9 +427,50 @@ Test it two ways:
 The bridge lives in the internal block and is felt in the caption. It is not
 announced. The caption never says "the theme bridge here is".
 
+The Notion posts each carry a one-line **Theme Bridge** in their header, in the
+form *"Connects to Saint Match's daily challenge feature — building faith
+through consistent small actions even when results aren't visible."* Adopt the
+header field. Do not adopt that level of generality: several of the Notion
+bridges fail the swap test above. The swap and action tests stay.
+
+### 6.1 Product facts a bridge may lean on
+
+From "Saint Match Novena generation and tracking". These are what the app
+actually does, and therefore what a bridge is allowed to promise:
+
+- **Saint matching** to a user's stated struggle or intention, plus a short
+  explanation of why that saint was chosen and what they are patron of.
+- **Daily micro-challenges** and a streak.
+- **Novenas** — startable any day, multiple at once, tracked day by day, with a
+  catalogue and feast-day-driven suggestions. Longer forms exist (30-day St
+  Joseph, 54-day Rosary).
+- **Virtue portfolio** — the saints a user has matched with, accumulating over
+  time, and a weekly history of challenges completed.
+
+Two constraints that follow directly:
+
+- **Novena text in the app is AI-generated**, and the user's own note says this
+  must be disclosed. A post must never imply that a novena in the app is a
+  received traditional text unless it says so.
+- **Never invent a saint or a patronage to make a bridge work.** The user's
+  logged complaint is exactly this: the app produced a "Saint of the Impossible",
+  who does not exist — the patron of impossible causes is St Rita, and the
+  Impossible Novena is to Our Lady. Same failure mode as §7, in the product.
+
+The second app-mention line "Saints. Novenas. Daily growth. Free on the App
+Store." is the one place the product's shape is stated outright. Everything else
+stays in the bridge.
+
 ---
 
-## 7. Quotation discipline
+## 7. Quotation discipline — STILL PROVISIONAL
+
+The Notion style bible is **silent on quotation sourcing**. Its six posts quote
+scripture with a reference and otherwise paraphrase freely; there is no rule in
+it about attributing words to a saint. This section is therefore this pipeline's
+own, retained unchanged and still provisional. It is not contradicted by the
+bible, and the user's objection to an invented saint (§6.1) is the same instinct
+applied to the product.
 
 **7.1 A saint who left no writings gets no quotes attributed to them.** Ever. Not
 paraphrased, not "in the spirit of", not a line from a hagiography set in quotes
@@ -340,7 +523,50 @@ source, it does not exist.
 The prompt is written for a generative model, which will fill every gap you
 leave with the most statistically common monk it has seen. So leave no gaps.
 
-### 8.1 The prompt must specify
+### 8.0 What the style bible fixes
+
+The Notion system prompt is far more prescriptive here than this rulebook was.
+Adopt it as written.
+
+- **Subject–caption alignment comes first, and it is mandatory.** If the caption
+  is about a modern experience — phones, work stress, dating, comfort eating,
+  scrolling at 2am — the image shows **a modern person in a modern setting**.
+  If the caption tells a specific historical or biblical story, the image shows
+  that figure in a historically accurate setting. Never mix eras inside one
+  image; the only thing constant across eras is the art style. Putting an ancient
+  robed figure over a caption about phone addiction is named as the pipeline's
+  second most common failure. State the alignment decision in one internal line
+  before writing the prompt. Across a batch, roughly 40% of posts should carry
+  modern subjects.
+- **Anchor to named painters and a tradition, never "oil painting style"** —
+  that phrasing is named as the number-one cause of flat digital-looking output.
+  The attested anchors, all from shipped posts: Caravaggio, Rembrandt, Carl
+  Bloch, Heinrich Hofmann, Guido Reni, Sassoferrato, Murillo, Frederic Leighton,
+  and Victorian devotional-print watercolour for the softer variant. Include a
+  named reference artwork where one exists — "Reference: Frederic Leighton's
+  *Elijah in the Wilderness*."
+- **Declare the surface**, explicitly: layered oil glazes, canvas weave,
+  craquelure in the darks, "photographed museum painting", and an explicit
+  "NOT digital, NOT illustrative, NOT smoothed".
+- **Two locked palettes are in use.** A Baroque tenebrist one — deep amber
+  #B8860B, warm brown #3E2723, golden ochre #C49A3C, cream #F5E6C8, sienna
+  #8B4513, roughly 35% lit / 65% shadow — and a soft devotional watercolour one —
+  cream #FAF3E8, warm beige #F0E0C8, sandstone #D4C4A8, roughly 70% lit / 30%
+  gentle shadow. Both exclude cool blues, greens, pastels and neon. Pick one per
+  post and hold it across every slide.
+- **Text-only journey slides are normal.** Slides 2–N are frequently a solid
+  brand background — #14111A deep purple-black or #1A1A1A charcoal — with the
+  @saintmatchapp handle at 8% from top, a serif headline at 25–40%, body in warm
+  grey #B8B0A0 at 48–68%, a dotted rule at ~82% and a "✳ NEXT" marker at ~90%.
+  Highlight words use the brand accent: amber-gold #C17B3A / #E8B83D, or sage
+  green #7C9A72.
+- **A modular negative prompt is mandatory on every image prompt**: a permanent
+  base block (cartoon, anime, CGI, 3D render, plastic skin, artstation,
+  hyperrealistic CGI, stock photo, neon, watermark, extra fingers, deformed
+  hands, garbled text) plus a per-post style block carrying the correct **era
+  exclusions** for that subject.
+
+### 8.1 The prompt must also specify
 
 - **Order and habit, by garment and colour.** Not "monk's robes". Dominican:
   white wool tunic, scapular and capuce, black cappa over it. Conventual
@@ -353,8 +579,15 @@ leave with the most statistically common monk it has seen. So leave no gaps.
   "in the manner of Spanish Baroque tenebrism, Zurbarán" — and let that carry
   palette and lighting.
 - **Emblems the dossier supports**, and only those.
-- **Composition and framing** for 9:16, with the upper third kept clear for
-  overlay type, and a mid-tone region behind the type so it clears 3.5:1.
+- **Composition and framing** for 9:16, built so the subject occupies one side or
+  band and the overlay text has a clean zone of its own. The style bible measures
+  this rather than defaulting: state the text zone as a vertical percentage range
+  and make the composition create it — Elijah in the upper 55% with the lower
+  35–40% dark for text; the hook figure in the left 40% with the right 60% bright
+  and empty. **Do not default text to the bottom.** Whatever the zone, the type
+  must stay legible against it — keep a mid-tone or clean region behind it, and
+  add the drop shadow the bible specifies (2–3px, dark, 50–60% opacity) when the
+  type sits on painted areas.
 
 ### 8.2 Prohibited, absolutely
 
@@ -374,9 +607,16 @@ leave with the most statistically common monk it has seen. So leave no gaps.
 - **Depicting a LEGEND as an event.** A legendary scene may be depicted only if
   it is a recognised iconographic type *and* the caption does not assert it *and*
   the source notes flag it. If in doubt, paint the person, not the story.
-- Modern faces, modern dentistry, glossy skin, HDR, lens flare, halo rendered as
-  a glowing ring of light. Halo as a flat gold disc or nothing.
-- Any text or lettering rendered inside the image. All type is added in layout.
+- Glossy skin, HDR, lens flare, halo rendered as a glowing ring of light. Halo as
+  a flat gold disc or nothing. (Modern faces are prohibited **only on historical
+  subjects** — on a MODERN-aligned post a modern face is the whole point.)
+
+**Superseded:** the earlier rule "any text or lettering rendered inside the
+image; all type is added in layout" is **withdrawn**. The style bible bakes the
+overlay text into the generated image and treats a generated image without its
+caption text as a failure. Carry the exact overlay string, font, colour,
+highlight word, position range and effects in the prompt, require perfect
+spelling, and regenerate on garbled or misspelled output rather than shipping it.
 
 ### 8.3 The iconography line in the source notes
 
@@ -386,40 +626,78 @@ attribute is in the prompt and not in that list, the pack fails §8.
 
 ---
 
-## 9. Soft CTA
+## 9. Engagement line, app mention and hashtags
 
 The CTA is soft because the product is a habit, not a purchase. Someone deciding
-whether to try a virtue app on the feast of a martyr is not to be hurried.
+whether to try a virtue app on the feast of a martyr is not to be hurried. But
+the *shape* of the ask is fixed by the style bible, not chosen per post: an
+engagement line, then two app-mention lines, then hashtags, in that order and
+nowhere else in the caption (§5.4).
 
-### 9.1 Approved patterns
+### 9.1 The engagement line
 
-Use one, unmodified in structure. Wording may vary; register may not.
+One line, immediately after the ✝️ separator. Attested wordings, used verbatim:
 
-- "Find the saint walking with you today. Saint Match — free, link in bio."
-- "Saint Match turns a virtue like this into one small action you can do today.
-  Free on iOS and Android."
-- "If you want to practise this rather than only admire it: Saint Match, link in
-  bio."
-- "One saint, one small challenge, each day. Saint Match — free to start."
+- "Type AMEN if this hit home ✝️"
+- "Comment AMEN if you needed this today 🙏"
+- "Type AMEN if this spoke to your soul 🙏🔥"
+- "Type AMEN if you believe the saints are praying for you right now 🙏🔥"
+- "Drop a 🙏 if this hit home"
 
-### 9.2 Rules
+**This supersedes the earlier ban on "Comment AMEN" as engagement bait.** It is
+the user's own shipped convention across every post in the style bible, so it is
+on-voice by definition. `SCORER.md` still fails it — see §0.2.
 
-- One CTA per post. It goes after the invocation, never before.
-- It names the app plainly and does not argue for it.
-- It must sit downstream of the bridge (§6). A CTA with no virtue named above it
-  is a STOP even if its wording is gentle — this is the brief's "missing virtue ↔
-  app bridge" failure.
-- It never promises an outcome, spiritual or otherwise.
+### 9.2 The app-mention lines
+
+Exactly two lines, at the very end of the body, immediately before the hashtags.
+Never invented, never reworded on the fly, never anywhere else in the caption.
+Attested pairs:
+
+| Line 1 | Line 2 |
+| --- | --- |
+| "Find the saint walking with you through every struggle — Saint Match, link in bio." | "Your patron saint is waiting. Download free today." |
+| "Find the saint who's walking with you — Saint Match, link in bio." | "Your saint is waiting. Free on the App Store." |
+| "Find your patron saint → Saint Match (link in bio)" | "Saints. Novenas. Daily growth. Free on the App Store." |
+| "Comment SAINT and I will send the free app to your DM" | "Your saint is waiting. Download free today." |
+
+The four earlier invented patterns are withdrawn; only the first of them
+("Find the saint walking with you…") matched anything real.
+
+### 9.3 Rules
+
+- One engagement line and one app-mention pair per post, in the §5.4 order.
+- The app is named **only** here — never in the body, never in on-image text.
+- The pair must sit downstream of the bridge (§6). An app mention with no virtue
+  named above it is a STOP even if its wording is gentle — the brief's "missing
+  virtue ↔ app bridge" failure.
+- It never promises a spiritual outcome.
 - It never uses the saint as leverage — the saint is not an endorsement.
 
-### 9.3 Banned register
+### 9.4 Hashtags
+
+The last block in the caption, after the app mention. Never inline in the body.
+
+- **15–20 niche-relevant tags**, mixed across three tiers held as a standing
+  bank: Tier 1 high volume (#Catholic #CatholicFaith #Jesus #Prayer #Faith),
+  Tier 2 medium (#CatholicReels #CatholicLife #CatholicCommunity #DailyPrayer
+  #GrowInHoliness #CatholicSaints), Tier 3 niche (#SaintMatch #PatronSaint
+  #CatholicVirtue and the post's own specifics).
+- Then **3–5 "buried trending" tags** placed last. The style bible is explicit
+  that these are a discoverability play and are **not** expected to match the
+  post's topic — #MondayMotivation, #FaithOverFear, #DailyInspiration and the
+  like — buried at the end so they do not read as out of place. Recorded as the
+  user's stated convention. It is the one rule in the bible that trades relevance
+  for reach; flag it rather than quietly extending it.
+
+### 9.5 Banned register
 
 - **Fake scarcity or urgency.** "Only today", "before it's gone", "limited
   spots", "ends at midnight", "don't miss out", countdowns.
 - **Hard sell.** "Download NOW", "Tap the link!!", "You NEED this app".
 - **Manufactured obligation.** "Share if you love St N.", "Only real Catholics
-  will…", "Comment AMEN".
-- **Engagement bait** in any form, including "double tap if".
+  will…" — obligation and gatekeeping, as distinct from the plain "Type AMEN"
+  invitation of §9.1, which is permitted.
 - **Naming the free-tier limit as pressure.** The free tier is three matches a
   week. That is a product fact. It is never a reason to hurry.
 - **Guilt.** "Most people scroll past this."
@@ -438,12 +716,19 @@ failures reaching it.
 4. Every quotation has a source and, for scripture, a checked context.
 5. Every attribute in the image prompt appears in the iconography list, and
    nothing the dossier contradicts is in the prompt.
-6. The bridge survives the swap test and yields a one-sentence micro-action.
-7. The CTA is one of the approved patterns, sits after the invocation, and
-   carries no urgency.
-8. The last line before the invocation is the hardest line in the post.
-9. No emoji. No banned register, §5.4 or §9.3.
-10. The header block is complete and `draft_id` matches the filename.
+6. The bridge survives the swap test and yields a one-sentence micro-action, and
+   promises nothing the app does not do (§6.1).
+7. The caption was written before the image prompt, and the subject–caption
+   alignment line is present and honoured by the prompt (§8.0).
+8. The caption ending follows §5.4 exactly: scripture block → ✝️ → engagement
+   line → two app-mention lines → niche hashtags → buried trending hashtags. The
+   app is not named anywhere above those two lines.
+9. Body is 200–500 words, opens on a corrective or a fact rather than a question,
+   sustains second person, and lands affirming rather than punishing. No banned
+   register, §5.5 or §9.5. Emoji only in the slots of §5.2.
+10. Carousel is 5–7 slides at 9:16, one idea and 5–15 words per slide, with at
+    least one cliffhanger and a landing slide that stands alone.
+11. The header block is complete and `draft_id` matches the filename.
 
 If any of 1–5 fails, the correct output is not a fix attempt dressed as a
 draft. Output **`STOP — <check>`** and say what the dossier would need to
