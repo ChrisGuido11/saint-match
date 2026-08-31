@@ -1,0 +1,10 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1080, "h": 1351, "title": "1 — Hook", "print": "fixed" },
+    { "file": "Maxim.dc.html", "x": 1200, "y": 0, "w": 1080, "h": 1351, "title": "2 — Maxim", "print": "fixed" },
+    { "file": "Challenge.dc.html", "x": 2400, "y": 0, "w": 1080, "h": 1351, "title": "3 — Challenge", "print": "fixed" },
+    { "file": "Prayer.dc.html", "x": 3600, "y": 0, "w": 1080, "h": 1351, "title": "4 — Prayer", "print": "fixed" },
+    { "file": "Invocation.dc.html", "x": 4800, "y": 0, "w": 1080, "h": 1351, "title": "5 — Invocation", "print": "fixed" }
+  ],
+  "launch": { "view": "canvas" }
+}
