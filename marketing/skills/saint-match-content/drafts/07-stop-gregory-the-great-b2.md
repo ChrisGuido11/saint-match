@@ -22,6 +22,17 @@ topic          vocation — being in work you did not choose
 > dossier lines used here are reproduced below with their original **D-numbers** so
 > the two packs can be cross-read.
 
+
+> **Concurrent rulebook edit — read this before regrading.** These packs were written
+> and graded against `best_skill.md` and `SCORER.md` **as they stood at `c0cd3d4`**,
+> which is what `skill_version` records and what was actually read. While this work was
+> in progress another commit, **`388920b` ("record three verified attribution cases")**,
+> changed both documents and added a seventh Format B specimen. **Neither pack has been
+> re-read or re-graded against `388920b`**, and the spec findings below were derived
+> from the `c0cd3d4` text. Some of them may already be addressed there. Re-grading
+> against the current rulebook is a separate job and is deliberately not done here,
+> because a guessed attribution is worse than a stale one (§3.1).
+
 ---
 
 ## 1. Dossier lines used in this pack
