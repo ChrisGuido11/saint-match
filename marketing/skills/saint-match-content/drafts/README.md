@@ -53,8 +53,20 @@ producing packs at a rate nobody can read carefully.
 | `04-stop-iconography-dominic.md` | St Dominic | 8 Aug (Memorial) | **STOP** | Iconography — wrong habit, an anachronistic object, and a legend staged as an event. Fails I1–I4. Copy and sourcing pass. |
 | `05-stop-cta-brand-ignatius-of-loyola.md` | St Ignatius of Loyola | 31 Jul (Memorial) | **STOP** | CTA and brand — fake scarcity, hard sell, promised outcome, and a bridge that is a slogan. Fails B1, B2, B3, C1, C2, C3, G1. Every truth check passes. |
 
+**The two packs below are different in kind from the five above.** They are the first
+packs written against the current rulebook, they carry a real `skill_version` sha, and
+they are **Format B**. The five above remain the source-discipline reference set; these
+two are the first live artifacts.
+
+| File | Saint | Feast | Format | Verdict | Demonstrates |
+| --- | --- | --- | --- | --- | --- |
+| `06-pass-gregory-the-great-b1.md` | St Gregory the Great | 3 Sep (Memorial) | **B, variant B-1** | **PASS** | First run of **W1–W5** and of the **rewritten I4** on a real artifact. A hinge built on a primary text read directly. A twelve-item exclusion list carrying three deliberate traps: Gregorian chant, "non Angli sed angeli", and the tiara-and-dove iconography. |
+| `07-stop-gregory-the-great-b2.md` | St Gregory the Great | 3 Sep (Memorial) | **B, variant B-2** | **STOP** (W2, G1) | First run of **W6–W9**, ever. STOPs on the hinge's swap test — and the STOP is structural, not a slip: **W2 and W7 cannot both be satisfied as written on B-2**. Carries the consolidated spec-findings list, SF-1 to SF-18. |
+
 Each STOP carries the scorer's full verdict and the corrected rewrite that would
-pass.
+pass. **`07`'s rewrite is the exception: it clears W2 and moves the risk onto W7, and no
+version of that post is known to pass both.** That is SF-2 and it is the most important
+open item in this directory.
 
 ## What the set is meant to establish
 
@@ -92,7 +104,9 @@ consistently or overruled.
 
 All five are in the General Roman Calendar and all five ranks were checked
 against it: Ignatius 31 July, Dominic 8 August, Kolbe 14 August, Monica
-27 August, Francis 4 October — Memorials, every one.
+27 August, Francis 4 October — Memorials, every one. **Gregory the Great,
+3 September, is a Memorial too**, and 3 September 2026 is a Thursday, so nothing
+supersedes it; `06` §0 records the check.
 
 Two calendar points worth carrying forward:
 
@@ -127,12 +141,18 @@ Two calendar points worth carrying forward:
   must declare `A-themed` or `B-saint-of-the-day` — and a Format B pack must also
   declare `format_variant` (`B-1-caption-carried` or `B-2-carousel-carried`),
   which is a STOP at §1 in its own right if missing.
-- **There is no worked Format B pack at all**, passing or stopping, on either
-  variant. Everything in `../exemplars/format-b-saint-of-the-day/` is a caption
-  or a hook slide, not a full pack with a dossier and image prompts, so **W1–W9
-  have never been exercised on a complete artifact** — and W6–W9, the variant B-2
-  checks, have never been exercised at all. That is the most useful gap in this
-  directory to fill next: one B-1 pack and one B-2 pack.
+- ~~**There is no worked Format B pack at all**~~ — **closed** by `06` (B-1) and
+  `07` (B-2), 3 September 2026. W1–W9 and the rewritten I4 have now all been run
+  on complete artifacts. What that first run found is written up as **SF-1 to
+  SF-18** at the end of `07`; the headline is that **W2's swap test and W7's
+  struggle-topic requirement pull against each other on variant B-2** and no post
+  is yet known to satisfy both.
+- **Both new packs are `HISTORICAL`-aligned**, so §8.0's "roughly 40% of a batch
+  should carry modern subjects" is unmet for 3 September. That is a batch
+  property and the next batch should correct it.
+- **Neither new pack has been voice-scored**, correctly: `06` PASSes but Format B
+  is `set_maturity: shape-only` (`SCORER.md` §9.5), and `07` STOPped, so it is
+  not scored at all.
 - **No pack has been graded by an LLM judge**, only by hand. Whether `SCORER.md`
   reproduces these verdicts when handed to a model is the first thing worth
   measuring, and it has not been measured.
