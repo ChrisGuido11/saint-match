@@ -1,5 +1,10 @@
 # best_skill.md — Saint Match daily saint post
 
+> **Layer: INSTANCE — Saint Match.** This is a brand rulebook. Its voice,
+> formats, CTAs and product bridge are Saint Match's and are not portable. The
+> portable conventions it rests on — the fact grade, quotation discipline — live
+> in `../../method/` and are pointed at from §2 and §7. See `../../README.md`.
+
 The rulebook. A frozen writer model reads this file and produces one finished
 post pack per day. It does not publish. It does not grade itself. Everything it
 produces goes to `SCORER.md` first.
@@ -13,11 +18,14 @@ Every pack declares which it is in the header (§3.1), and the scorer runs a
 different voice floor for each.
 
 **Format A voice comes from the Notion style bible (§5), not from the Raymond
-post.**
-`marketing/carousels/st-raymond-nonnatus/README.md` is still the reference
-specimen for **source discipline** — accuracy grading, exclusions, no invented
-quotes — and only for that. Its caption is off-voice against the style bible in
-several specific ways, itemised in §5.6.
+post.** The **St Raymond Nonnatus carousel** — a completed, shipped five-slide
+carousel produced in the Saint Match app repository before this pipeline existed
+— is still the reference case for **source discipline**: accuracy grading,
+declared exclusions, no invented quotes, and a false cardinalate caught and kept
+out of both the copy and the image. It is a reference for that and only that. Its
+caption is off-voice against the style bible in several specific ways, itemised
+in §5.6, and the case is summarised there and in `BRIEF.md` in enough detail to
+stand without the assets.
 
 One-line memory: **write what you can prove, stop when you cannot.**
 
@@ -139,46 +147,32 @@ Each day the writer receives exactly two things:
 2. The **struggle topic** for the day — one of: anxiety, waiting, grief, purity,
    patience, vocation, anger, loneliness, shame, fear, distraction, money.
 
-**The dossier is the entire permitted factual universe.** Not the model's
-training memory, not "what is commonly said about," not a plausible
-reconstruction. If a sentence in the draft cannot be traced to a numbered line
-in the dossier, it does not go in the draft. This is hard rule #1 and it is not
-negotiable for any reason, including that the fact is probably true.
+**The dossier is the entire permitted factual universe, and the rule is stated
+in `../../method/FACT-GRADING.md`** — along with what to output when the dossier is too
+thin (`INSUFFICIENT DOSSIER — <what is missing>`, and the day falls back to
+another saint). It is hard rule #1 and it is not negotiable for any reason,
+including that the fact is probably true.
 
-If the dossier is too thin to support a post, the correct output is not a
-thinner post. It is: **`INSUFFICIENT DOSSIER — <what is missing>`**, and the day
-falls back to another saint. A saint you cannot source is a saint you do not
-post.
+What stays here is the Saint Match part: the writer is handed a **dossier** and a
+**struggle topic**, and the twelve topics are the list above.
 
 ---
 
-## 2. The dossier and the fact grade
+## 2. The dossier and the fact grade — MOVED TO THE METHOD LAYER
 
-Every dossier line carries a grade. The grade governs how the fact may be
-phrased in copy. This is the single most load-bearing convention in the file.
+**The DOCUMENTED / TRADITIONAL / LEGEND convention now lives in
+`../../method/FACT-GRADING.md`, verbatim and complete**, together with the "dossier is
+the entire permitted factual universe" rule from §1 above.
 
-| Grade | Means | Permitted phrasing |
-| --- | --- | --- |
-| **DOCUMENTED** | Attested by a contemporary or near-contemporary record, a primary text, an official act (canonisation, papal bull, liturgical book), or modern scholarly consensus. | Assert it plainly. "He died on 14 August 1941." |
-| **TRADITIONAL** | Long-held, widely transmitted in the Church, but not documented contemporaneously. Includes post-hoc eyewitness testimony gathered decades later, e.g. at a beatification process. | Attribute the holding. "The Church has long held…", "Witnesses at his beatification testified…", "his order remembers…" |
-| **LEGEND** | A story with no evidentiary basis, often retrofitted to explain a name, an attribute or a patronage. | **Never asserted.** Only ever: "the tradition remembers…", "the story that came down…", "legend gives him…". The reader must be able to tell it is a story. |
+It moved because it is the most portable thing in this rulebook: any brand
+writing about anything with a history has attested claims, widely-transmitted
+claims and pleasant stories, and needs the same phrasing discipline for each.
 
-Rules that follow from the table:
+Still Saint Match's, and still here: which sources this instance's dossiers are
+built from, and the standing exclusions (§0.2, and `drafts/README.md`).
 
-- **A LEGEND may never be the load-bearing claim of a post.** It can colour a
-  post; it cannot carry it. If removing the legend collapses the post, the post
-  is a legend with a saint's name on it.
-- **A LEGEND may never appear in the caption overlay**, because overlay text is
-  read as assertion and has no room for qualification.
-- **Silence beats hedging beats asserting.** If a fact is not needed, cut it.
-- **Say when the record is thin.** The Raymond caption does this in the body —
-  "Little of his life can be documented with certainty—the Church has kept its
-  shape rather than its dates." This is on-voice, not a disclaimer. Honesty
-  about the record is part of the register.
-- A **debunked** claim is not a grade, it is an exclusion. Raymond's cardinalate
-  is the worked case: a sixteenth-century confusion with Cardinal Robert
-  Somercotes. It appears in later paintings. It is still false, and it appears
-  nowhere in the post, in the copy or in the image.
+References to "§2" throughout this file and throughout `SCORER.md` resolve to
+that file, which keeps the original numbering for exactly that reason.
 
 ---
 
@@ -244,7 +238,9 @@ Why this block exists:
 
 Building analytics ingestion is out of scope for this pipeline. The contract
 here is only that the fields exist and are correct. The agreed return format for
-engagement data is an append-only JSONL file in this repo — see `ANALYTICS.md`.
+engagement data is an append-only JSONL file at `analytics/metrics.jsonl`
+**relative to this instance folder** — see `../../method/ANALYTICS.md`, which is
+the schema and is deliberately path-independent.
 
 ### 3.2 The rest of the pack
 
@@ -825,85 +821,25 @@ stays in the bridge.
 
 ---
 
-## 7. Quotation discipline — STILL PROVISIONAL
+## 7. Quotation discipline — MOVED TO THE METHOD LAYER
 
-The Notion style bible is **silent on quotation sourcing**. Its six posts quote
-scripture with a reference and otherwise paraphrase freely; there is no rule in
-it about attributing words to a saint. This section is therefore this pipeline's
-own, retained unchanged and still provisional. It is not contradicted by the
-bible, and the user's objection to an invented saint (§6.1) is the same instinct
-applied to the product.
+**This section now lives in `../../method/QUOTATION.md`, verbatim and complete,
+including §7.1–§7.7.** It was moved because it is not Saint Match's: a model
+asked for a quotation invents a fluent, apt, perfectly-formed sentence in any
+domain, for any subject, and every rule in §7 is written against that behaviour
+rather than against anything about saints.
 
-**7.1 A saint who left no writings gets no quotes attributed to them.** Ever. Not
-paraphrased, not "in the spirit of", not a line from a hagiography set in quotes
-next to their name. This is the rule the Raymond post is built on: five slides,
-no words in Raymond's mouth.
+The worked examples inside it stay Catholic — the order's constitutions,
+scripture, a named later author, the Collect from the Missal, the Raymond slides —
+and are marked there as this instance's illustrations of a general order of
+preference.
 
-When the saint left nothing, quote instead, in this order of preference:
+**Read with it:** `../../method/ATTRIBUTION-CASES.md`, three verified cases in which a
+real publisher's quotation passes an informal check and is still wrong. Two of
+the three come from specimens in this instance's Format B folder.
 
-1. **The order's rule or constitutions.** Raymond slide 1: the Constitutions of
-   the Order of Mercy.
-2. **Scripture** that the life actually turns on. Raymond slide 2: 1 Corinthians
-   7:23, "You were bought with a price; do not become slaves of men" — chosen
-   because he was a ransomer of slaves. The link is real, not decorative.
-3. **A named later author**, attributed to that author and never to the saint.
-   Raymond slide 3: Dom Prosper Guéranger, *The Liturgical Year*.
-4. **The liturgy** — the Collect for the feast, from the Roman Missal.
-
-**7.2 If the saint did leave writings, quote the writing, with the citation.**
-Ignatius → *Spiritual Exercises*, with the paragraph number. Augustine →
-*Confessions*, book and chapter. Francis → the Testament or the Earlier Rule.
-The citation goes in the source notes even when it does not fit on the slide.
-
-**7.3 Words recorded by a named contemporary are quotable, and are graded by who
-recorded them and when.** Monica left no writings, but Augustine records her
-speech in *Confessions* IX — a named contemporary and participant, writing
-about a decade later. That is quotable as TRADITIONAL, attributed as "as her son
-recorded it". By contrast, Kolbe's words at the selection come from testimony
-gathered at a beatification process years after his death: also quotable, also
-TRADITIONAL, and it must be phrased as testimony, not as transcript.
-
-**7.4 Scripture.** Name a translation and stick to it across the pack. Cite book,
-chapter, verse. Read the verses either side before using it. A verse that means
-something else in context is a misquote even when the words are correct — this
-is an explicit STOP in the brief, not a nuance.
-
-**7.5 Liturgical text is never paraphrased.** The Collect goes in as it stands in
-the Missal. Line breaks for legibility are fine. Word changes are not.
-
-**7.6 The failure mode this section exists to prevent.** A language model asked
-for a saint quote will produce a fluent, apt, devotional sentence that no one
-ever wrote. It will sound exactly right. "Preach the Gospel at all times; when
-necessary, use words" is not in Francis of Assisi's writings or in any early
-life of him. Aptness is not evidence. If the quote is not in the dossier with a
-source, it does not exist.
-
-**7.7 Three verified cases, and the three additional rules they produce.** The
-worked cases are in `ATTRIBUTION-CASES.md`; each one defeats a check that §7.1–
-§7.6 would otherwise be trusted to catch.
-
-- **Re-open the formatted original.** *(Case 1 — Joseph Calasanz.)* The Liturgy
-  of the Hours marks scriptural quotation with **italics, not quote marks**, so
-  copying a breviary paragraph into a caption deletes the only citation frame it
-  had. Any quotation harvested from a breviary, lectionary, Office of Readings
-  excerpt, devotional reprint, PDF or slide is checked **against the formatted
-  source**, never against the plain text that reached you.
-- **Unquoted claims are attributions too.** *(Case 2 — Bernard of Clairvaux.)*
-  "Known for his promotion of the Memorare" contains no quotation marks and is
-  still a misattribution — the prayer postdates him by ~300 years. It has to be
-  caught as an unsourced **fact** (T1, T5), not as an unsourced quote (T3). And
-  **name collision drifts one way only**: toward the more famous holder of the
-  name. Check the dates.
-- **State the limit of a negative result.** *(Case 3 — Augustine.)* "Not found"
-  is a claim about the search as well as the text. Name the corpus searched, name
-  the corpus skipped, and say which. A finding written as "almost certainly" is
-  auditable and upgradable; the same finding written as "definitively" is a
-  fabrication of certainty.
-
-A fourth, positive rule runs through all three: **when a spurious quote is
-popular, find what it was reaching for.** It is nearly always reaching for
-something the author really wrote, and a replacement is a better outcome than a
-refusal — a refusal leaves the writer with the hole that invited the invention.
+Everything §7 says still binds every Saint Match pack. Nothing was relaxed by the
+move.
 
 ---
 

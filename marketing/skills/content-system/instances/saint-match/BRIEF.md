@@ -1,5 +1,11 @@
 # SkillOpt as coach for a Saint Match content creator
 
+> **Layer: INSTANCE — Saint Match.** This is the original brief, kept as written.
+> Much of what it sketches has since been split into a portable **method** layer
+> (`../../method/`) and this brand **instance**; see `../../README.md` for the
+> boundary. Where this brief and the current documents disagree, the documents
+> are current and the brief is the record of what was asked for.
+
 ## Mission
 Build/improve a content creator skill for Saint Match (Catholic virtue app: saint matching, daily micro-challenges, novenas — "Duolingo for virtue"). Use SkillOpt (Microsoft, MIT) as the coach, not the publisher.
 
@@ -56,8 +62,18 @@ Build/improve a content creator skill for Saint Match (Catholic virtue app: sain
 ## One-line memory
 > Write what you can prove. Stop when you cannot. Evolve the rulebook only when the grade goes up.
 
-## Prior art
-`marketing/carousels/st-raymond-nonnatus/` contains a completed worked example produced under this methodology: accuracy-graded research separating documented fact from legend, no quotes attributed to a saint who left no writings, and a factual error — a false cardinalate — caught and excluded. See that folder's `README.md` for the accuracy notes.
+## Prior art — the St Raymond Nonnatus carousel (case study)
+
+A completed five-slide carousel on **St Raymond Nonnatus**, feast 31 August, shipped from the Saint Match app repository before this pipeline existed. It is the origin case for the source discipline in `../../method/FACT-GRADING.md` and `../../method/QUOTATION.md`, and it is described here rather than linked because the assets live in a different repository from the one this folder is designed to be copied into.
+
+What it demonstrated, and why it is still cited:
+
+- **Accuracy-graded research**, separating documented fact from legend before a word of copy was written — the direct ancestor of the DOCUMENTED / TRADITIONAL / LEGEND convention.
+- **No quotes attributed to a saint who left no writings.** Raymond left nothing, so the five slides quote, in order: the Constitutions of the Order of Mercy, 1 Corinthians 7:23, Dom Prosper Guéranger's *The Liturgical Year*, and the Collect from the Roman Missal. That fallback order is now `QUOTATION.md` §7.1.
+- **A factual error caught and excluded.** Raymond was **never a cardinal** — a sixteenth-century confusion with Cardinal Robert Somercotes, repeated in later paintings. It appears nowhere in the copy and nowhere in the image, and the exclusion was declared rather than silently applied. This is the standing worked example for the exclusion list (`GATE.md` T6) and for "later art repeating an error is the error in paint, not evidence for it" (`TRUTH-CHECKS.md` I2).
+- **Saying plainly when the record is thin**: *"Little of his life can be documented with certainty — the Church has kept its shape rather than its dates."*
+
+Two cautions that travel with the citation. Its **caption is off-voice** for Format A against the Notion style bible, itemised in `best_skill.md` §5.6; and its **4:5 five-slide liturgical structure** is a permitted variant, not the default (`best_skill.md` §4.3). Cite it for source discipline, never for voice or format.
 
 ## Status
 This brief is stored pending two inputs:

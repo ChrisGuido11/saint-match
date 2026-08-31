@@ -1,4 +1,20 @@
-# SCORER.md — the gate
+# SCORER.md — the gate (Saint Match instance)
+
+> **Layer: INSTANCE — Saint Match.** What remains in this file is the part of the
+> gate that is about *this brand*: the voice floors (§3, §3A, §3B, §3B-ii, §3C),
+> the CTA checks (§4), the bridge check (§5), and the current maturity of this
+> instance's specimen sets (§9.5).
+>
+> **The architecture, the grading procedure, the truth and image checks, the
+> recording and output contracts, and the voice-score design are in
+> `../../method/`** — they are brand-agnostic and are meant to be copied whole.
+> Each section below that moved carries a pointer saying where it went and why.
+> **The section numbering is unchanged across the split**, so every existing
+> cross-reference still resolves. `../../method/README.md` maps number to file.
+>
+> A grader runs this file and the method files together. Neither is complete
+> alone, and that is the intended shape: the method is what a second brand
+> inherits, this file is what Saint Match had to decide for itself.
 
 Grades one post pack produced under `best_skill.md`. Usable by a human reviewer
 or by an LLM judge. **It fails closed:** anything not affirmatively established
@@ -12,221 +28,52 @@ what would have to change.
 
 ## 0. The architectural rule
 
-**The truth gate is a hard filter. It is never traded off against engagement.**
+**§0 and §0.1 now live in `../../method/GATE.md`, verbatim and complete.** They are the
+two decisions everything else in this document depends on:
 
-There is no blended score. There is no "strong engagement offsets a weak
-source". The order of operations is fixed and one-directional:
+- **The truth gate is a hard filter and is never traded against engagement.**
+  There is no blended score, because a blended score is trainable: give the loop
+  a number in which truth and reach are commensurable and it will learn the exact
+  amount of shading that maximises it.
+- **Voice is judged by two mechanisms and they are kept apart** — a binary floor
+  that is part of the gate, and a 1–5 score that can never block anything. A
+  score that can block becomes a censor; a floor that is also a score becomes
+  negotiable.
 
-```
-draft → truth / brand / CTA / bridge / iconography checks → PASS or STOP
-                                                              |
-                                        engagement selection runs ONLY here
-                                        among drafts that already PASSED
-```
-
-Engagement data may be used to choose between two drafts that both passed, and
-to decide whether a rulebook edit is kept. It may never lift a draft over the
-gate, and it may never be averaged with a truth result.
-
-**Why this is stated as architecture rather than as guidance.** A blended score
-is trainable. Give the loop a number in which truth and reach are commensurable
-and it will, entirely correctly by its own objective, learn the exact amount of
-shading that maximises the blend — a slightly bolder claim, a legend asserted
-rather than attributed, a quote that sounds like the saint. Each step is small,
-each is rewarded, and hard rule #1 is gone within a few generations without any
-single decision having broken it. Separating the filter from the objective is
-the only structure in which that gradient does not exist. Keeping them separate
-costs some reach. That is the intended trade and it is not revisited per post.
-
-The corollary: **a STOP is never overridden by a scorer or a writer.** Only a
-human, in writing, on the record, and the override is logged against the
-`draft_id`.
-
-### 0.1 Voice is judged by two mechanisms, and they are kept apart
-
-Voice appears twice in this document, doing two different jobs. Conflating them
-destroys both.
-
-| | **Voice floor** (§3) | **Voice score** (§9) |
-| --- | --- | --- |
-| Shape | Binary — PASS / STOP | Continuous — 1 to 5 |
-| Question | *Is this off-brand enough to stop?* | *Which rulebook version writes better?* |
-| Part of the gate | **Yes.** A STOP here blocks publication. | **Never.** It cannot block anything. |
-| Anchored on | Mandatory structural elements, present or absent | Comparison against the format's exemplar set |
-| Consumed by | The writer, as a required rewrite | The SkillOpt loop, ranking `skill_version`s |
-
-**The floor may never be expressed as a score, and the score may never enter the
-verdict.** Both halves of that sentence are load-bearing:
-
-- **A score that can block becomes a censor.** Once a 1–5 voice number can STOP
-  a post, every borderline draft turns into an argument about a judge's taste,
-  the threshold gets negotiated downward under delivery pressure, and a
-  fully-sourced post dies because a model rated its warmth a 2. Worse, the same
-  number is now commensurable with the truth result, which is the exact blending
-  §0 exists to prevent — voice would have found the back door that engagement
-  was locked out of.
-- **A floor that is also a score becomes negotiable.** "The scripture block is
-  missing, but the voice scored 4.5" is a sentence that must be impossible to
-  say. Mandatory elements are mandatory: absent is absent, and absence does not
-  average with anything.
-
-So: the voice floor asks only *is the required element there*. It never asks *is
-this good*. The voice score asks only *is this good, relative to this format's
-exemplars*. It never gets a vote on publication. Neither one is derived from the other, and the
-verdict block in §8 prints them in separate sections so they cannot be summed by
-accident.
+Neither is Saint Match's, and a second brand that adopts the checks below without
+adopting those two decisions has not adopted this system.
 
 ---
 
 ## 1. How to grade
 
-1. Read the **source notes first**, before the caption. Grading the copy first
-   invites you to go looking for justification for prose you already liked.
-2. Build a claim list: every factual assertion in the overlay, the description
-   caption and the image prompt.
-3. Run every check in §2–§6. Run all of them; do not stop at the first STOP —
-   the writer needs the full list.
-4. Emit the verdict in the §8 format.
-5. **Only if the verdict is PASS**, and only when the loop has asked for it,
-   run the voice score in §9. It is a separate pass with a separate output and
-   it changes nothing about step 4. A STOPped draft is not voice-scored, because
-   ranking the prose of something that will never ship is wasted effort and
-   invites the score to be read as a mitigation.
+**Moved to `../../method/GATE.md` §1, verbatim and complete** — read the source notes
+before the caption; build a claim list; run every check rather than stopping at
+the first STOP; emit the verdict; and voice-score only after a PASS and only when
+asked.
 
-The voice floor checks (V1–V7 for Format A, W1–W9 for Format B — §3) are
-**structural presence tests** and are run with the rest of the gate at step 3. Run them mechanically — count the words,
-find the ✝️, match the app-mention pair against the table. Do not form an
-opinion about the writing while running them; that is §9's job and it happens
-later, separately, and only after a PASS.
+It also holds the **fail-closed defaults** and the rule that the post format and
+variant are **declared, never inferred** — including the instruction not to
+"correct" a declared format that seems wrong for the draft, because grading it as
+declared produces the accurate failure and the signal the loop needs.
 
-**Before anything else, read the declared format and, on Format B, the declared
-variant** from the header block (`post_format`, `format_variant`). Together they
-select which voice floor runs — V1–V7 for Format A, W1–W9 for Format B with the
-W-series scoped by variant — and which column of B1 and B2 applies. See §3.0.
-
-- The format is **declared, never inferred**. A pack with no `post_format`, or
-  with a value that is not `A-themed` or `B-saint-of-the-day`, is a **STOP**
-  here, before any other check runs.
-- **The variant is declared too.** A pack declaring `post_format:
-  B-saint-of-the-day` with no `format_variant`, or with a value that is not
-  `B-1-caption-carried` or `B-2-carousel-carried`, is a **STOP** here, on the
-  same footing and for the same reason: the two variants disagree on caption
-  length, on where the facts live and on what the hook slide must carry, so
-  guessing which one is in front of you produces a confident misgrade rather than
-  an error. A **Format A** pack carrying a `format_variant` value is also a STOP —
-  one of the two fields is wrong and the grader cannot tell which.
-- **Do not "correct" a declared format or variant that seems wrong for the
-  draft.** If a pack declares Format B and reads like Format A, grade it as
-  Format B and let it fail W1 and B1-B. If it declares B-1 and reads like B-2,
-  grade it as B-1 and let it fail W1 and W5. That failure is the accurate one and
-  it is the signal the loop needs. Silently regrading against the other format or
-  variant hides the error.
-
-> **Two things called B1 and B2.** The Format B **variants** are **B-1** and
-> **B-2**, always hyphenated. The shared brand **checks** are **B1** (register)
-> and **B2** (shape and ending), never hyphenated, and they run on both formats.
-> This document writes "variant B-2" and "check B2" wherever ambiguity is
-> possible; a grader should do the same.
-
-**Fail-closed defaults**, applied without discretion:
-
-- Missing dossier line for a claim → **STOP**. Not a judgement call, not "seems
-  right", not "widely known". Absent evidence is failure.
-- Missing or unreadable source notes → **STOP** for the whole pack.
-- Grader cannot determine whether a check passes → **STOP**.
-- Check not applicable → mark `N/A` with a reason. `N/A` is not `PASS` and must
-  be justified in one line.
+That text names this instance's fields (`post_format`, `format_variant`) and its
+floors (V1–V7, W1–W9) as its worked example; §3.0 below is where those are
+actually defined.
 
 ---
 
 ## 2. TRUTH checks
 
-Gated on the dossier. Every one of these is binary.
+**T1–T6 now live in `../../method/TRUTH-CHECKS.md`, verbatim and complete.** Gated on the
+dossier, every one of them binary, and unchanged by any realignment of this
+document — the note in §3 that the voice floor was rewritten has never applied to
+them.
 
-### T1 — Every claim has a dossier line
-
-- **Tests:** each factual assertion in the pack maps to a numbered dossier line.
-- **PASSES:** every claim on the claim list has a line and a grade.
-- **STOPS:** one or more claims have no line. **Automatic** — the grader does not
-  assess whether the claim is true.
-- **Evidence:** claim → dossier line number, for every claim. Unmatched claims
-  listed verbatim.
-
-### T2 — Grade-appropriate phrasing
-
-- **Tests:** how each claim is worded against its grade (`best_skill.md` §2).
-- **PASSES:** DOCUMENTED asserted plainly; TRADITIONAL attributed to who holds
-  it; LEGEND framed so a reader can tell it is a story — "the tradition
-  remembers", "legend gives him".
-- **STOPS:** a LEGEND asserted as fact; a LEGEND anywhere in a caption overlay; a
-  TRADITIONAL claim stated flatly; a LEGEND doing the load-bearing work of the
-  post such that removing it collapses the post.
-- **Evidence:** the sentence as written, its grade, and the phrasing rule broken.
-
-### T3 — Quotation attribution
-
-- **Tests:** every quoted string.
-- **PASSES:** each quotation is either (a) from the saint's own writings, with a
-  citation to work and locus; (b) from the order's rule or constitutions, from
-  scripture, from a named later author, or from the Missal, and attributed to
-  that source and not to the saint; or (c) speech recorded by a named
-  contemporary, graded TRADITIONAL and phrased as recorded testimony.
-- **STOPS:** any quotation attributed to a saint who left no writings; any
-  quotation whose citation is absent, vague ("attributed to"), or unverifiable;
-  any paraphrase presented inside quotation marks; any altered liturgical text.
-- **Evidence:** each quotation verbatim, its claimed source, its dossier line.
-- **Note for the grader:** this is where an LLM writer fails most often and most
-  fluently. A quotation that fits the theme perfectly and has no citation is the
-  characteristic signature of invention, not a coincidence. Aptness raises
-  suspicion; it never substitutes for a source.
-- **Note — two ways a citation passes T3 and is still wrong.** Both are worked in
-  `ATTRIBUTION-CASES.md`. **(1) A lost formatting frame.** The Liturgy of the
-  Hours marks scriptural quotation with *italics*, not quote marks, so a line
-  copied out of a breviary paragraph can be transcribed perfectly and arrive with
-  its attribution deleted (Case 1: Daniel 12:3 under Joseph Calasanz's name).
-  Require the dossier to name the **formatted** source, not the plain text the
-  writer met. **(2) A well-formed citation that is simply false.** "Points at a
-  checkable text" is the *shape* a citation must have, never a substitute for
-  having made the check.
-
-### T4 — Scripture integrity
-
-- **Tests:** each scripture citation — wording, reference, and context.
-- **PASSES:** reference is book/chapter/verse and correct; wording matches a
-  named translation used consistently across the pack; the sense in the post is
-  the sense in the passage.
-- **STOPS:** wrong reference; conflated verses; a translation swapped mid-pack; a
-  verse whose meaning in context differs from its use in the post — including
-  when every word is correct.
-- **Evidence:** the citation, the translation named, and one line on how the
-  surrounding verses were checked.
-
-### T5 — Feast, rank and biography
-
-- **Tests:** feast date, liturgical rank, order, offices held, dates of birth,
-  death, beatification and canonisation.
-- **PASSES:** each is present in the dossier and reproduced exactly.
-- **STOPS:** any date, rank or office that differs from the dossier, or that
-  appears in the pack but not in the dossier. Includes ranks the saint never
-  held — the Raymond Nonnatus cardinalate is the standing example.
-- **Evidence:** each datum as written, next to its dossier line.
-- **Note — "known for" claims land here, not in T3.** A sentence like "known for
-  his devotion to Mary and promotion of the Memorare" has **no quotation marks in
-  it** and so is invisible to T3, and it is still a misattribution: the Memorare
-  postdates Bernard of Clairvaux by ~300 years and was popularised by a different
-  Bernard (Case 2, `ATTRIBUTION-CASES.md`). Treat any claim about what a figure
-  wrote, composed, founded, promoted or is "known for" as a T1/T5 datum requiring
-  its own dossier line. **Name collisions drift toward the more famous name**, so
-  where one is possible, check the dates first.
-
-### T6 — Exclusions are declared
-
-- **Tests:** the "excluded and why" list in the source notes.
-- **PASSES:** the list exists and names at least the known false or contested
-  claims attached to this saint.
-- **STOPS:** the list is absent; or the grader knows of a well-known false claim
-  about this saint that is neither excluded nor addressed.
-- **Evidence:** the exclusion list, plus any known false claim it omits.
+Two of them carry notes added from verified cases in
+`../../method/ATTRIBUTION-CASES.md`: **T3** on citation frames that a transcription
+destroys, and **T5** on "known for" claims, which contain no quotation marks and
+are therefore invisible to T3.
 
 ---
 
@@ -1137,446 +984,65 @@ intended, informative failure, so report both.
 
 ## 6. ICONOGRAPHY check
 
-Applies to the AI image prompt.
+**I1–I4 and the §6.5 scope note now live in `../../method/TRUTH-CHECKS.md`, verbatim and
+complete.**
 
-### I1 — Attributes are sourced
+They are truth checks enforced on an image rather than on a sentence — an image
+asserts things, and every attribute it asserts must trace to a dossier line
+exactly as a sentence must — so they travel with T1–T6 rather than staying with
+this instance's voice floor. I4 is the exception in kind (legibility and
+composition, not truth) and is kept beside them because §6.5's whole point is
+that its rewrite is not precedent for softening I1–I3.
 
-- **Tests:** every habit, garment, emblem, object, setting and rank in the prompt
-  against the iconography list in the source notes.
-- **PASSES:** each element appears in the list with a supporting dossier line.
-- **STOPS:** any element in the prompt that is absent from the list, or listed
-  with no dossier support. Vague habit description ("monk's robes") is a STOP,
-  because it delegates the choice to the generator.
-- **Evidence:** prompt element → dossier line, for every element.
-
-### I2 — Nothing the dossier contradicts
-
-- **Tests:** rank, order, era, object.
-- **PASSES:** no insignia of an office the saint did not hold; correct habit for
-  the correct order, described by garment and colour; nothing anachronistic to
-  the century and place.
-- **STOPS:** cardinal's red or galero for a non-cardinal; mitre or crozier for a
-  non-bishop; wrong habit colour or wrong order's habit; an object that did not
-  exist in that form in that place in that century. Later paintings repeating the
-  error are not evidence and may not be cited in defence.
-- **Evidence:** the offending phrase from the prompt, the contradicting dossier
-  line, and the correct alternative.
-
-### I3 — Legend not depicted as event
-
-- **Tests:** the scene described.
-- **PASSES:** the prompt depicts the person, or a recognised iconographic type
-  that the caption does not assert and the source notes flag.
-- **STOPS:** a LEGEND rendered as a documentary scene, or a legendary scene
-  depicted while the caption asserts it as fact.
-- **Evidence:** the scene as described, and the grade of the underlying claim.
-
-### I4 — Type zone, contrast and frame
-
-Tests the *layout* of a baked-in-text image. Runs on both formats and both
-Format B variants. On a **B-2** pack the image under test is the **hook slide**,
-and its numbered promise (W6) is the type this check is about.
-
-- **Tests:** the framing, composition and type-treatment instructions in the
-  image prompt, against `best_skill.md` §8.1 and §8.2.
-- **PASSES — all five:**
-  1. **Aspect ratio declared.** 9:16, 1080 × 1920, stated in the prompt rather
-     than left to the generator.
-  2. **A type zone is specified**, as a vertical percentage range chosen for
-     *this* composition — "figure in the upper 55%, lower 35–40% dark for type",
-     "figure in the left 40%, right 60% bright and empty" — **and the
-     composition is described so as to create it**. Per-composition is the whole
-     requirement: a zone that happens to be at the top or the bottom is fine; a
-     zone that is at the top or the bottom *because that is the default* is not,
-     and neither is a zone asserted in one clause that the rest of the prompt
-     does not build.
-  3. **Contrast where the type lands.** A mid-tone or otherwise clean region is
-     specified behind the type, sufficient for the type to clear **3.5:1**
-     against it, plus the drop shadow §8.1 specifies (2–3px, dark, 50–60%
-     opacity) wherever type sits on painted areas.
-  4. **No collision with the subject.** The type zone does not overlap the
-     subject's **face or hands**, nor any of the **iconographic attributes I1
-     sourced** — the identifying garment of the habit, the emblem, the object the
-     post rests on. Burying the attribute that makes the saint identifiable is a
-     layout failure even when the prompt names that attribute perfectly.
-  5. **The baked type is fully specified.** Where text is rendered inside the
-     image — which is the normal case — the prompt carries the exact overlay
-     string, the font, the colour, the highlight word, the position range and the
-     effects, and requires correct spelling.
-- **STOPS:** no aspect ratio declared, or any ratio other than 9:16; no type zone
-  named, or a zone named as a percentage but not created by the composition; no
-  contrast provision where the type lands; the type zone overlapping the face,
-  the hands, or an attribute I1 sourced; baked-in type whose string, position,
-  colour or treatment is left for the generator to choose; rendered text that
-  came back garbled or misspelled and was shipped rather than regenerated.
-- **Evidence:** the framing clause quoted; the type zone as a vertical
-  percentage range; the contrast provision quoted; and one line confirming the
-  zone clears the face and the attributes listed under I1.
-- **Text inside the image is required, not banned.** The style bible bakes the
-  overlay into the generated image and treats a generated image without its
-  caption text as a failure (`best_skill.md` §8.2). A prompt that asks the
-  generator to render lettering is **correct** and must not be STOPped for it.
-- **There is no fixed clear band.** Do not require the upper third — or any
-  other fixed region — to be empty. §8.1 is explicit that the zone is measured
-  per composition and that defaulting it (to the bottom, or to anywhere else) is
-  the error. The only band rule is that the zone be *stated* and *built*.
-- **I4 is a legibility and composition check, not a truth check.** Whether the
-  attributes are sourced and correct is I1 and I2. A prompt can pass I4 with a
-  cardinal's galero in it and STOP at I2; a prompt can name every attribute
-  correctly and STOP at I4 for printing the headline across the saint's face.
-
-### 6.5 Iconography scope — and the resolved I4 conflict
-
-**I1, I2 and I3 are truth checks and are unmodified.** Iconography accuracy is a
-truth surface, not a voice one; nothing in the style bible touches it, and no
-realignment of this document has weakened it or may weaken it. They stay exactly
-as strict.
-
-**I4 is different in kind, and it has been rewritten. The conflict this section
-used to record is closed.** I4 formerly required "no text rendered inside the
-image" and "upper third kept clear for overlay type". Both clauses were
-**withdrawn** by `best_skill.md` §8.2: the style bible bakes the overlay text
-into the generated image and treats a generated image without its caption text
-as a failure, and §8.1 requires the text zone to be declared as a
-per-composition vertical percentage range that must **not** default to a fixed
-band. As written, the old I4 would have STOPped every correctly produced post —
-the same class of bug as the old Raymond-derived voice checks in §3, pointed at
-the image pipeline.
-
-**The style bible is authoritative on the image pipeline**, so I4 was rewritten
-to it rather than the bible being bent back to I4. What I4 now tests is what
-actually matters for a baked-in-text image: a legible type zone exists and is
-specified per composition, the contrast is provided where the type lands, the
-type does not collide with the face or with a sourced attribute, and the aspect
-ratio is declared.
-
-Consequences for graders:
-
-- **Do not record a "scorer/rulebook conflict" note against I4 any more.** An I4
-  STOP is now attributable to the draft, and the required rewrite is concrete.
-- The **contrast requirement survives unchanged** — it was never in conflict.
-  §8.1 states the same 3.5:1 mid-tone requirement and adds the 2–3px, 50–60%
-  opacity drop shadow.
-- **Nothing here licenses relaxing I1–I3.** The resolution was to the layout
-  clause of I4 only. If a rewrite of a layout constraint is ever read as
-  precedent for softening a sourcing constraint, that reading is wrong on its
-  face: §0 forbids trading the truth gate against anything.
+**What stays Saint Match's** is what the checks are run *against*: the habit,
+era, palette, art-historical anchor and baked-type rules of `best_skill.md` §8,
+which I1, I2 and I4 all cite.
 
 ---
 
 ## 7. Recording the verdict
 
-Every grade is recorded against the pack's `draft_id`, whether it passed or not.
-
-- `draft_id` and `skill_version` are copied from the pack's header block
-  unchanged. A pack whose header block is missing or malformed is a **STOP** at
-  §1 before any other check runs, because an ungradeable draft cannot be
-  attributed to a rulebook version.
-- Because both are recorded, **PASS/STOP rate per `skill_version` is trackable**.
-  That rate is a first-class signal for the loop: a rulebook edit that raises the
-  STOP rate is a worse rulebook, independent of how the surviving posts perform.
-  A rulebook that quietly gets looser will show up as *fewer* STOPs and worse
-  spot-audits, so the rate is read alongside periodic human re-grading rather
-  than on its own.
-- STOPped drafts never reach a platform and so never appear in
-  `analytics/metrics.jsonl`. The scorer's own records are the only place they are
-  counted. Do not discard them.
-- **The voice score (§9), where one was taken, is recorded against the same
-  `draft_id` but in a separate field, never merged into the verdict and never
-  averaged with a check result.** A record whose verdict is STOP carries no voice
-  score at all. If a downstream consumer ever needs "the score" for a draft, the
-  answer is that there are two numbers of different kinds and it must say which
-  one it means.
+**Moved to `../../method/GATE.md` §7, verbatim and complete** — every grade recorded
+against the artifact's id whether it passed or not; PASS/STOP rate per rulebook
+version as a first-class signal; STOPped drafts counted from the scorer's records
+because they never reach a platform; and the voice score recorded in a separate
+field that is never merged into the verdict.
 
 ---
 
 ## 8. Output format
 
-```
-VERDICT: PASS | STOP
-draft_id:       <from header block>
-skill_version:  <from header block>
-post_format:    A-themed | B-saint-of-the-day
-format_variant: B-1-caption-carried | B-2-carousel-carried | — (Format A)
-graded_by:      <human name | judge model id>
-graded_at:      <ISO 8601>
+**The output contract now lives in `../../method/GATE.md` §8, verbatim and complete** —
+the verdict block, the rules for the emitted grade (every check gets a line;
+every line carries evidence; any single STOP makes the verdict STOP; the verdict
+block never contains a numeric score), and the separate voice-score block with
+its `exemplar_set` field.
 
-CHECKS
-  T1 dossier coverage      PASS | STOP | N/A — <evidence>
-  T2 grade-appropriate     PASS | STOP | N/A — <evidence>
-  T3 quotation             PASS | STOP | N/A — <evidence>
-  T4 scripture             PASS | STOP | N/A — <evidence>
-  T5 feast / rank / bio    PASS | STOP | N/A — <evidence>
-  T6 exclusions declared   PASS | STOP | N/A — <evidence>
-  V1 scripture block       PASS | STOP | N/A — <evidence>
-  V2 cross separator       PASS | STOP | N/A — <evidence>
-  V3 engagement line       PASS | STOP | N/A — <evidence>
-  V4 app-mention pair      PASS | STOP | N/A — <evidence>
-  V5 hashtags              PASS | STOP | N/A — <evidence>
-  V6 ending order          PASS | STOP | N/A — <evidence>
-  V7 slide structure       PASS | STOP | N/A — <evidence>
-  W1 caption 40-70 (B-1)   PASS | STOP | N/A — <evidence>
-  W2 hinge                 PASS | STOP | N/A — <evidence>
-  W3 invocation ending     PASS | STOP | N/A — <evidence>
-  W4 no product pitch      PASS | STOP | N/A — <evidence>
-  W5 facts graded          PASS | STOP | N/A — <evidence>
-  W6 numbered promise      PASS | STOP | N/A — <evidence>
-  W7 audience = struggle   PASS | STOP | N/A — <evidence>
-  W8 caption minimal (B-2) PASS | STOP | N/A — <evidence>
-  W9 carousel carries it   PASS | STOP | N/A — <evidence>
-  B1 register              PASS | STOP | N/A — <evidence>
-  B2 shape and ending      PASS | STOP | N/A — <evidence>
-  B3 promises              PASS | STOP | N/A — <evidence>
-  C1 approved pattern      PASS | STOP | N/A — <evidence>
-  C2 banned register       PASS | STOP | N/A — <evidence>
-  C3 saint not leverage    PASS | STOP | N/A — <evidence>
-  G1 bridge                PASS | STOP | N/A — <evidence>
-  I1 attributes sourced    PASS | STOP | N/A — <evidence>
-  I2 no contradiction      PASS | STOP | N/A — <evidence>
-  I3 legend not depicted   PASS | STOP | N/A — <evidence>
-  I4 type zone / frame     PASS | STOP | N/A — <evidence>
-
-REQUIRED REWRITES
-  1. <check id> — <what must change, concretely>
-  2. ...
-
-NOTES
-  <anything the grader wants on the record, including N/A justifications>
-```
-
-Rules for the emitted grade:
-
-- **Every check gets a line, both formats' and both variants' lines included.**
-  The seven V lines and the nine W lines are always printed; one set carries
-  verdicts and the others carry `N/A — Format A` / `N/A — Format B` / `N/A —
-  variant B-1` / `N/A — variant B-2`. Do not delete the inapplicable block. A
-  grader who prints only the applicable set makes it impossible to tell a check
-  that was N/A by format or variant from one that was silently skipped — and on
-  Format B, where the W-series is split across two variants, that distinction is
-  the only thing standing between a correct grade and a silent misgrade.
-- **Any single STOP makes the verdict STOP.** There is no count, no threshold, no
-  majority. One is enough. This is identical on both formats.
-- Every check gets a line, including passing ones, and every line carries
-  evidence. "PASS" with no evidence is treated as ungraded, which is a STOP.
-- Required rewrites are concrete and actionable: name the sentence, name the
-  replacement or name the dossier line that would be needed. "Improve the tone"
-  is not a rewrite note.
-- **The verdict block never contains a numeric score.** Introducing one
-  recreates the blending this document exists to prevent. The voice score of §9
-  is emitted in its own block, below, under its own heading, and only when the
-  verdict is PASS. It is not part of the grade and never appears on the
-  `VERDICT:` line.
-
-When a voice score has been taken, it is appended as a **separate block** after
-the verdict, never inside it:
-
-```
---- NOT PART OF THE VERDICT ---
-
-VOICE SCORE (ranking signal only — cannot block publication)
-draft_id:        <same>
-skill_version:   <same>
-post_format:     A-themed | B-saint-of-the-day
-format_variant:  B-1-caption-carried | B-2-carousel-carried | — (Format A)
-exemplar_set:    exemplars/ | exemplars/format-b-saint-of-the-day/ (positives of the matching variant only)
-judge:           <model id + prompt version>
-rank_position:   <n> of <set size + 1>
-voice_score:     <1–5>
-variety_score:   <1–5>
-nearest_exemplar: <filename>  — <the specific move it shares>
-weakest_axis:    <which of the §9.2 axes scored lowest, and why>
-judge_agreement: <n of m judges within 1 point>
-set_maturity:    ranked | shape-only (Format B, set too thin — §9.5)
-```
-
-`exemplar_set` must match `post_format` **and `format_variant`**. **A Format B
-post scored against the Format A gold set is a void measurement**, not a low one:
-it would be marked down for lacking a scripture block it is correct not to have.
-The same holds one level down — a B-2 caption ranked against B-1 captions is
-void, because it would be marked down for being fourteen words, which is what
-its variant requires. The **negative specimens are never referents for ranking**;
-their use is as known-bad anchors for the judge-consistency bar in §9.4.
+The check list printed in that block is **this instance's**: T1–T6, V1–V7,
+W1–W9, B1–B3, C1–C3, G1, I1–I4. A second brand prints its own floor checks in
+the same skeleton and keeps the T and I lines unchanged.
 
 ---
 
 ## 9. The voice score — a ranking signal, never a gate
 
-Everything in this section is **outside the gate**. Nothing here can STOP a
-draft, and nothing here may be combined with anything in §2–§6. If you are
-reading this section to decide whether a post may be published, you are in the
-wrong section: that decision was made in §8 and it is final.
+**§9's preamble and §9.1–§9.4 now live in `../../method/VOICE-SCORE.md`, verbatim and
+complete:** score each format against its own set; anchor on exemplars rather
+than adjectives (odd-one-out, forced ranking, nearest neighbour); the
+anti-pastiche guard and the `variety_score` that tempers the loop; and the
+judge-consistency bar that must be cleared before any voice score is allowed to
+drive a rulebook edit.
 
-**What it is for.** The SkillOpt loop needs to know whether an edit to
-`best_skill.md` made the writing better. PASS/STOP rate (§7) tells you whether a
-rulebook version produces *publishable* posts; it says nothing about whether it
-produces *good* ones, because the floor is a floor. The voice score is the
-ordinal signal that fills that gap, and it exists to rank `skill_version`s
-against each other — never to rank a post against a bar.
+They moved because none of it is about Saint Match. The failure they are written
+against — an LLM judge rating everything a 4 against an adjective, and a loop
+learning pastiche from a fixed gold set — belongs to the mechanism, not to the
+brand.
 
-### 9.1 Score each format — and each Format B variant — against its own set
-
-| Format / variant | Referents usable for ranking | Size |
-| --- | --- | --- |
-| A — themed long-form | `exemplars/` | 6 |
-| B, variant **B-1** | `01-REFERENCE-ewtn-st-clare`, `02-st-raymond-nonnatus` | 2 — see §9.5 |
-| B, variant **B-2** | `03-REFERENCE-ewtnparents-st-monica` | **1** — see §9.5 |
-| — | `04` Calasanz, `05` Augustine Institute, `06` Queenship, `07` Bernard | **not referents.** Known-bad / known-middling / mixed anchors for the §9.4 consistency bar only |
-
-**Never score a Format B post against the Format A exemplars, or the reverse.**
-The two formats disagree on almost every surface feature — length, person,
-ending, emoji, hashtags — so a cross-format comparison measures the format
-difference and nothing else. It would reliably rate correct Format B posts as
-poor, and it would do so with confident, plausible-sounding reasons, which is
-the worst kind of bad measurement. The `exemplar_set` field in the output block
-exists to make a cross-format score visible after the fact.
-
-**And never score across variants.** A B-2 caption is fourteen words with no
-fact in it; ranked against the B-1 captions it is last every time, for being
-correct. `format_variant` is recorded in the voice-score block for the same
-after-the-fact reason.
-
-**The negatives are not referents.** `04` and `05` are craft counter-examples,
-`06` is a middling one, and `07` is mixed — a strong performer that carries a
-misattribution and an opener this scorer STOPs. Do not put any of them in a
-forced ranking as though they were gold. Their value is in §9.4: a judge that
-cannot rank `04` last is a judge whose scores are discarded.
-
-### 9.2 Anchor on exemplars, not on adjectives
-
-**Do not ask a judge to rate a draft against words like "reverent", "warm" or
-"urgent".** Absolute rating against adjectives is the failure mode this design
-exists to avoid: an LLM asked "how reverent is this, 1–5?" answers 4 for almost
-anything, the distribution collapses, and the score stops discriminating between
-rulebook versions — which is its only job. The number looks like a measurement
-and carries no information.
-
-Ask a **comparative** question instead, with the exemplars in the context window
-as the referents:
-
-1. **Odd-one-out.** Present the draft shuffled among the format's exemplars,
-   unlabelled. Ask which one was not written by the same hand, and why. A draft
-   that is not identified is at the top of the scale. A draft identified
-   immediately, with a specific reason, is not.
-2. **Forced ranking.** Ask the judge to rank all *n+1* captions best-to-worst as
-   examples of this account's voice. Record `rank_position`. Ordinal data from a
-   forced ranking is far more stable across sessions than an absolute rating,
-   because the referents are fixed and cannot drift.
-3. **Nearest neighbour.** Ask which exemplar the draft is closest to and **what
-   specific move they share** — a named opening formula, a beat paragraph, a
-   hinge of the same kind. "It feels similar" is not an answer; the shared move
-   must be nameable. This is what makes the score auditable rather than a vibe
-   with a number attached.
-
-`voice_score` (1–5) is derived from `rank_position`, not asked for directly.
-Placing last of seven is 1; placing mid-set is 3; being unidentifiable in the
-odd-one-out test and ranking in the top third is 5.
-
-**Per-format axes**, used only to explain a score, never summed into one:
-
-- **Format A:** opening formula; beat paragraphs; concreteness and named
-  specifics; the turn landing on the reader and resolving; affirming ending.
-- **Format B, variant B-1:** economy; the hinge's strength and non-obviousness;
-  the fact carrying real weight; the invocation landing cleanly.
-- **Format B, variant B-2:** the pull of the numbered promise; how sharply the
-  audience line names a struggle; whether the teachings are genuinely distinct
-  from each other rather than one idea cut four ways; the caption getting out of
-  the way.
-
-**On both Format B variants, do not put weight on "ends on the invocation" as an
-axis.** Every correct post does it, and the `06` specimen shows a devout ending
-on an inert post. It discriminates nothing.
-
-Report the **weakest axis** with the score. The axis is the actionable part; the
-number is only for ordering.
-
-### 9.3 The anti-pastiche guard
-
-**Optimising voice-similarity converges on formulaic output.** This is the
-predictable failure of the whole mechanism and it must be designed against
-rather than watched for. A loop rewarded purely for resembling six fixed
-captions learns the safest common denominator of those six: it will open on a
-negated assumption every time because that scores well, use the same beat-
-paragraph rhythm, reach for the same three hook formulas, and produce posts that
-are individually good and collectively interchangeable. Similarity to a fixed set
-is maximised by **repetition**, and an audience reads repetition as a template.
-Engagement then decays for a reason the voice score cannot see, because by its
-own measure everything is improving.
-
-So the score is **explicitly tempered by a variety term**, and `variety_score`
-is reported alongside `voice_score` — never averaged into it, for the same
-reason truth is not averaged with reach.
-
-**How variety is measured**, against the last 30 published posts of the same
-format, not against the exemplars:
-
-- **Opening-formula distribution.** Which of the attested openers each post used.
-  Measure the spread — a run where one formula exceeds ~50% is flagged. This is
-  the cheapest and most diagnostic signal.
-- **Structural n-gram overlap.** Character 5-gram or token trigram Jaccard
-  similarity between each new caption and each of the last 30. A rising *maximum*
-  pairwise similarity means the writer is converging on a template; a rising
-  *mean* means the whole run is flattening. Both are computed without a model.
-- **Opening-line and closing-line uniqueness.** Exact and near-duplicate first
-  and last sentences across the run. These are where templating shows first.
-- **Hinge-type repetition (Format B).** Classify each hinge — object, word,
-  action, place, absence — and track the distribution. Two consecutive posts
-  hinging on the same type is a flag; three is a finding.
-- **Lexical entropy** over content words per run, as a coarse backstop.
-
-**How it is used:** `variety_score` gates *the loop*, not the post. A rulebook
-edit that raises mean `voice_score` while lowering `variety_score` is
-**rejected**, because it has learned pastiche rather than voice. A single post's
-variety score is not a reason to do anything to that post — it has already
-passed or stopped on the gate, and variety is a property of a run, not of a
-caption.
-
-**The deeper limitation, recorded rather than solved:** a fixed gold set can only
-ever measure similarity to the past. It cannot reward a genuinely better post
-that does something none of the six does — that post is *more* likely to be
-identified as the odd one out, and the loop will score it down. So the voice
-score is a **guard against drift, not a search for improvement.** Real
-improvement in this voice comes from the user shipping new posts and the gold
-set being deliberately re-baselined (`exemplars/README.md`), not from the loop
-climbing this number. Do not let a high voice score be read as evidence that the
-writing is getting better; it is evidence that it is not getting worse.
-
-### 9.4 Voice judgement is noisier than truth judgement
-
-T1–T6 are close to deterministic: a claim either maps to a numbered dossier line
-or it does not, and two competent graders agree almost always. Voice judgement is
-not like that. It varies with prompt phrasing, with exemplar ordering in the
-context window, with the model version, and with the same judge run twice.
-
-Treating a noisy signal as if it were a clean one is how a loop learns from
-nothing. So:
-
-**The voice score must clear a judge-consistency bar before it is allowed to
-drive any rulebook edit.**
-
-- **Establish the bar before using the score at all.** Score a held-out set with
-  **m ≥ 3 independent judge runs** — different sessions, shuffled exemplar order,
-  ideally more than one model. Record `judge_agreement` as the number of runs
-  landing within 1 point.
-- **The bar:** at least **⅔ of runs within 1 point**, and — the part that
-  actually matters — the judge must reproduce a **known ordering**. Include a
-  deliberately off-voice caption (a `drafts/` pack, which is off-voice by
-  construction, or a Format A caption submitted as Format B) and confirm the
-  judge ranks it last. A judge that cannot separate a known-bad caption from the
-  gold set cannot separate two rulebook versions, and its scores are discarded.
-- **Below the bar, the score is recorded and ignored.** It is never used to
-  accept or reject a rulebook edit. Keep collecting it; a signal too noisy to act
-  on today may clear the bar with a better judge prompt.
-- **Above the bar, act only on differences larger than the noise.** A 0.2
-  difference in mean voice score between two `skill_version`s, measured with
-  ±1-point judge spread, is not a result. Require a margin exceeding the observed
-  judge disagreement, over a meaningful number of posts, before an edit is kept
-  on voice grounds.
-- **Re-establish the bar whenever the judge model or prompt changes.** The
-  consistency measured is a property of that judge, not of this document, and it
-  does not transfer.
-- **Never** let a noisy voice score outvote the PASS/STOP rate of §7, which is a
-  clean signal from a near-deterministic gate. Where they disagree, the gate is
-  right.
+**What stays here is §9.5: the current state of *this* instance's sets** — how
+many specimens exist per format and per variant, which are rankable referents,
+which are known-bad anchors, and therefore what may and may not be scored today.
+That changes every time the user ships a post, which is exactly why it is not
+portable.
 
 ### 9.5 Format B's exemplar set is too thin to rank on yet
 

@@ -1,5 +1,9 @@
 # drafts/ — worked examples
 
+> **Layer: INSTANCE — Saint Match.** Worked packs for this brand. The conventions
+> they demonstrate — the graded dossier, the exclusion list, the check anatomy —
+> are in `../../../method/`.
+
 > ## ⚠ These five packs are NOT voice exemplars
 >
 > They were written against the **old provisional voice**, before the Notion

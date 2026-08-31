@@ -1,5 +1,9 @@
 # exemplars/format-b-saint-of-the-day/ — Format B specimens
 
+> **Layer: INSTANCE — Saint Match.** Two of the attribution findings collected
+> here were promoted to the method layer as general lessons:
+> `../../../../method/ATTRIBUTION-CASES.md`.
+
 **Format B is the saint-of-the-day post, and it is the standard for daily
 posts.** It is a distinct format from the themed long-form posts in the parent
 `exemplars/` directory — not a shortened version of them.

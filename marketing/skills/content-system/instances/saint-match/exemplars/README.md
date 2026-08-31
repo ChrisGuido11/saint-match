@@ -1,5 +1,9 @@
 # exemplars/ — the Format A voice gold set
 
+> **Layer: INSTANCE — Saint Match.** These are this brand's voice referents and
+> are not portable. What *is* portable is why they exist and how they are used:
+> `../../../method/VOICE-SCORE.md`.
+
 > **This directory is Format A only — themed long-form posts.**
 > The **saint-of-the-day** post has its own format and its own specimens in
 > **`format-b-saint-of-the-day/`**, and **Format B is the standard for daily

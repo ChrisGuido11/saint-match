@@ -1,10 +1,15 @@
 # analytics/
 
-`metrics.jsonl` lands here. Append-only, one JSON object per line, written by an
-external collection system. Nothing in this repo ingests it; this directory is
-the agreed drop point.
+`metrics.jsonl` lands here — **`<instance>/analytics/metrics.jsonl`**, resolved
+relative to this instance folder wherever it lives. Append-only, one JSON object
+per line, written by an external collection system. Nothing in this folder
+ingests it; this directory is the agreed drop point, and it moves with the
+instance.
 
-Full rationale in `../ANALYTICS.md`. The short version:
+Full rationale and the authoritative schema: `../../../method/ANALYTICS.md`.
+That file is **method layer** — path-independent, and it resolves this drop
+point as `<instance>/analytics/metrics.jsonl`, relative to the instance folder
+rather than to any repository root. The short version:
 
 ```json
 {
@@ -38,3 +43,7 @@ Three rules that matter more than the rest:
 
 One `draft_id` per platform, so a single post yields up to four rows. Key on
 `(draft_id, platform, collected_at)`.
+
+The schema above is the Saint Match naming of it; `saint`, `feast_date` and
+`topic` are this instance's subject fields, and a second brand renames them. The
+rest is fixed by the method file.
