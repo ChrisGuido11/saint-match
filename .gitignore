@@ -33,9 +33,13 @@ yarn-error.*
 # Windows
 nul
 
-# local env files
+# local env files — these patterns match at any depth, so a stray .env holding
+# a NETLIFY_AUTH_TOKEN cannot be committed from a subdirectory either.
 .env
 .env*.local
+
+# Netlify CLI local state (created by marketing/.../site/deploy.sh)
+.netlify/
 
 # typescript
 *.tsbuildinfo

@@ -14,7 +14,69 @@ MP4 — so it deploys as-is with no build step.
 
 ---
 
-## Path A — Netlify CLI
+## Path A — `./deploy.sh` (recommended)
+
+One command. Creates the site, deploys, rewrites the Open Graph URLs to the real
+origin, re-deploys, then verifies every asset is actually reachable.
+
+```bash
+NETLIFY_AUTH_TOKEN=nfp_xxxxxxxx ./deploy.sh
+```
+
+Get the token from **Netlify → User settings → Applications → Personal access
+tokens → New access token**. It is shown once.
+
+The script runs from its own directory no matter where you invoke it from, so
+`marketing/carousels/st-raymond-nonnatus/site/deploy.sh` from the repo root works
+identically to `./deploy.sh` from inside this folder.
+
+What it does, in order:
+
+1. Checks for `NETLIFY_AUTH_TOKEN`, `node`/`npx` and `curl`, and exits with a
+   clear message if anything is missing.
+2. Creates a Netlify site (or reuses `NETLIFY_SITE_ID`) and deploys this
+   directory with `netlify deploy --dir=. --prod`.
+3. Parses the live URL out of the CLI's `--json` output — and refuses to
+   continue, printing the raw output, if it cannot find one.
+4. Rewrites `og:url`, `og:image`, `og:image:secure_url`, `twitter:image` and
+   `<link rel="canonical">` in `index.html` to the real deployed origin, deletes
+   the duplicate relative `og:image` fallback, then **re-deploys** so the
+   corrected tags are live. The rewrite is anchored on tag names and is
+   idempotent — running the script twice does not stack or corrupt anything.
+5. Verifies the live site: the HTML, `slides/01-hook.png`,
+   `slides-vertical/01-hook.png`, a ZIP and the MP4 must all return 200 with a
+   sensible `content-type`, and the `og:image` URL advertised by the live HTML
+   must itself return 200 `image/png`. Prints a pass/fail table and exits
+   non-zero if anything failed.
+6. Prints the final URL and reminds you to commit the `index.html` change.
+
+### Environment variables
+
+| Variable | Required | Meaning |
+| --- | --- | --- |
+| `NETLIFY_AUTH_TOKEN` | yes | Personal access token. Read from the environment only. |
+| `NETLIFY_SITE_ID` | no | Deploy into an existing site (Site configuration → Site ID) instead of creating one. The script prints this after a first run so you can reuse it. |
+| `SITE_NAME` | no | Name for a newly created site. Default `saint-match-raymond-nonnatus`. Netlify site names are globally unique, so pick another if creation fails. |
+| `SKIP_OG_REWRITE` | no | Set to `1` to deploy once and leave `index.html` alone (no OG rewrite, no second deploy). |
+
+Redeploying to the same site later:
+
+```bash
+NETLIFY_AUTH_TOKEN=nfp_xxxxxxxx NETLIFY_SITE_ID=abc123... ./deploy.sh
+```
+
+### Keep the token out of the repository
+
+Supply the token as an environment variable — on the command line, exported in
+your shell, or from your OS keychain / CI secret store. **Never commit it.** The
+root `.gitignore` ignores `.env` and `.env*.local` at any depth, plus the
+`.netlify/` state directory the CLI creates here, so neither a local env file nor
+CLI state can slip into a commit. Nothing in this directory should ever contain
+the token itself.
+
+---
+
+## Path B — manual Netlify CLI
 
 Run from the repository root.
 
@@ -48,7 +110,10 @@ netlify deploy --prod \
   --message "St Raymond Nonnatus carousel assets"
 ```
 
-## Path B — connect the Git repository
+Going this route, you must fix the OG URLs in `index.html` yourself — see
+**Before you go live** below. `./deploy.sh` does it for you.
+
+## Path C — connect the Git repository
 
 Continuous deploy on every push to the branch.
 
@@ -62,11 +127,15 @@ Continuous deploy on every push to the branch.
 3. Deploy. Netlify reads `netlify.toml` from the base directory, so the cache and
    security headers apply automatically.
 
+---
+
+## The base-directory trap
+
 The base directory matters: the repository root has its own `netlify.toml` for
 the main marketing site, which publishes `/site`. Leaving the base directory
-blank will deploy that site instead of this one.
-
----
+blank — or running `netlify deploy --dir=.` from the repository root — will
+deploy **that** site instead of this one. This is exactly why `deploy.sh` starts
+with `cd "$(dirname "$0")"`.
 
 ## Before you go live
 
@@ -74,9 +143,12 @@ blank will deploy that site instead of this one.
   `og:image:secure_url`, `twitter:image` and `<link rel="canonical">` all point
   at `https://saintmatch.app/carousels/st-raymond-nonnatus/`. Replace that origin
   and path with wherever this actually lands, or X and Facebook will scrape the
-  wrong host and the preview card will not render. The relative
-  `/slides/01-hook.png` fallback keeps the image resolvable in the meantime, but
-  several scrapers require a fully-qualified URL.
+  wrong host and the preview card will not render. There is also a duplicate
+  relative `og:image` (`/slides/01-hook.png`) that should be deleted — a relative
+  OG URL does not resolve for most scrapers, and two `og:image` tags are
+  ambiguous. **`./deploy.sh` does all of this automatically**; only paths B and C
+  need you to do it by hand. Either way, commit the resulting `index.html` so the
+  repository matches what is live.
 - Validate the card with the
   [Facebook sharing debugger](https://developers.facebook.com/tools/debug/) and
   by posting the link to a throwaway X account.
