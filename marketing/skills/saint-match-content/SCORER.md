@@ -93,23 +93,40 @@ accident.
    ranking the prose of something that will never ship is wasted effort and
    invites the score to be read as a mitigation.
 
-The voice floor checks (V1–V7 for Format A, W1–W5 for Format B — §3) are
+The voice floor checks (V1–V7 for Format A, W1–W9 for Format B — §3) are
 **structural presence tests** and are run with the rest of the gate at step 3. Run them mechanically — count the words,
 find the ✝️, match the app-mention pair against the table. Do not form an
 opinion about the writing while running them; that is §9's job and it happens
 later, separately, and only after a PASS.
 
-**Before anything else, read the declared format** from the header block
-(`post_format`). It selects which voice floor runs — V1–V7 for Format A, W1–W5
-for Format B — and which column of B1 and B2 applies. See §3.0.
+**Before anything else, read the declared format and, on Format B, the declared
+variant** from the header block (`post_format`, `format_variant`). Together they
+select which voice floor runs — V1–V7 for Format A, W1–W9 for Format B with the
+W-series scoped by variant — and which column of B1 and B2 applies. See §3.0.
 
 - The format is **declared, never inferred**. A pack with no `post_format`, or
   with a value that is not `A-themed` or `B-saint-of-the-day`, is a **STOP**
   here, before any other check runs.
-- **Do not "correct" a declared format that seems wrong for the draft.** If a
-  pack declares Format B and reads like Format A, grade it as Format B and let it
-  fail W1 and B1-B. That failure is the accurate one and it is the signal the
-  loop needs. Silently regrading against the other format hides the error.
+- **The variant is declared too.** A pack declaring `post_format:
+  B-saint-of-the-day` with no `format_variant`, or with a value that is not
+  `B-1-caption-carried` or `B-2-carousel-carried`, is a **STOP** here, on the
+  same footing and for the same reason: the two variants disagree on caption
+  length, on where the facts live and on what the hook slide must carry, so
+  guessing which one is in front of you produces a confident misgrade rather than
+  an error. A **Format A** pack carrying a `format_variant` value is also a STOP —
+  one of the two fields is wrong and the grader cannot tell which.
+- **Do not "correct" a declared format or variant that seems wrong for the
+  draft.** If a pack declares Format B and reads like Format A, grade it as
+  Format B and let it fail W1 and B1-B. If it declares B-1 and reads like B-2,
+  grade it as B-1 and let it fail W1 and W5. That failure is the accurate one and
+  it is the signal the loop needs. Silently regrading against the other format or
+  variant hides the error.
+
+> **Two things called B1 and B2.** The Format B **variants** are **B-1** and
+> **B-2**, always hyphenated. The shared brand **checks** are **B1** (register)
+> and **B2** (shape and ending), never hyphenated, and they run on both formats.
+> This document writes "variant B-2" and "check B2" wherever ambiguity is
+> possible; a grader should do the same.
 
 **Fail-closed defaults**, applied without discretion:
 
@@ -209,55 +226,96 @@ engagement line, sets 200–500 words, has **no invocation slot at all**, ends
 affirming rather than hard, and uses "Type AMEN" as its standing engagement line
 on every post. A scorer holding the old rules would STOP every correct draft.
 
-### 3.0 Two formats. Read this before running anything in §3.
+### 3.0 Two formats, and two Format B variants. Read this before running anything in §3.
 
 There are two documented post formats and **they have different voice floors**.
 Running one format's floor against the other is the same class of bug this
-realignment exists to fix, pointed the other way.
+realignment exists to fix, pointed the other way. Within Format B there are two
+**variants**, and running one variant's checks against the other is that same bug
+again at one level down.
 
 | | **Format A — themed long-form** | **Format B — saint of the day** |
 | --- | --- | --- |
 | Source | The Notion style bible; `exemplars/` | The user's stated spec; `exemplars/format-b-saint-of-the-day/` |
 | When | Themed and scriptural posts | **The standard for daily saint posts** |
-| Body | 200–500 words | **~40–70 words** |
+| Body | 200–500 words | **~40–70 words (B-1) / ~8–25 words (B-2)** |
 | Person | Sustained second person | **Third person** |
-| Ending | Scripture → ✝️ → engagement → app mentions → hashtags | **"St [Name], pray for us."** |
-| Bridge | Stated in the internal block, felt in the caption | **Performed as a hinge, never stated** |
-| CTA | Engagement line + app-mention pair | **The hinge is the CTA. No pitch at all.** |
-| Floor checks | **V1–V7** | **W1–W5** |
+| Ending | Scripture → ✝️ → engagement → app mentions → hashtags | **"St [Name], pray for us."** — both variants |
+| Bridge | Stated in the internal block, felt in the caption | **Performed, never stated** — as a hinge (B-1) or as a numbered promise to a named audience (B-2) |
+| CTA | Engagement line + app-mention pair | **No pitch at all.** |
+| Floor checks | **V1–V7** | **W1–W9**, scoped by variant |
 
-**The format is declared, not inferred.** The pack header block carries it. A
-pack whose format is missing, malformed, or not one of the two is a **STOP at
-§1**, before any voice check runs — grading a draft against a guessed format is
-how a correct post gets rejected for lacking an element its format does not
-have. Do not infer the format from the draft's length or from whether it happens
-to have a scripture block; that reasoning is circular, because those are the
-very things under test.
+**The two Format B variants** (`best_skill.md` §4.4.1) differ on one axis:
+which surface carries the teaching.
+
+| | **B-1 — caption-carried** | **B-2 — carousel-carried** |
+| --- | --- | --- |
+| `format_variant` | `B-1-caption-carried` | `B-2-carousel-carried` |
+| Caption | 40–70 words: fact → hinge → invocation | 8–25 words: framing question → invocation |
+| Teaching lives in | The caption | The carousel |
+| Hook slide | Not specified | **Numbered promise + named audience** |
+| Facts in the caption | **Exactly one** | Effectively none — they are in the slides |
+| Opening question | **Banned** (B1-B) | **Required** (W8) |
+| Floor checks | W1–W5 | W2–W5 (variant parts) + **W6–W9** |
+
+**The format and the variant are declared, not inferred.** The pack header block
+carries both. A pack whose format is missing, malformed, or not one of the two —
+or whose Format B variant is missing or malformed — is a **STOP at §1**, before
+any voice check runs. Grading a draft against a guessed format or variant is how
+a correct post gets rejected for lacking an element it is correct not to have.
+Do not infer the format from the draft's length or from whether it happens to
+have a scripture block, and do not infer the variant from how long the caption
+is; that reasoning is circular, because those are the very things under test.
 
 **Applicability, exhaustively:**
 
-| Checks | Format A | Format B |
-| --- | --- | --- |
-| T1–T6 truth | **run, unchanged** | **run, unchanged** |
-| I1–I4 iconography | **run, unchanged** | **run, unchanged** |
-| V1–V7 voice floor | run | **`N/A — Format B`** |
-| W1–W5 voice floor | **`N/A — Format A`** | run |
-| B1 register | run, Format A column | run, Format B column |
-| B2 shape and ending | run, Format A column | run, Format B column |
-| B3 promises | run | run |
-| C1 CTA pattern | run | **`N/A — Format B`**, superseded by W4 |
-| C2 banned register | run | run |
-| C3 saint not leverage | run | run |
-| G1 bridge | run, stated form | run, hinge form (W2 is the strict test) |
+| Checks | Format A | Format B, variant B-1 | Format B, variant B-2 |
+| --- | --- | --- | --- |
+| T1–T6 truth | **run, unchanged** | **run, unchanged** | **run, unchanged** |
+| I1–I3 iconography | **run, unchanged** | **run, unchanged** | **run, unchanged** |
+| I4 type zone / frame | run | run | run — on the **hook slide** |
+| V1–V7 voice floor | run | **`N/A — Format B`** | **`N/A — Format B`** |
+| W1 caption length 40–70 | **`N/A — Format A`** | run | **`N/A — variant B-2`**, superseded by W8 |
+| W2 hinge | **`N/A — Format A`** | run, caption form | run, carousel form |
+| W3 invocation ending | **`N/A — Format A`** | run | run |
+| W4 no product pitch | **`N/A — Format A`** | run | run |
+| W5 fact grading | **`N/A — Format A`** | run, one-fact form | run, per-slide form (**no one-fact count**) |
+| W6 numbered promise | **`N/A — Format A`** | **`N/A — variant B-1`** | run |
+| W7 audience named | **`N/A — Format A`** | **`N/A — variant B-1`** | run |
+| W8 caption minimal | **`N/A — Format A`** | **`N/A — variant B-1`** | run |
+| W9 carousel carries it | **`N/A — Format A`** | **`N/A — variant B-1`** | run |
+| B1 register | run, Format A column | run, Format B column | run, Format B column + the B-2 question carve-out |
+| B2 shape and ending | run, Format A column | run, B2-B variant B-1 part | run, B2-B variant B-2 part |
+| B3 promises | run | run | run |
+| C1 CTA pattern | run | **`N/A — Format B`**, superseded by W4 | **`N/A — Format B`**, superseded by W4 |
+| C2 banned register | run | run | run |
+| C3 saint not leverage | run | run | run |
+| G1 bridge | run, stated form | run, hinge form (W2 is the strict test) | run, hinge form (W2 is the strict test) |
 
-`N/A` normally demands a bespoke one-line justification (§1). **Format
-mismatch is the single exception**: writing `N/A — Format B` is a complete and
-sufficient justification, because the format was declared in the header and
-verified at §1. Every other `N/A` still needs its reason.
+`N/A` normally demands a bespoke one-line justification (§1). **Format and
+variant mismatch is the single exception**: writing `N/A — Format B` or `N/A —
+variant B-1` is a complete and sufficient justification, because both were
+declared in the header and verified at §1. Every other `N/A` still needs its
+reason.
 
-**A STOP is a STOP whichever floor produced it.** The two floors differ in
-content, never in force. Neither is the "lighter" one; Format B is shorter, not
-laxer, and its hinge test (W2) is the hardest single judgement in this document.
+**A STOP is a STOP whichever floor produced it.** The floors differ in content,
+never in force. None of them is the "lighter" one; Format B is shorter, not
+laxer, its hinge test (W2) is the hardest single judgement in this document, and
+variant B-2 is not a relaxation of B-1 — it moves the load from the caption to
+the carousel and is graded on the surface that carries it.
+
+**The two directions this scoping can fail, both of which STOP a correct post:**
+
+- Running **W1** (40–70 words) or **W5**'s exactly-one-fact count against a
+  **B-2** post. A correct B-2 caption is fourteen words and carries no fact; the
+  facts are in the slides. Both would fire, both would be wrong.
+- Running **W6–W9** against a **B-1** post. A correct B-1 post has no numbered
+  promise, no audience line and a caption that is *supposed* to carry the
+  teaching. All four would fire, all four would be wrong.
+
+Also note **B1-B's ban on a rhetorical opening question is variant B-1 only** —
+in B-2 the framing question is the required caption form. That carve-out is
+written into B1-B and must not be dropped when the check is quoted.
 
 ---
 
@@ -384,19 +442,48 @@ those, not against general taste and not against the Raymond caption — which
 
 ---
 
-## 3B. Format B voice floor — W1–W5
+## 3B. Format B voice floor — W1–W9
 
 **Run only when the declared format is B.** For Format A, record every W check as
 `N/A — Format A`.
 
 Format B is the **saint-of-the-day post, and it is the standard for daily
 posts**. It is a different register from Format A, not a compressed version of
-it. The defining mechanic is the **hinge** (W2); everything else in this
-subsection exists to keep the hinge in clear air.
+it. It has **two variants** — B-1 caption-carried and B-2 carousel-carried
+(§3.0) — and the W-series is scoped between them. **W1 is B-1 only. W6–W9 are
+B-2 only. W2–W5 run on both** — W3 and W4 identically, W2 and W5 with a
+per-variant part.
 
-Its exemplar set is `exemplars/format-b-saint-of-the-day/`. **That set currently
-holds two items, one of which is third-party.** It is enough to fix the shape.
-It is not yet enough to rank on — see §9.5.
+**What the evidence actually separates.** The set holds engagement figures for
+five third-party posts. The four below are all from the EWTN organisation and so
+share a follower base; `05` is a much smaller account and is deliberately kept
+out of the table (see the README). The split in them is **not** the invocation:
+
+| Specimen | Likes | Saves | Hook or hinge? |
+| --- | --- | --- | --- |
+| `03` EWTN Parents, St Monica (B-2) | 7,194 | 1,306 | numbered promise + named audience |
+| `01` EWTN, St Clare (B-1) | 7,131 | 882 | hinge word — *broadcast* — into the brand |
+| `06` EWTN, Queenship of Mary | 2,871 | 148 | **neither** (ends devotionally) |
+| `04` EWTN, St Joseph Calasanz | 996 | 69 | **neither**, and no invocation |
+
+**Ending on the invocation is necessary but not sufficient — it is table
+stakes.** The Queenship post closes devotionally, on a Salve Regina acclamation,
+and still lands ~2.5× below Clare and Monica on likes and ~6× below on saves. So
+W3 stays mandatory and stays a STOP, but passing it is not what makes a post
+work. **What separates a strong Format B post is that it gives the reader a
+reason to stop**: a **numbered promise with a named audience** (B-2, W6+W7), or a
+**hinge carrying the saint's life into what the app does** (B-1, W2). A post with
+neither is inert even when every structural box is ticked — and the floor cannot
+catch that on its own, which is why W2, W6 and W7 are written as hard as they
+are.
+
+Read those four rows with §9.5's caveats attached: they are **not** four
+comparable data points. See `exemplars/format-b-saint-of-the-day/README.md`.
+
+Its exemplar set is `exemplars/format-b-saint-of-the-day/`. **That set holds six
+items: three positive, two negative, one middling, and only one of them is Saint
+Match's own.** It is enough to fix both variants' shapes. It is not enough to
+rank on — see §9.5.
 
 **Format B does not carry Format A's furniture.** No scripture block, no ✝️, no
 🙏🔥, no "Type AMEN", no hashtag wall, no app-mention pair. Their **absence is
@@ -408,26 +495,43 @@ wording leak into a W judgement.
 `best_skill.md` §4 opens "Everything is 9:16, 1080 × 1920", which is a frame
 rule and is format-agnostic, so **9:16 still applies** and I4 still tests it. The
 5–7 slide count and the mandatory cliffhanger of §4.1 are Format A structure and
-**do not apply** — a 40–70 word caption cannot carry seven distinct emotional
-beats, and demanding it would force padding, which is the failure this format
-exists to avoid. The 5–15 words per slide legibility limit still applies to any
-slide that exists.
+**do not apply on either variant** — a 40–70 word caption cannot carry seven
+distinct emotional beats, and demanding it would force padding, which is the
+failure this format exists to avoid. The 5–15 words per slide legibility limit
+still applies to any slide that exists.
 
-**Beyond that, Format B's slide structure is unspecified by the user.** Do not
-invent one and do not STOP a Format B pack on slide count. Record the count in
-NOTES so the shape can be settled from evidence once more specimens exist.
+- **Variant B-1's slide structure is unspecified by the user.** Do not invent one
+  and do not STOP on slide count. Record the count in NOTES so the shape can be
+  settled from evidence once more specimens exist.
+- **Variant B-2's slide count is constrained only by its own promise**, and only
+  through W6: the number on the hook slide must equal the number of slides
+  delivering a distinct teaching. **No total slide count is prescribed** — the one
+  specimen runs seven slides behind a promise of four and the remaining slides
+  are not recorded, so there is nothing to prescribe from. Record the total in
+  NOTES.
 
-### W1 — Length
+### W1 — Caption length, 40–70 words
+
+**Variant B-1 only.** On variant B-2 record `N/A — variant B-2`; W8 is the
+caption-length check there, and running this band against a correct fourteen-word
+B-2 caption would STOP it for being what it is supposed to be.
 
 - **Tests:** the caption body word count.
 - **PASSES:** **40–70 words**, invocation included.
 - **STOPS:** under 40 or over 70. Over 70 is the characteristic failure — it
   means the writer reverted to Format A's expansiveness and the hinge is buried.
 - **Evidence:** the exact word count.
-- **Note:** the band is tight on purpose. A Format B post that "needs" 90 words
-  is usually carrying two facts; cut to one (W5) rather than widening the band.
+- **Note:** the band is tight on purpose. A B-1 post that "needs" 90 words is
+  usually carrying two facts; cut to one (W5) rather than widening the band. If
+  it genuinely has several separately sourceable teachings, that is a signal it
+  should have been written as **B-2** — but the fix is to rewrite and re-declare,
+  never to regrade the pack in front of you against the other variant (§1).
 
 ### W2 — Exactly one identifiable hinge
+
+**Runs on both variants.** What changes is only **which surface the two sides sit
+on**, and that is set out at the end of this check. The test itself does not
+change, and the B-2 form is not the easier one.
 
 This is the defining check of Format B and the hardest judgement in this
 document. Read it twice.
@@ -474,9 +578,33 @@ document. Read it twice.
   **what can't be put into words**. Saint side: the padlock. App side: the reader
   carrying something wordless. The app is never named.
 
+**Where the two sides sit, by variant:**
+
+| | **B-1** | **B-2** |
+| --- | --- | --- |
+| Saint side | a sentence in the caption | one of the numbered teaching slides |
+| App side | a sentence in the caption | the **audience line on the hook slide** (W7) |
+
+On **B-2 the audience line is the app side**, which is why W7 requires it to be a
+**struggle topic**: Saint Match matches a person to the saint who carried their
+thing, and the audience line is where that match is *performed*. A demographic
+there ("every Catholic parent") is a segment label, not a hinge — correct for an
+account whose identity is a demographic, wrong for a product that matches on
+struggle. A B-2 pack whose audience line is a demographic STOPs at **W7**, and
+usually at W2 as well because there is then no app side at all; report both.
+
+**Do not accept a looser hinge on B-2 because it is spread across two surfaces.**
+It must still be nameable in one word or one short phrase, still be exactly one,
+still be performed and never explained, and still survive the swap test. The
+three-line evidence form above is required identically, with the surface named:
+`saint side: slide 3 — "…"`, `app side: hook slide — "…"`.
+
 ### W3 — Ends on the invocation
 
-- **Tests:** the final line.
+**Runs on both variants, identically.** This is the one Format B rule that does
+not vary at all.
+
+- **Tests:** the final line of the caption.
 - **PASSES:** the caption's last line is the invocation, in the form **"St
   [Name], pray for us."** Nothing after it.
 - **STOPS:** absent; not last; reworded past recognition; followed by anything at
@@ -486,8 +614,27 @@ document. Read it twice.
   "St", "Saint Raymond"). A **patronage clause** — "St Rita, patron of impossible
   causes, pray for us" — is permitted only if that patronage is a dossier line;
   an unsourced patronage in the invocation is a T1 STOP, not a W3 one.
+- **Note — W3 is table stakes, not the differentiator, and this correction
+  matters.** It is tempting to read W3 as the check that makes Format B work,
+  because the two strong specimens both end there and the worst specimen does
+  not. The `06` Queenship specimen refutes that: it closes devotionally, on a
+  Salve Regina acclamation in the invocation's slot, and still lands ~2.5× below
+  Clare and Monica on likes and ~6× below on saves. **Ending correctly is
+  necessary and never sufficient.** Do not treat a W3 PASS as evidence that a
+  post has a reason for the reader to stop — that is W2 for B-1, and W6 with W7
+  for B-2. A pack that passes its whole W-series structurally and still reads
+  inert is a real outcome of this floor; record it in NOTES rather than inventing
+  a STOP for it, because the floor is a floor (§0.1).
+- **A devotional acclamation is not an invocation.** "Mother of Mercy, our life,
+  our sweetness, and our hope!" is liturgically fine and is **not** the form W3
+  requires. If the form is not "St [Name], pray for us", W3 STOPs regardless of
+  how devout the substitute is.
 
 ### W4 — No product pitch. The hinge is the CTA.
+
+**Runs on both variants, identically.** On B-2 "every line" includes every slide
+overlay, not just the caption — the pitch a B-2 post is most likely to grow is a
+final slide saying where to get the app.
 
 - **Tests:** every line, for a selling register.
 - **PASSES:** there is **no separate CTA at all** — no app-mention line, no "link
@@ -506,23 +653,166 @@ document. Read it twice.
   leaves the grader uncertain whether it is pitching resolves as a STOP under the
   §1 fail-closed default. C3 still runs alongside: the saint is not leverage.
 
-### W5 — One fact, correctly graded
+### W5 — Facts, correctly graded
 
-- **Tests:** the concrete fact the post rests on.
-- **PASSES:** **one** concrete, verifiable fact about the saint, traced to a
-  dossier line, and either **DOCUMENTED and asserted plainly**, or **TRADITIONAL
-  and attributed** in the phrasing §2 requires ("the Church has long held…",
-  "his order remembers…").
-- **STOPS:** no concrete fact — the post is atmosphere; more than one fact, so
-  the hinge has to compete; a **LEGEND used as the anchoring fact**, which is an
-  automatic STOP here even when it is attributed, because at 40–70 words a
-  legend attributed is still the load-bearing claim (`best_skill.md` §2); a
+**Runs on both variants. The grading requirement is shared; the count
+requirement is variant B-1 only.**
+
+#### W5 — shared, both variants
+
+- **PASSES:** every concrete fact the post rests on traces to a dossier line and
+  is either **DOCUMENTED and asserted plainly**, or **TRADITIONAL and attributed**
+  in the phrasing §2 requires ("the Church has long held…", "his order
+  remembers…").
+- **STOPS:** no concrete fact anywhere — the post is atmosphere; a **LEGEND used
+  as an anchoring fact**, an automatic STOP even when attributed, because in this
+  format an attributed legend is still load-bearing (`best_skill.md` §2); a
   TRADITIONAL fact asserted flatly.
+
+#### W5 — variant B-1: exactly one fact
+
+- **PASSES:** **one** such fact, in the caption, doing all the anchoring work.
+- **STOPS:** more than one fact, so the hinge has to compete for the word budget.
 - **Evidence:** the fact quoted, its dossier line, and its grade.
-- **Note:** W5 is a **voice-floor framing test** and does not replace T1 or T2,
-  which run unchanged and are the strict ones. W5 additionally requires that
-  there be exactly **one** such fact — a count requirement T1 and T2 do not make.
-  A Format B post whose single fact is ungraded fails T1 *and* W5.
+
+#### W5 — variant B-2: one per numbered slide, and no count limit
+
+- **PASSES:** each numbered teaching slide rests on its own graded fact; the
+  hook slide's promise is not itself a factual claim about the saint and needs no
+  dossier line beyond the teachings it counts.
+- **STOPS:** a numbered slide with no fact under it — a slide of pure
+  exhortation padding the promised count; any slide whose fact is ungraded or
+  mis-phrased for its grade.
+- **The one-fact count above does NOT apply here, and applying it would STOP
+  every correct B-2 post.** A B-2 post promising four teachings has at least four
+  facts by construction; that is the format, not a failure. If you find yourself
+  writing "more than one fact" as a STOP reason on a B-2 pack, you are running
+  the B-1 part and should go back to §3.0.
+- **Evidence:** a table — slide number, the fact quoted, its dossier line, its
+  grade.
+
+#### W5 — note, both variants
+
+W5 is a **voice-floor framing test** and does not replace T1 or T2, which run
+unchanged, apply to every claim on every surface, and are the strict ones. What
+W5 adds on **B-1** is a **count** requirement T1 and T2 do not make; on **B-2** it
+adds a per-slide *placement* requirement — every promised teaching must actually
+rest on something. A Format B post whose fact is ungraded fails T1 *and* W5.
+
+---
+
+## 3B-ii. Variant B-2 floor — W6–W9
+
+**Run only when the declared format is B *and* the declared variant is
+`B-2-carousel-carried`.** On variant B-1 record all four as `N/A — variant B-1`;
+on Format A, `N/A — Format A`. These four checks exist because in B-2 the load
+moved off the caption, and a floor that only reads the caption would find a
+fourteen-word post with nothing in it and have no way to tell whether that is
+correct.
+
+**Evidence base, stated up front so it is not over-read.** B-2 rests on **one**
+third-party specimen — `03-REFERENCE-ewtnparents-st-monica.md`, whose hook slide
+is *"4 things St. Monica can teach every Catholic parent."* and whose caption in
+full is fourteen words. Everything below that is not a direct reading of that
+specimen is marked. The word band in W8 in particular is **n = 1** and is
+provisional; widen it from evidence, not from a draft that missed it.
+
+### W6 — Numbered promise on the hook slide
+
+- **Tests:** the hook slide's overlay text.
+- **PASSES:** the hook slide states an **explicit number** — a numeral or a
+  number word — and **what that number is of**: a countable teaching, lesson,
+  thing or reason drawn from this saint's life. And the carousel **delivers that
+  count**: the number of slides carrying a distinct numbered teaching equals the
+  number promised.
+- **STOPS:** no number on the hook slide; a number with no countable noun after
+  it; a promise of a mood or a feeling rather than a countable teaching
+  ("Everything St Monica can show us"); a mismatch between the number promised
+  and the number of teaching slides delivered, in either direction. Over-delivery
+  is a STOP too — it means the hook slide is wrong, and a reader who counts is
+  the reader this format is for.
+- **Evidence:** the hook slide verbatim; the number; the count of slides
+  delivering a distinct teaching, listed by slide number.
+- **Note:** the number is a **contract**, and it is half of the reason a B-2 post
+  earns a stop-scroll. The `03` specimen's 1,306 saves against `06`'s 148 is the
+  clearest signal in the set that a countable promise is what gets a post saved —
+  read with §9.5's caveats, and see the README on why those two rows are not a
+  controlled comparison.
+- **No total slide count is prescribed** (§3B.0). W6 constrains only the count of
+  *teaching* slides against the promise. A hook slide, a prayer slide and an
+  invocation slide are not teachings and are not counted.
+
+### W7 — An explicit audience is named, and it is a struggle topic
+
+- **Tests:** the hook slide's overlay text, second required part.
+- **PASSES:** the hook slide **names an audience explicitly** — not "us", not
+  "everyone", not implied — **and**, for a Saint Match post, that audience is a
+  **struggle topic**: one of the twelve in `best_skill.md` §1 (anxiety, waiting,
+  grief, purity, patience, vocation, anger, loneliness, shame, fear, distraction,
+  money) or a plain paraphrase of one. "…anyone waiting on someone they love."
+  "…anyone carrying a shame they have not said out loud."
+- **STOPS:** no audience named; the audience is a **demographic** — a role, an
+  age, a state of life, a country: "every Catholic parent", "young men",
+  "students", "priests", "converts". Also STOPS: an audience so wide it names
+  nobody ("every Catholic", "all of us").
+- **The line the two run closest on is `vocation`.** It is a struggle topic in
+  `best_skill.md` §1, and it is also one word away from a state of life. The test
+  is whether the phrase names **what someone is carrying** or **what someone
+  is**: "…anyone who cannot tell what they are supposed to do with their life" is
+  the struggle and passes; "…seminarians" or "…young men discerning the
+  priesthood" is a category of person and STOPs. Apply the same reading to
+  `grief` ("…anyone who has just buried someone" ✓ / "…widows" ✗).
+- **Evidence:** the audience clause quoted, and which struggle topic it is or
+  which demographic category it fell into.
+- **This is a deliberate divergence from the specimen, and it is recorded rather
+  than inherited.** EWTN Parents names a demographic — "every Catholic parent" —
+  and is right to: a demographic **is** that account's identity, and its audience
+  self-selects on it. Saint Match matches on **struggle**, so the same slot has to
+  carry a struggle for the post to perform its own product. Do not cite the
+  specimen in defence of a demographic here; the specimen is evidence for the
+  *slot*, not for what fills it.
+- **W7 and W2 overlap on purpose.** The audience line is the hinge's app side on
+  B-2. A demographic there usually fails both. Report both — the writer needs to
+  know the line is wrong *and* that the post consequently has no bridge.
+
+### W8 — The caption is minimal
+
+- **Tests:** the caption body, in full.
+- **PASSES:** exactly two elements and nothing else — **one line of framing,
+  phrased as a question**, then **the invocation** (W3). **8–25 words total.**
+- **STOPS:** the caption carries the teaching, the fact, or the hinge — that is a
+  **B-1** post and it should have been declared as one; under 8 or over 25 words;
+  no framing question; any third element — a second framing line, a summary, a
+  hashtag, an emoji, a sign-off.
+- **Evidence:** the caption verbatim, the word count, and the two elements named.
+- **A framing question is REQUIRED here and is not the banned opening question.**
+  `best_skill.md` §5.5 bans opening on a rhetorical question; that is a **Format
+  A** rule which variant **B-1** inherits (B1-B). It does **not** apply to a B-2
+  caption, whose whole job is to frame and hand off to the carousel. Firing B1-B's
+  question ban here would STOP every correct B-2 post. The carve-out is written
+  into B1-B; do not drop it.
+- **The 8–25 band is n = 1 and is provisional.** The single specimen's caption is
+  fourteen words. The band is set wide around it deliberately. Record the count in
+  NOTES on every B-2 pack so the band can be re-set from evidence rather than from
+  the first draft that overshot it.
+
+### W9 — The carousel carries the teaching
+
+- **Tests:** the division of labour between caption and slides.
+- **PASSES:** the numbered teachings live in the slides, and **deleting the
+  caption entirely would leave the post intact and comprehensible.** The caption
+  frames; it does not teach.
+- **STOPS:** the teaching is in the caption and the slides restate or decorate it
+  — that is a B-1 post misdeclared as B-2, and the STOP is the accurate outcome
+  (§1: grade as declared); slides that carry no teaching at all and exist only to
+  reach the promised number.
+- **Evidence:** one line per slide naming what it teaches, plus an explicit
+  statement of whether the post survives deletion of the caption.
+- **Note:** W8 and W9 are complements, not duplicates. W8 tests that the caption
+  is small; W9 tests that the slides are load-bearing. A post can pass W8 with a
+  minimal caption and still fail W9 because the slides are wallpaper — a
+  fourteen-word caption over four decorative slides is an empty post, not a
+  correct one.
 
 ---
 
@@ -575,8 +865,47 @@ address requirements differ and are split explicitly.**
   generalised third person — "Some people are carrying something they can't put
   words to" — rather than direct address.
 - **STOPS:** sustained second-person address, which is Format A's register and at
-  this length reads as a pitch; Format A's urgent exhorting tone; a rhetorical
-  question as the opening line; plus every shared ban above.
+  this length reads as a pitch; Format A's urgent exhorting tone; **encyclopedia
+  register** and the **calendar-announcement opening**, both below; a rhetorical
+  question as the opening line — **variant B-1 only**; plus every shared ban
+  above.
+
+- **The opening-question ban is variant B-1 only.** In variant **B-2** the
+  caption's opening line **must** be a framing question (W8). Firing this clause
+  against a B-2 pack STOPs every correct B-2 post, which is precisely the
+  scoping bug §3.0 exists to prevent. On B-2, record this clause as not
+  applicable in the B1 evidence line and grade the rest of B1-B normally.
+
+- **Encyclopedia register — the primary Format B anti-pattern, and it is a
+  STOP.** A caption that reads as a reference-work entry: neutral biographical
+  appositives strung together ("He was a Spanish priest and educator who provided
+  free education to poor schoolboys and founded a religious order to grow his
+  efforts"), a patronage stated as a label, a bland closing pleasantry, no reader
+  anywhere in it. It is fluent and it is often perfectly accurate, which is why
+  it survives the truth gate untouched and has to be stopped here.
+  **This is the default an LLM drifts to** — it is what the training data holds
+  most of about saints — so it will be produced confidently and will not look
+  wrong. Worked negative: `exemplars/format-b-saint-of-the-day/04-REFERENCE-ewtnmedia-st-joseph-calasanz.md`.
+
+- **The calendar-announcement opening — a diagnostic marker.** "August 25 is the
+  feast day of St Joseph Calasanz…", "August 22 is the feast day of the Queenship
+  of Mary…". Opening by announcing the date or the feast is a STOP on both
+  variants: it opens on the calendar rather than on the reader or the fact, and
+  the reader has been given no reason to keep reading. **It co-occurs with
+  encyclopedia register** — both specimens that open this way are also
+  encyclopedic, and both are the two underperformers in the set — so treat it as
+  the cheapest available tell: if the first six words name a date, read the rest
+  for encyclopedia register before anything else. A **timeliness peg** is not a
+  hinge; it is a reason to post today, which is a different thing, and it does not
+  substitute for W2, W6 or W7.
+
+- **A stated bridge — the saint as mascot.** "As the patron saint of the X
+  Institute, St N. holds a special place in our mission." Third person, right
+  length, ends on the invocation, and no hinge: the connection is announced
+  instead of performed, so the saint is a mascot rather than a bridge. This is a
+  W2 STOP primarily; note it here because it reads as good register and will
+  otherwise pass B1 unremarked. Worked negative:
+  `exemplars/format-b-saint-of-the-day/05-REFERENCE-augustine-institute-st-augustine.md`.
 - **Emoji rule for Format B: none at all.** Format B has neither slot that
   licenses an emoji — there is no ✝️ separator and no engagement line — so **any**
   emoji is out-of-slot and is a STOP. This is the old blanket emoji ban surviving
@@ -619,22 +948,53 @@ address requirements differ and are split explicitly.**
 
 #### B2-B — Format B shape
 
-- **Tests:** structure of the Format B caption.
+**Run the part matching the declared variant. Running the other one STOPs a
+correct post for having the shape its variant requires.**
+
+**Shared, both variants:**
+
+- **STOPS:** opening on a **calendar announcement** — "August 25 is the feast day
+  of…" — which opens on the calendar rather than on the reader or the fact
+  (B1-B); anything printed after the invocation; Format A's
+  eight-to-twelve-paragraph build compressed into the word budget.
+
+**B2-B, variant B-1 — caption-carried:**
+
+- **Tests:** structure of the caption.
 - **PASSES:** a fact, a hinge, an invocation, in that order and nothing else.
   Typically three to five sentences. Opens on the **fact**, plainly stated. The
   hinge follows and is not explained. The invocation closes it (W3).
 - **STOPS:** opens on the hinge or on a mood rather than the fact; a summarising
   or moralising sentence between the hinge and the invocation, which flattens the
-  hinge by explaining it; any block after the invocation; Format A's
-  eight-to-twelve-paragraph build compressed into the word budget.
+  hinge by explaining it.
 - **Evidence:** the sentences listed in order with their roles named.
-- **Note:** B2-B tests the **order and economy**; W1 tests the length and W2 the
-  hinge itself. B2-B is where "correct parts, wrong sequence" is caught — most
+- **Note:** this part tests the **order and economy**; W1 tests the length and W2
+  the hinge itself. It is where "correct parts, wrong sequence" is caught — most
   often a post that explains its own hinge in a closing line before the
   invocation.
-- **Note — the ending polarity question does not arise here.** Format B does not
-  end affirming *or* hard; it ends on the invocation, which is a liturgical form
-  and not a rhetorical one. Do not import B2-A's ending test.
+
+**B2-B, variant B-2 — carousel-carried:**
+
+- **Tests:** structure of the caption *and* the slide order.
+- **PASSES:** caption is framing question → invocation, in that order and nothing
+  else (W8). The carousel opens on the **hook slide** carrying the numbered
+  promise and the audience (W6, W7), then delivers the promised teachings one per
+  slide, and lands on the invocation.
+- **STOPS:** the caption states the fact or the hinge, i.e. the B-1 shape wearing
+  a B-2 declaration; the framing question placed after the invocation; the
+  numbered promise buried on a later slide instead of the hook slide; teaching
+  slides carrying two teachings each so the count reads short.
+- **Evidence:** the caption's two elements named in order, then a one-line-per-
+  slide list with each slide's role.
+- **Note — do not import B-1's "opens on the fact" test.** A correct B-2 caption
+  opens on a question and contains no fact at all. That is W8's shape, and it is
+  right.
+
+- **Note — the ending polarity question does not arise on either variant.**
+  Format B does not end affirming *or* hard; it ends on the invocation, which is
+  a liturgical form and not a rhetorical one. Do not import B2-A's ending test.
+  And note the converse, from `06`: ending devoutly is **not** by itself evidence
+  the post works (W3).
 
 ### B3 — Promises
 
@@ -779,41 +1139,96 @@ Applies to the AI image prompt.
   depicted while the caption asserts it as fact.
 - **Evidence:** the scene as described, and the grade of the underlying claim.
 
-### I4 — Layout constraints
+### I4 — Type zone, contrast and frame
 
-- **Tests:** framing instructions.
-- **PASSES:** 9:16; upper third kept clear for overlay type; a mid-tone region
-  specified behind the type so it can clear 3.5:1; no text rendered inside the
-  image.
-- **STOPS:** missing aspect ratio; no clear region for type; the prompt asks the
-  generator to render lettering.
-- **Evidence:** the framing clause quoted.
+Tests the *layout* of a baked-in-text image. Runs on both formats and both
+Format B variants. On a **B-2** pack the image under test is the **hook slide**,
+and its numbered promise (W6) is the type this check is about.
 
-### 6.5 Unresolved conflict in I4 — flag it, do not soften it
+- **Tests:** the framing, composition and type-treatment instructions in the
+  image prompt, against `best_skill.md` §8.1 and §8.2.
+- **PASSES — all five:**
+  1. **Aspect ratio declared.** 9:16, 1080 × 1920, stated in the prompt rather
+     than left to the generator.
+  2. **A type zone is specified**, as a vertical percentage range chosen for
+     *this* composition — "figure in the upper 55%, lower 35–40% dark for type",
+     "figure in the left 40%, right 60% bright and empty" — **and the
+     composition is described so as to create it**. Per-composition is the whole
+     requirement: a zone that happens to be at the top or the bottom is fine; a
+     zone that is at the top or the bottom *because that is the default* is not,
+     and neither is a zone asserted in one clause that the rest of the prompt
+     does not build.
+  3. **Contrast where the type lands.** A mid-tone or otherwise clean region is
+     specified behind the type, sufficient for the type to clear **3.5:1**
+     against it, plus the drop shadow §8.1 specifies (2–3px, dark, 50–60%
+     opacity) wherever type sits on painted areas.
+  4. **No collision with the subject.** The type zone does not overlap the
+     subject's **face or hands**, nor any of the **iconographic attributes I1
+     sourced** — the identifying garment of the habit, the emblem, the object the
+     post rests on. Burying the attribute that makes the saint identifiable is a
+     layout failure even when the prompt names that attribute perfectly.
+  5. **The baked type is fully specified.** Where text is rendered inside the
+     image — which is the normal case — the prompt carries the exact overlay
+     string, the font, the colour, the highlight word, the position range and the
+     effects, and requires correct spelling.
+- **STOPS:** no aspect ratio declared, or any ratio other than 9:16; no type zone
+  named, or a zone named as a percentage but not created by the composition; no
+  contrast provision where the type lands; the type zone overlapping the face,
+  the hands, or an attribute I1 sourced; baked-in type whose string, position,
+  colour or treatment is left for the generator to choose; rendered text that
+  came back garbled or misspelled and was shipped rather than regenerated.
+- **Evidence:** the framing clause quoted; the type zone as a vertical
+  percentage range; the contrast provision quoted; and one line confirming the
+  zone clears the face and the attributes listed under I1.
+- **Text inside the image is required, not banned.** The style bible bakes the
+  overlay into the generated image and treats a generated image without its
+  caption text as a failure (`best_skill.md` §8.2). A prompt that asks the
+  generator to render lettering is **correct** and must not be STOPped for it.
+- **There is no fixed clear band.** Do not require the upper third — or any
+  other fixed region — to be empty. §8.1 is explicit that the zone is measured
+  per composition and that defaulting it (to the bottom, or to anywhere else) is
+  the error. The only band rule is that the zone be *stated* and *built*.
+- **I4 is a legibility and composition check, not a truth check.** Whether the
+  attributes are sourced and correct is I1 and I2. A prompt can pass I4 with a
+  cardinal's galero in it and STOP at I2; a prompt can name every attribute
+  correctly and STOP at I4 for printing the headline across the saint's face.
 
-**I1–I4 above are unmodified by this realignment and stay exactly as strict.**
-Iconography is a truth surface, not a voice one, and nothing in the style bible
-touches it.
+### 6.5 Iconography scope — and the resolved I4 conflict
 
-One conflict is nonetheless recorded here so it is not discovered mid-grade.
-I4's last clause — "no text rendered inside the image", and "upper third kept
-clear" — contradicts `best_skill.md` §8.2, which **withdraws** that rule: the
-style bible bakes the overlay text into the generated image and treats a
-generated image without its caption text as a failure. §8.1 further says the
-text zone is declared as a vertical percentage range per composition and must
-**not** default to a fixed band.
+**I1, I2 and I3 are truth checks and are unmodified.** Iconography accuracy is a
+truth surface, not a voice one; nothing in the style bible touches it, and no
+realignment of this document has weakened it or may weaken it. They stay exactly
+as strict.
 
-Until that is resolved by whoever owns this file:
+**I4 is different in kind, and it has been rewritten. The conflict this section
+used to record is closed.** I4 formerly required "no text rendered inside the
+image" and "upper third kept clear for overlay type". Both clauses were
+**withdrawn** by `best_skill.md` §8.2: the style bible bakes the overlay text
+into the generated image and treats a generated image without its caption text
+as a failure, and §8.1 requires the text zone to be declared as a
+per-composition vertical percentage range that must **not** default to a fixed
+band. As written, the old I4 would have STOPped every correctly produced post —
+the same class of bug as the old Raymond-derived voice checks in §3, pointed at
+the image pipeline.
 
-- **Grade I4 as written.** Do not relax it on your own authority, and do not
-  read this note as permission to pass a draft that fails it.
-- **Record the conflict in NOTES** on any pack where I4 is the only STOP, naming
-  `best_skill.md` §8.2, so the STOP is visibly attributable to a scorer/rulebook
-  disagreement rather than to the draft.
-- The contrast requirement in I4 — a mid-tone region behind the type clearing
-  3.5:1 — is **not** in conflict and survives any resolution. §8.1 states the
-  same requirement and adds the 2–3px, 50–60% opacity drop shadow for type
-  sitting on painted areas.
+**The style bible is authoritative on the image pipeline**, so I4 was rewritten
+to it rather than the bible being bent back to I4. What I4 now tests is what
+actually matters for a baked-in-text image: a legible type zone exists and is
+specified per composition, the contrast is provided where the type lands, the
+type does not collide with the face or with a sourced attribute, and the aspect
+ratio is declared.
+
+Consequences for graders:
+
+- **Do not record a "scorer/rulebook conflict" note against I4 any more.** An I4
+  STOP is now attributable to the draft, and the required rewrite is concrete.
+- The **contrast requirement survives unchanged** — it was never in conflict.
+  §8.1 states the same 3.5:1 mid-tone requirement and adds the 2–3px, 50–60%
+  opacity drop shadow.
+- **Nothing here licenses relaxing I1–I3.** The resolution was to the layout
+  clause of I4 only. If a rewrite of a layout constraint is ever read as
+  precedent for softening a sourcing constraint, that reading is wrong on its
+  face: §0 forbids trading the truth gate against anything.
 
 ---
 
@@ -847,11 +1262,12 @@ Every grade is recorded against the pack's `draft_id`, whether it passed or not.
 
 ```
 VERDICT: PASS | STOP
-draft_id:      <from header block>
-skill_version: <from header block>
-post_format:   A-themed | B-saint-of-the-day
-graded_by:     <human name | judge model id>
-graded_at:     <ISO 8601>
+draft_id:       <from header block>
+skill_version:  <from header block>
+post_format:    A-themed | B-saint-of-the-day
+format_variant: B-1-caption-carried | B-2-carousel-carried | — (Format A)
+graded_by:      <human name | judge model id>
+graded_at:      <ISO 8601>
 
 CHECKS
   T1 dossier coverage      PASS | STOP | N/A — <evidence>
@@ -867,11 +1283,15 @@ CHECKS
   V5 hashtags              PASS | STOP | N/A — <evidence>
   V6 ending order          PASS | STOP | N/A — <evidence>
   V7 slide structure       PASS | STOP | N/A — <evidence>
-  W1 length 40-70          PASS | STOP | N/A — <evidence>
+  W1 caption 40-70 (B-1)   PASS | STOP | N/A — <evidence>
   W2 hinge                 PASS | STOP | N/A — <evidence>
   W3 invocation ending     PASS | STOP | N/A — <evidence>
   W4 no product pitch      PASS | STOP | N/A — <evidence>
-  W5 one graded fact       PASS | STOP | N/A — <evidence>
+  W5 facts graded          PASS | STOP | N/A — <evidence>
+  W6 numbered promise      PASS | STOP | N/A — <evidence>
+  W7 audience = struggle   PASS | STOP | N/A — <evidence>
+  W8 caption minimal (B-2) PASS | STOP | N/A — <evidence>
+  W9 carousel carries it   PASS | STOP | N/A — <evidence>
   B1 register              PASS | STOP | N/A — <evidence>
   B2 shape and ending      PASS | STOP | N/A — <evidence>
   B3 promises              PASS | STOP | N/A — <evidence>
@@ -882,7 +1302,7 @@ CHECKS
   I1 attributes sourced    PASS | STOP | N/A — <evidence>
   I2 no contradiction      PASS | STOP | N/A — <evidence>
   I3 legend not depicted   PASS | STOP | N/A — <evidence>
-  I4 layout                PASS | STOP | N/A — <evidence>
+  I4 type zone / frame     PASS | STOP | N/A — <evidence>
 
 REQUIRED REWRITES
   1. <check id> — <what must change, concretely>
@@ -894,11 +1314,14 @@ NOTES
 
 Rules for the emitted grade:
 
-- **Every check gets a line, both formats' lines included.** The seven V lines
-  and the five W lines are always printed; one set carries verdicts and the other
-  carries `N/A — Format A` / `N/A — Format B`. Do not delete the inapplicable
-  block. A grader who prints only the applicable set makes it impossible to tell
-  a check that was N/A by format from one that was silently skipped.
+- **Every check gets a line, both formats' and both variants' lines included.**
+  The seven V lines and the nine W lines are always printed; one set carries
+  verdicts and the others carry `N/A — Format A` / `N/A — Format B` / `N/A —
+  variant B-1` / `N/A — variant B-2`. Do not delete the inapplicable block. A
+  grader who prints only the applicable set makes it impossible to tell a check
+  that was N/A by format or variant from one that was silently skipped — and on
+  Format B, where the W-series is split across two variants, that distinction is
+  the only thing standing between a correct grade and a silent misgrade.
 - **Any single STOP makes the verdict STOP.** There is no count, no threshold, no
   majority. One is enough. This is identical on both formats.
 - Every check gets a line, including passing ones, and every line carries
@@ -922,7 +1345,8 @@ VOICE SCORE (ranking signal only — cannot block publication)
 draft_id:        <same>
 skill_version:   <same>
 post_format:     A-themed | B-saint-of-the-day
-exemplar_set:    exemplars/ | exemplars/format-b-saint-of-the-day/
+format_variant:  B-1-caption-carried | B-2-carousel-carried | — (Format A)
+exemplar_set:    exemplars/ | exemplars/format-b-saint-of-the-day/ (positives of the matching variant only)
 judge:           <model id + prompt version>
 rank_position:   <n> of <set size + 1>
 voice_score:     <1–5>
@@ -933,9 +1357,13 @@ judge_agreement: <n of m judges within 1 point>
 set_maturity:    ranked | shape-only (Format B, set too thin — §9.5)
 ```
 
-`exemplar_set` must match `post_format`. **A Format B post scored against the
-Format A gold set is a void measurement**, not a low one: it would be marked
-down for lacking a scripture block it is correct not to have.
+`exemplar_set` must match `post_format` **and `format_variant`**. **A Format B
+post scored against the Format A gold set is a void measurement**, not a low one:
+it would be marked down for lacking a scripture block it is correct not to have.
+The same holds one level down — a B-2 caption ranked against B-1 captions is
+void, because it would be marked down for being fourteen words, which is what
+its variant requires. The **negative specimens are never referents for ranking**;
+their use is as known-bad anchors for the judge-consistency bar in §9.4.
 
 ---
 
@@ -953,12 +1381,14 @@ produces *good* ones, because the floor is a floor. The voice score is the
 ordinal signal that fills that gap, and it exists to rank `skill_version`s
 against each other — never to rank a post against a bar.
 
-### 9.1 Score each format against its own exemplar set
+### 9.1 Score each format — and each Format B variant — against its own set
 
-| Format | Exemplar set | Size |
+| Format / variant | Referents usable for ranking | Size |
 | --- | --- | --- |
 | A — themed long-form | `exemplars/` | 6 |
-| B — saint of the day | `exemplars/format-b-saint-of-the-day/` | 2 — see §9.5 |
+| B, variant **B-1** | `01-REFERENCE-ewtn-st-clare`, `02-st-raymond-nonnatus` | 2 — see §9.5 |
+| B, variant **B-2** | `03-REFERENCE-ewtnparents-st-monica` | **1** — see §9.5 |
+| — | `04` Calasanz, `05` Augustine Institute, `06` Queenship | **not referents.** Known-bad / known-middling anchors for the §9.4 consistency bar only |
 
 **Never score a Format B post against the Format A exemplars, or the reverse.**
 The two formats disagree on almost every surface feature — length, person,
@@ -967,6 +1397,16 @@ difference and nothing else. It would reliably rate correct Format B posts as
 poor, and it would do so with confident, plausible-sounding reasons, which is
 the worst kind of bad measurement. The `exemplar_set` field in the output block
 exists to make a cross-format score visible after the fact.
+
+**And never score across variants.** A B-2 caption is fourteen words with no
+fact in it; ranked against the B-1 captions it is last every time, for being
+correct. `format_variant` is recorded in the voice-score block for the same
+after-the-fact reason.
+
+**The negatives are not referents.** `04` and `05` are craft counter-examples and
+`06` is a middling one. Do not put them in a forced ranking as though they were
+gold. Their value is in §9.4: a judge that cannot rank `04` last is a judge whose
+scores are discarded.
 
 ### 9.2 Anchor on exemplars, not on adjectives
 
@@ -1002,8 +1442,16 @@ odd-one-out test and ranking in the top third is 5.
 
 - **Format A:** opening formula; beat paragraphs; concreteness and named
   specifics; the turn landing on the reader and resolving; affirming ending.
-- **Format B:** economy; the hinge's strength and non-obviousness; the fact
-  carrying real weight; the invocation landing cleanly.
+- **Format B, variant B-1:** economy; the hinge's strength and non-obviousness;
+  the fact carrying real weight; the invocation landing cleanly.
+- **Format B, variant B-2:** the pull of the numbered promise; how sharply the
+  audience line names a struggle; whether the teachings are genuinely distinct
+  from each other rather than one idea cut four ways; the caption getting out of
+  the way.
+
+**On both Format B variants, do not put weight on "ends on the invocation" as an
+axis.** Every correct post does it, and the `06` specimen shows a devout ending
+on an inert post. It discriminates nothing.
 
 Report the **weakest axis** with the score. The axis is the actionable part; the
 number is only for ordering.
@@ -1099,17 +1547,37 @@ drive any rulebook edit.**
 
 ### 9.5 Format B's exemplar set is too thin to rank on yet
 
-`exemplars/format-b-saint-of-the-day/` holds **two specimens**, and one of them
-is third-party (EWTN) and is a reference for *shape* only — not Saint Match
-content and not to be imitated line-by-line.
+`exemplars/format-b-saint-of-the-day/` holds **six specimens**, of which **five
+are third-party** references for *shape* only — not Saint Match content and not
+to be imitated line-by-line — and **two are negatives** plus one middling, which
+are not referents at all (§9.1). That leaves **two rankable referents for variant
+B-1 and one for variant B-2**, and exactly **one Saint Match specimen in the whole
+folder**.
 
-Two items are enough to fix the format's structure, which is why W1–W5 are
-binary and confident. **They are not enough to rank on.** A forced ranking
-against two referents, one of which is off-brand by origin, produces an ordinal
-with almost no resolution, and an odd-one-out test against a set of two is close
-to meaningless.
+That is enough to fix both variants' structure, which is why W1–W9 are binary and
+confident. **It is nowhere near enough to rank on.** A forced ranking against two
+referents produces an ordinal with almost no resolution; against **one** it
+produces none at all, so **variant B-2 cannot be voice-scored under any
+circumstances yet** — record `set_maturity: shape-only` and omit the number.
 
-Until the set reaches **at least four or five Saint Match specimens**:
+**Engagement figures are not a substitute for referents.** The set now carries
+real like and save counts, and they are genuinely informative about *what*
+separates a strong post (§3B). They are **not** a ranking scale: they are five
+posts across three accounts of very different sizes, uncontrolled for subject
+salience, and using them to order drafts would import every confound the README
+lists straight into the loop. See
+`exemplars/format-b-saint-of-the-day/README.md` before citing any of them.
+
+**Normalise before comparing, and this is now evidenced rather than assumed.**
+The `06` Queenship post outscores the `04` Calasanz post roughly 3:1 on likes with
+no more craft in it — Mary is vastly better known than Joseph Calasanz. So the
+SkillOpt loop must **normalise engagement against a saint-popularity baseline
+before comparing posts**: a Marian feast and an obscure Mercedarian are not
+comparable on raw numbers, and a rulebook version that happened to draw the
+better-known saints would otherwise win on nothing.
+
+Until the set reaches **at least four or five Saint Match specimens per
+variant**:
 
 - Run the voice score on Format B in **`set_maturity: shape-only`** mode: record
   `nearest_exemplar` and `weakest_axis`, which remain useful as qualitative

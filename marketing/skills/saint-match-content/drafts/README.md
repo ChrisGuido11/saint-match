@@ -12,7 +12,12 @@
 >   LEGEND convention, and the "excluded, and why" list.
 > - **Truth failures** — draft 03 is still the worked example of an invented
 >   quotation failing T1 and T3 together.
-> - **Iconography failures** — draft 04 is still the worked example of I1–I4.
+> - **Iconography failures** — draft 04 is still the worked example of **I1–I3**,
+>   which are unchanged. **Their I4 lines are stale**: every pack here reserves a
+>   fixed clear upper third and bakes no text into the image, which was I4's rule
+>   when they were written and is no longer. I4 has since been rewritten
+>   (`SCORER.md` §6.5) and now requires a **per-composition** type zone and a
+>   fully specified baked-in overlay. Do not copy their I4 evidence lines.
 > - **CTA and brand failures of the kind that survive the realignment** — draft
 >   05's fake scarcity, hard sell, promised outcome and slogan-bridge are all
 >   still STOPs under the current C2, B3 and G1.
@@ -119,11 +124,15 @@ Two calendar points worth carrying forward:
   frame is 9:16 on both formats (`best_skill.md` §4).
 - **No pack here carries a `post_format` field**, which the scorer now requires
   before any check runs. As written they would STOP at §1. Any regenerated pack
-  must declare `A-themed` or `B-saint-of-the-day`.
-- **There is no worked Format B pack at all**, passing or stopping. The two
-  specimens in `../exemplars/format-b-saint-of-the-day/` are captions, not full
-  packs with dossiers and image prompts, so W1–W5 have never been exercised on a
-  complete artifact. That is the most useful gap in this directory to fill next.
+  must declare `A-themed` or `B-saint-of-the-day` — and a Format B pack must also
+  declare `format_variant` (`B-1-caption-carried` or `B-2-carousel-carried`),
+  which is a STOP at §1 in its own right if missing.
+- **There is no worked Format B pack at all**, passing or stopping, on either
+  variant. Everything in `../exemplars/format-b-saint-of-the-day/` is a caption
+  or a hook slide, not a full pack with a dossier and image prompts, so **W1–W9
+  have never been exercised on a complete artifact** — and W6–W9, the variant B-2
+  checks, have never been exercised at all. That is the most useful gap in this
+  directory to fill next: one B-1 pack and one B-2 pack.
 - **No pack has been graded by an LLM judge**, only by hand. Whether `SCORER.md`
   reproduces these verdicts when handed to a model is the first thing worth
   measuring, and it has not been measured.

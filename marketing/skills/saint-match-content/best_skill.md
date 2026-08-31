@@ -81,22 +81,41 @@ it can be corrected rather than silently inherited.
   any emoji, required a 120–200 word caption closing on the invocation with the
   hardest line last, and banned "comment AMEN" as engagement bait. All of those
   are on-voice for Format A under the style bible, and all are now fixed. The
-  scorer's voice floor is `SCORER.md` §3A (V1–V7) for Format A and §3B (W1–W5)
-  for Format B, with B1/B2 split per format. Truth (T1–T6) and iconography
-  (I1–I4) were not touched by the realignment.
+  scorer's voice floor is `SCORER.md` §3A (V1–V7) for Format A and §3B (W1–W9)
+  for Format B, with B1/B2 split per format. Truth (T1–T6) and the
+  iconographic-accuracy checks (I1–I3) were not touched by the realignment and
+  have not been touched since.
   Two things are worth carrying: the old note cited those checks as C4/C5/C6/C8,
   which were **never their real IDs** — the offending checks were B1, B2 and C2.
-  And one genuine scorer/rulebook conflict is still open: **I4 still forbids text
-  rendered inside the image**, which §8.2 below withdraws. `SCORER.md` §6.5
-  records it; it needs an owner's decision.
+  And the one genuine scorer/rulebook conflict this note used to flag is **now
+  resolved**: I4 forbade text rendered inside the image and demanded a fixed
+  clear upper third, both of which §8.2 below withdraws. **I4 has been rewritten
+  to the bible** — it now tests that a per-composition type zone is specified and
+  built, that contrast is provided where the type lands, that the type does not
+  collide with the face or with a sourced attribute, and that 9:16 is declared.
+  `SCORER.md` §6.5 records the resolution. I1–I3 were deliberately left alone.
 - **CONFIRMED — there are two post formats, and the daily saint post has its
   own.** The Notion style bible describes **Format A**, themed long-form. The
   user has since specified **Format B**, the saint-of-the-day post, which is now
-  **the standard for daily posts**: ~40–70 words, third person, one fact, a
-  performed hinge, ending on the invocation, with none of Format A's scripture
-  block, emoji, engagement line, app-mention pair or hashtags. See §4.4 and §5.7.
-  Format B's specimen set holds only two items and is explicitly thin —
-  `exemplars/format-b-saint-of-the-day/README.md`.
+  **the standard for daily posts**: third person, a performed hinge, ending on
+  the invocation, with none of Format A's scripture block, emoji, engagement
+  line, app-mention pair or hashtags. The "~40–70 words, one fact" part of that
+  spec turns out to be variant **B-1** specifically — see the next bullet. §4.4
+  and §5.7.
+- **CONFIRMED — Format B has two variants.** Real posts from the same account
+  show two shapes: **B-1 (caption-carried)**, the original spec, and **B-2
+  (carousel-carried)**, where the carousel teaches and the caption is a framing
+  question plus the invocation. Both end on the invocation — but **that is table
+  stakes, not the differentiator**: a fifth specimen ends devoutly and still
+  underperforms badly. What separates a strong post is a **hook or a hinge**.
+  See §4.4.0 and §4.4.1.
+  Format B's specimen set now holds **six** items — three positive, two negative
+  and one middling, **five of them third-party reference specimens** — and is
+  **still thin for ranking**: only one is Saint Match's own and it is unshipped,
+  and the B-2 shape rests on a single specimen.
+  `exemplars/format-b-saint-of-the-day/README.md` records what the set can and
+  cannot support, including why the four posts carrying engagement figures are
+  **not** four comparable data points.
 - **NOTE — the seed drafts also lag.** The five packs in `drafts/` were written
   to the old provisional voice: 4:5 format, no emoji, invocation endings, no
   scripture block, no hashtags. They still demonstrate the *source discipline*
@@ -169,6 +188,7 @@ Every pack opens with this, verbatim field names, one per line:
 draft_id       <YYYY-MM-DD>-<saint-slug>
 skill_version  best_skill.md @ <git commit sha>
 post_format    A-themed | B-saint-of-the-day
+format_variant B-1-caption-carried | B-2-carousel-carried   (Format B only)
 format         carousel | reel
 saint          <full name as used in copy>
 feast_date     <date>
@@ -183,6 +203,16 @@ ending — and it selects which floor the scorer runs (§3.0 of `SCORER.md`).
 separate decision. **The scorer STOPs a pack with no `post_format` before any
 other check runs**, and it grades the format as declared rather than as it reads,
 so declaring it wrongly produces a loud failure rather than a quiet misgrade.
+
+**`format_variant` is a third axis and it is required on Format B.** It declares
+whether the teaching is carried by the caption (**B-1**) or by the carousel
+(**B-2**) — see §4.4.1 — and it selects which W-checks run. A Format B pack with
+no `format_variant`, or with a value that is not one of the two, is a **STOP**
+alongside a missing `post_format`. On Format A the field is **omitted**; a
+Format A pack carrying a B variant value is also a STOP, because it means one of
+the two fields is wrong and the grader cannot tell which. Like `post_format`, the
+variant is **declared, never inferred**: a pack that declares B-1 and reads like
+B-2 is graded as B-1 and fails, and that failure is the accurate one.
 
 Why this block exists:
 
@@ -220,7 +250,8 @@ engagement data is an append-only JSONL file in this repo — see `ANALYTICS.md`
 | **AI image prompt** | Per slide. 9:16, art-historically anchored, 14 parameters plus the modular negative prompt. Written to §8. |
 | **Soft CTA** | **Format A only.** The engagement line plus the two app-mention lines, verbatim from §9. Format B has no CTA block — its hinge is the CTA (§5.7), and this row is omitted from the pack entirely. |
 | **Hashtags** | **Format A only.** 15–20 niche tags from the three-tier bank, then 3–5 buried trending tags. §9.4. Omitted from a Format B pack. |
-| **Hinge line** | **Format B only.** One internal line naming the hinge word or concept, the sentence where it belongs to the saint, and the sentence where it does the brand's work. §5.7. |
+| **Hinge line** | **Format B only.** One internal line naming the hinge word or concept, the sentence where it belongs to the saint, and the sentence where it does the brand's work. §5.7. On variant B-2 the two sides sit on different surfaces — name which slide and which line. |
+| **Hook slide line** | **Format B, variant B-2 only.** One internal line quoting the hook slide verbatim and naming its two required parts: the number promised, and the audience — which for Saint Match is a struggle topic, not a demographic. §4.4.1. |
 | **Source notes** | Every factual claim in the pack, one line each, graded DOCUMENTED / TRADITIONAL / LEGEND, with the source. Plus an explicit list of what was **excluded and why** — the exclusions are the point. |
 
 **Order of work is fixed: caption → alignment decision → image prompt.** Never
@@ -245,8 +276,8 @@ structure — see the conflict note at §4.3.
 
 | | **Format A — themed long-form** | **Format B — saint of the day** |
 | --- | --- | --- |
-| Spec | §4.1–4.2 structure, §5 voice, §9 CTA | §4.4 structure, §5.7 voice |
-| Source | The Notion style bible; six shipped captions | The user's stated spec; two specimens |
+| Spec | §4.1–4.2 structure, §5 voice, §9 CTA | §4.4 structure (two variants, §4.4.1), §5.7 voice |
+| Source | The Notion style bible; six shipped captions | The user's stated spec; six specimens — three positive, two negative, one middling |
 | Used for | Themed and scriptural posts | **The standard for daily saint posts** |
 | Exemplars | `exemplars/` | `exemplars/format-b-saint-of-the-day/` |
 
@@ -306,27 +337,132 @@ the default and it does not override the 9:16 frame or the 5–15 word limit.
 not a compressed Format A, and it exists because none of the style bible's six
 worked posts is a single-saint feast-day post.
 
-The spec, as the user gave it:
+**What every Format B post does, on both variants:**
 
-- **~40–70 words.** Radically shorter than Format A.
 - **Third person.** Not Format A's sustained direct "you".
-- **One concrete, verifiable fact** about the saint, graded per §2 as usual.
 - **A hinge** — the defining mechanic, §5.7 below.
-- **Ends on the invocation**: "St [Name], pray for us."
+- **Ends on the invocation**: "St [Name], pray for us." The shared rule, on both
+  variants, and mandatory — but **table stakes, not the differentiator.** See
+  "What actually separates a strong post" below before reading it as more than
+  that.
 - **No scripture block, no ✝️, no 🙏🔥, no "Type AMEN", no hashtag block.** Those
   are Format A elements. Their absence here is correct and is not a defect.
 - **The bridge is the CTA.** No separate sales line, no app-mention pair, no
   product pitch. Naming the app in a pitching register is a STOP.
 
+#### 4.4.0 What actually separates a strong Format B post
+
+An earlier version of this section treated **ending on the invocation** as the
+format's key differentiator. **That was too simple and the evidence refutes it.**
+The engagement figures held in `exemplars/format-b-saint-of-the-day/`:
+
+| Specimen | Likes | Saves | Hook or hinge? |
+| --- | --- | --- | --- |
+| `03` St Monica (B-2) | 7,194 | 1,306 | numbered promise + named audience |
+| `01` St Clare (B-1) | 7,131 | 882 | hinge word — *broadcast* — into the brand |
+| `06` Queenship of Mary | 2,871 | 148 | **neither** |
+| `04` St Joseph Calasanz | 996 | 69 | **neither**, and no invocation |
+
+The `06` Queenship post **does** close devotionally — a Salve Regina acclamation
+in the invocation's slot — and still lands ~2.5× below Clare and Monica on likes
+and ~6× below on saves. So:
+
+> **Ending on the invocation is necessary but not sufficient. It is table
+> stakes. What separates a strong Format B post is that it gives the reader a
+> reason to stop: a numbered promise with a named audience (B-2), or a hinge
+> carrying the saint's life into what the app does (B-1). A post with neither is
+> inert, however correctly it ends.**
+
+**The opening-line tell.** Both underperformers open by announcing the calendar —
+"August 25 is the feast day of…", "August 22 is the feast day of…". Both strong
+posts open on the reader's situation or straight into the fact. **"Opens by
+announcing the date or the feast" is an anti-pattern marker**, and it
+**co-occurs with encyclopedia register** (§5.7) — the two specimens that open
+that way are also the two encyclopedic ones. It is the cheapest tell available:
+if the first six words name a date, the post is probably inert. A timeliness peg
+is a reason to post *today*; it is not a reason for the reader to stop scrolling,
+and it does not substitute for a hook or a hinge.
+
+**Read the table with its caveats attached.** The three EWTN rows are a valid
+within-account comparison; the Augustine Institute post in `05` is a different,
+much smaller account and its numbers are confounded by follower count. And even
+within EWTN, **subject salience is uncontrolled** — Mary is far better known than
+Joseph Calasanz, so part of the 2,871 vs 996 gap is popularity rather than craft.
+`exemplars/format-b-saint-of-the-day/README.md` states this in full; do not cite
+these numbers without it.
+
+#### 4.4.1 Two variants: where the teaching lives
+
+Format B has **two attested shapes**, and they differ on one axis only: **which
+surface carries the teaching.** Both are declared in the header (§3.1) and the
+scorer runs a different subset of the W-series for each.
+
+> **Naming caution.** The *variants* are **B-1** and **B-2**, always hyphenated.
+> The scorer also has *checks* called **B1** (register) and **B2** (shape and
+> ending), unhyphenated, which run on both formats. They are different things.
+> When in doubt, write "variant B-2" or "check B2".
+
+| | **B-1 — caption-carried** | **B-2 — carousel-carried** |
+| --- | --- | --- |
+| Carries the teaching | The **caption** | The **carousel** |
+| Caption | **~40–70 words**: fact → hinge → invocation | **Minimal**: one framing question + the invocation, ~8–25 words |
+| Hook slide | Not specified | **Numbered promise + explicit audience** |
+| Facts | **Exactly one**, doing all the work | One per numbered slide; the count is the promise |
+| Ends on the invocation | **Yes** | **Yes** |
+| Floor checks | W1–W5 | W2–W5 (variant parts) + **W6–W9** |
+| Specimens | `01-REFERENCE-…-st-clare`, `02-st-raymond-nonnatus` | `03-REFERENCE-…-st-monica` |
+
+**B-1 — caption-carried.** The original spec, as the user gave it:
+
+- **~40–70 words.**
+- **One concrete, verifiable fact** about the saint, graded per §2 as usual.
+- Shape: fact → hinge → invocation, three to five sentences (§5.7).
+- The carousel, where there is one, illustrates. It does not teach.
+
+**B-2 — carousel-carried.** The same account's second shape. The carousel does
+the work and the caption does almost nothing:
+
+- **The hook slide states a numbered promise *and* names an explicit audience.**
+  Both, in one line. The attested specimen: *"4 things St. Monica can teach every
+  Catholic parent."* The number is a contract — promise four and deliver four.
+- **The caption is minimal**: one line of framing, phrased as a question, then
+  the invocation. Nothing else. The specimen's caption in full is *"What can
+  Catholic parents learn from Saint Monica? / Saint Monica, Please Pray for
+  Us!"* — fourteen words.
+- **A framing question is the correct opening for a B-2 caption.** §5.5's ban on
+  opening with a rhetorical question is a **Format A** rule and B-1 inherits it;
+  it does **not** apply to the B-2 caption, whose entire job is to frame and hand
+  off. Applying it here would STOP every correct B-2 post.
+- **The audience line is where Saint Match diverges from the specimen.** EWTN
+  Parents names a **demographic** ("every Catholic parent") because a demographic
+  *is* that account's identity. Saint Match matches on **struggle**, so the same
+  slot carries a **struggle topic**: "…anyone waiting on someone they love",
+  "…anyone carrying a shame they have not said out loud". Use the day's struggle
+  topic from §1. A demographic in that slot is a STOP (`SCORER.md` W7) — not
+  because the specimen is wrong, but because it is a different product.
+
+**Choosing between them.** B-1 is the default. Reach for B-2 when the saint's
+life yields several genuinely distinct, separately sourceable teachings and
+compressing them into one 40–70 word caption would mean picking one and wasting
+the rest. Do not reach for B-2 to smuggle in extra material a single fact could
+not carry — that is the padding failure with more slides.
+
 **Frame and slides.** 9:16 still applies — §4 opens with it and it is
 format-agnostic. The 5–7 slide count and the mandatory cliffhanger of §4.1 do
-**not** apply: a 40–70 word caption cannot carry seven distinct emotional beats,
-and forcing it would produce padding, which is the failure this format avoids.
-The 5–15 words per slide limit still applies to any slide that exists. Beyond
-that, **Format B's slide structure is deliberately unspecified** — it is not yet
-attested, so it is not invented here, and the scorer does not STOP on slide count
-for Format B (`SCORER.md` §3B.0). Record the count so the shape can be settled
-from evidence.
+**not** apply to either variant: a 40–70 word caption cannot carry seven distinct
+emotional beats, and forcing it would produce padding, which is the failure this
+format avoids. The 5–15 words per slide limit still applies to any slide that
+exists.
+
+- **B-1's slide structure remains deliberately unspecified.** It is not yet
+  attested, so it is not invented here, and the scorer does not STOP on slide
+  count (`SCORER.md` §3B.0). Record the count so the shape can be settled from
+  evidence.
+- **B-2's slide structure is constrained only by its own promise.** The number on
+  the hook slide must equal the number of slides that deliver a distinct
+  teaching. That is an internal-consistency rule, not an invented count: the one
+  specimen runs seven slides behind a promise of four, and the remaining slides
+  are not recorded, so **no total slide count is prescribed**.
 
 Everything in §§1, 2, 3, 6, 7, 8 and 10 applies unchanged. **Shorter is not
 looser**: the dossier is still the entire permitted factual universe, quotation
@@ -503,7 +639,12 @@ Instagram post on St Clare, held in
 `exemplars/format-b-saint-of-the-day/01-REFERENCE-ewtn-st-clare.md` as a
 **third-party reference specimen for internal style study only**. It is not
 Saint Match content and is not to be reproduced or imitated line-by-line; what
-transfers is the mechanic, not the text.
+transfers is the mechanic, not the text. The same applies to every other
+third-party file in that folder — four more, two of them negatives and one
+middling.
+
+**§5.7 covers both variants.** Everything in it holds on B-1 and B-2 alike
+except the two shape paragraphs below, which are split by variant.
 
 **The register.** Plain, unhurried, declarative. The saint is the grammatical
 subject. The post reports; it does not exhort. No urgency, no direct address, no
@@ -539,14 +680,60 @@ Rules that follow:
   in one word or one short phrase, there is no hinge. The scorer treats inability
   to name it as the STOP itself (`SCORER.md` W2).
 
-**Shape.** Fact → hinge → invocation, in that order, typically three to five
-sentences. Open on the fact, plainly. No summarising or moralising sentence
-between the hinge and the invocation — that flattens the hinge by explaining it.
-Nothing after the invocation.
+**Shape — variant B-1.** Fact → hinge → invocation, in that order, typically
+three to five sentences. Open on the fact, plainly. No summarising or moralising
+sentence between the hinge and the invocation — that flattens the hinge by
+explaining it. Nothing after the invocation.
 
-**Banned register**, in addition to §5.5 which applies in full: sustained second
-person; Format A's urgent exhorting tone; any emoji; any hashtag block; any app
-mention or pitch line; any summarising closer.
+**Shape — variant B-2.** The caption is framing question → invocation, and
+nothing else. The teaching lives in the carousel: hook slide carrying the
+numbered promise and the audience line, then one slide per numbered teaching,
+ending on the invocation. Everything above about the hinge still holds — what
+changes is only **which surface the two sides sit on**. In B-2 the saint side is
+in the numbered slides and the app side is the **audience line on the hook
+slide**, which is why that line must be a struggle topic: *the app matches a
+person to the saint who carried their thing*, and the audience line is where that
+match is performed rather than stated. Naming a demographic there swaps a
+performed hinge for a segment label and the post loses its only bridge.
+
+The hinge must still be nameable in one word or one short phrase, still be
+exactly one, still be performed and never explained, and still survive the swap
+test — the surface changes, the test does not.
+
+**Banned register**, on both variants, in addition to §5.5 with **one carve-out**:
+sustained second person; Format A's urgent exhorting tone; any emoji; any hashtag
+block; any app mention or pitch line; any summarising closer.
+
+> **The carve-out.** §5.5 bans a **rhetorical question as the opening line**.
+> That holds for Format A and for variant B-1. It does **not** hold for a
+> **B-2 caption**, where a one-line framing question is the required form
+> (§4.4.1). Everything else in §5.5 applies in full to both variants.
+
+Three further bans the evidence is specific about:
+
+- **Encyclopedia register — the primary Format B anti-pattern.** A caption that
+  reads as a reference-work entry: feast date as the opening peg, a string of
+  neutral biographical appositives, a patronage, a bland closing pleasantry. It
+  is fluent, it is accurate, and it teaches nothing and carries no hinge.
+  **This is the default an LLM drifts to**, because it is what the training data
+  holds most of about saints, and it will be produced confidently unless it is
+  named and refused. The worked negative is
+  `exemplars/format-b-saint-of-the-day/04-REFERENCE-ewtnmedia-st-joseph-calasanz.md`.
+  A **timeliness peg** — "as the new school year begins", "August 25 is the feast
+  of…" — is not a hinge; it is a reason to post today, which is a different thing
+  and does not substitute.
+- **The calendar-announcement opening.** "August 25 is the feast day of St N…"
+  Opening by announcing the date or the feast, on either variant. It opens on the
+  calendar rather than on the reader or the fact, and it is **the cheapest tell
+  for encyclopedia register** — the two specimens that open this way are the two
+  encyclopedic ones and the two underperformers (§4.4.0). Treat it as a marker as
+  well as a ban: if a draft's first six words name a date, reread the whole thing
+  for register before anything else.
+- **A stated bridge, i.e. the saint as mascot.** "As the patron saint of X, St N.
+  holds a special place in our mission." The shape can be perfect — third person,
+  right length, ending on the invocation — and still have no hinge, because the
+  connection is announced rather than performed. Worked negative:
+  `exemplars/format-b-saint-of-the-day/05-REFERENCE-augustine-institute-st-augustine.md`.
 
 ---
 
@@ -761,6 +948,9 @@ overlay text into the generated image and treats a generated image without its
 caption text as a failure. Carry the exact overlay string, font, colour,
 highlight word, position range and effects in the prompt, require perfect
 spelling, and regenerate on garbled or misspelled output rather than shipping it.
+`SCORER.md` I4 has been rewritten to match — it now *requires* the baked type to
+be fully specified, and it no longer demands a fixed clear band. The conflict
+recorded in the old `SCORER.md` §6.5 is closed.
 
 ### 8.3 The iconography line in the source notes
 
@@ -871,9 +1061,13 @@ failures reaching it.
    promises nothing the app does not do (§6.1).
 7. The caption was written before the image prompt, and the subject–caption
    alignment line is present and honoured by the prompt (§8.0).
-8. The header block is complete, `draft_id` matches the filename, and
-   **`post_format` is declared**. Checks 9–11 below apply to Format A; checks
-   12–14 apply to Format B. Run only the set matching the declared format.
+8. The header block is complete, `draft_id` matches the filename,
+   **`post_format` is declared**, and on Format B **`format_variant` is declared**
+   too. Checks 9–11 below apply to Format A; **12–15** apply to both Format B
+   variants; **16** is variant B-1 only; **17** is variant B-2 only. Run only the
+   sets matching what was declared — running B-2's checks against a B-1 post, or
+   B-1's word band against a B-2 post, fails a correct post for lacking something
+   its variant does not have.
 
 **Format A only:**
 
@@ -886,16 +1080,39 @@ failures reaching it.
 11. Carousel is 5–7 slides at 9:16, one idea and 5–15 words per slide, with at
     least one cliffhanger at slide 3 or 4 and a landing slide that stands alone.
 
-**Format B only:**
+**Format B, both variants:**
 
-12. Body is 40–70 words, third person, resting on exactly one fact — and that
-    fact is DOCUMENTED and asserted plainly, or TRADITIONAL and attributed. It is
-    never a LEGEND.
+12. Third person throughout. No emoji, no hashtags, no scripture block, no ✝️, no
+    engagement line, no app-mention pair, and the app is not pitched anywhere.
 13. There is exactly one hinge, it is named in the internal hinge line, it is
-    performed rather than explained, and it survives the swap test.
-14. The last line is the invocation and nothing follows it. There is no scripture
-    block, no ✝️, no engagement line, no app-mention pair, no hashtags and no
-    emoji, and the app is not pitched anywhere.
+    performed rather than explained, and it survives the swap test. On B-1 both
+    sides are in the caption; on B-2 the saint side is in the numbered slides and
+    the app side is the audience line.
+14. **The last line is the invocation and nothing follows it.** True on both
+    variants — this is the shared Format B rule.
+15. No encyclopedia register: no run of neutral biographical appositives, no
+    patronage-as-label, no bland closing pleasantry. **The post does not open by
+    announcing the date or the feast** — that is the tell the two weakest
+    specimens share. No stated bridge; the saint is not the brand's mascot. And
+    the post gives the reader a reason to stop — a hinge (B-1) or a numbered
+    promise to a named audience (B-2). Ending on the invocation does not by
+    itself satisfy this; it is table stakes (§4.4.0).
+
+**Variant B-1 only:**
+
+16. Caption is 40–70 words, resting on exactly one fact — and that fact is
+    DOCUMENTED and asserted plainly, or TRADITIONAL and attributed. It is never a
+    LEGEND. Shape is fact → hinge → invocation, with no explaining sentence
+    before the invocation.
+
+**Variant B-2 only:**
+
+17. The hook slide carries **both** a numbered promise and an explicit audience,
+    and that audience is a **struggle topic, not a demographic**. The number
+    promised equals the number of slides that deliver a distinct teaching. The
+    caption is a one-line framing question plus the invocation, ~8–25 words, and
+    nothing else — and the teaching genuinely lives in the slides, such that
+    deleting the caption leaves the post intact.
 
 If any of 1–5 fails, the correct output is not a fix attempt dressed as a
 draft. Output **`STOP — <check>`** and say what the dossier would need to

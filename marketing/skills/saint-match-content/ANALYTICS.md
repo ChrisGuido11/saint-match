@@ -27,6 +27,8 @@ One JSON object per line.
 {
   "draft_id": "2026-08-31-raymond-nonnatus",
   "skill_version": "<git sha of best_skill.md at generation time>",
+  "post_format": "A-themed | B-saint-of-the-day",
+  "format_variant": "B-1-caption-carried | B-2-carousel-carried | null",
   "platform": "instagram | tiktok | youtube | x",
   "format": "carousel-4x5 | photo-9x16 | short",
   "saint": "St Raymond Nonnatus",
@@ -64,3 +66,18 @@ One JSON object per line.
 - Drafts that STOPped at the gate never reach a platform and so never appear
   here. Their `draft_id`s are counted from the scorer's records instead — see
   `SCORER.md`.
+- **`post_format` and `format_variant` are copied from the pack header
+  unchanged**, and rows are never pooled across them. Format A and Format B
+  disagree on length, person and ending; variants B-1 and B-2 disagree on where
+  the content lives. Averaging a 300-word themed post with a fourteen-word
+  carousel caption measures the format mix, not the rulebook.
+  `format_variant` is `null` on Format A rows.
+- **Raw engagement is not comparable across saints, and this is observed rather
+  than assumed.** Two third-party posts in
+  `exemplars/format-b-saint-of-the-day/` — same account, same register, same
+  anti-pattern opener — differ ~3× on likes, with subject fame the obvious
+  available explanation (a Marian feast vs an obscure Mercedarian). **Any
+  consumer comparing `skill_version`s must normalise against a saint-popularity
+  baseline first**, or a rulebook version that happened to draw the better-known
+  saints wins on nothing. Establishing that baseline is out of scope for this
+  file; the requirement is not.

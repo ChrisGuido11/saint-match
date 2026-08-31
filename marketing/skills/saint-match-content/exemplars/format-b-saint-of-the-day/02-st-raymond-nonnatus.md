@@ -1,5 +1,8 @@
 # SPECIMEN — St Raymond Nonnatus
 
+**Variant: B-1 (caption-carried).** **Verdict in the set: POSITIVE.**
+**The only Saint Match item in this folder. No engagement data — unshipped.**
+
 **Status:** Saint Match specimen, **drafted in-house, not yet shipped.** It is
 the first worked example of Format B in the brand's own register.
 **Source:** drafted alongside the Format B spec; illustrative.

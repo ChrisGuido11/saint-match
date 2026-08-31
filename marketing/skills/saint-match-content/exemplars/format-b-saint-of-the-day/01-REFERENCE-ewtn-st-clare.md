@@ -1,5 +1,8 @@
 # REFERENCE SPECIMEN — EWTN, St Clare of Assisi
 
+**Variant: B-1 (caption-carried).** **Verdict in the set: POSITIVE.**
+**Account:** `@ewtnmedia`. **Engagement: 7,131 likes / 882 saves.**
+
 > **THIRD-PARTY CONTENT. NOT SAINT MATCH CONTENT.**
 >
 > This caption was published by **EWTN** on Instagram. It is reproduced here for
@@ -68,3 +71,24 @@ Note also what it does *not* do, all of which Format B inherits:
   phrasing ("the tradition remembers…"), and a Saint Match post resting on it
   flatly asserted would STOP at T2 and W5. **The specimen models the hinge; it
   does not model our sourcing standard.**
+
+## Engagement, and what it does and does not show
+
+**7,131 likes / 882 saves.** The second-strongest post in this folder, behind
+`03` (St Monica, B-2) on both counts.
+
+Read alongside `03`, `04` and `06`, which are from the same organisation and
+therefore a **valid within-account comparison** for follower count — but **not**
+for subject salience, and **not** as four independent data points. The README's
+"How to read the engagement table" section states the confounds in full and must
+be read before this number is cited anywhere.
+
+What the figure supports, weakly and only in company with the other three: a post
+built on a **hinge** gets stopped on and saved at several times the rate of a post
+built on neither hinge nor hook. What it does not support: any claim that the
+invocation ending is what did it — `06` ends devoutly and is inert
+(`best_skill.md` §4.4.0).
+
+**Opening line, for the record:** "During an illness when she could not attend
+Holy Mass…" — opens on the situation, not on the calendar. Compare `04` and `06`,
+which both open "August [N] is the feast day of…".
