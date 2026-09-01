@@ -297,12 +297,12 @@ the schema and is deliberately path-independent.
 | **Topic + theme bridge** | Two or three sentences, internal. Names the struggle topic and the specific virtue this saint's life exemplifies against it, and how that virtue becomes a 5–15 minute Saint Match micro-action. If you cannot name the micro-action, there is no bridge. |
 | **Description caption** | The post body. Written to §5, in the mandatory ending order of §5.4. **Written first** — see below. |
 | **Subject–caption alignment** | One internal line, per §8.1. States whether the caption is about a modern experience or a historical one, and therefore whether the image shows a modern person or the historical figure. Written *after* the caption and *before* the image prompt. |
-| **Caption overlay** | The on-image text. One block per slide, each with its highlight word, highlight colour and position. 5–15 words per slide (§4). Quoted material only per §7. |
+| **Caption overlay** | The on-image text. One block per slide, each with its highlight word, highlight colour and position. 5–15 words per slide (§4.1), **excluding attribution lines and verbatim liturgical text**. Quoted material only per §7. |
 | **AI image prompt** | Per slide. 9:16, art-historically anchored, 14 parameters plus the modular negative prompt. Written to §8. |
 | **Soft CTA** | **Format A only.** The engagement line plus the two app-mention lines, verbatim from §9. Format B has no CTA block — its hinge is the CTA (§5.7), and this row is omitted from the pack entirely. |
 | **Hashtags** | **Format A only.** 15–20 niche tags from the three-tier bank, then 3–5 buried trending tags. §9.4. Omitted from a Format B pack. |
 | **Hinge line** | **Format B only.** One internal line naming the hinge word or concept, the sentence where it belongs to the saint, and the sentence where it does the brand's work. §5.7. On variant B-2 the two sides sit on different surfaces — name which slide and which line. |
-| **Hook slide line** | **Format B, variant B-2 only.** One internal line quoting the hook slide verbatim and naming its two required parts: the number promised, and the audience — which for Saint Match is a struggle topic, not a demographic. §4.4.1. |
+| **Hook slide line** | **Format B, variant B-2 only.** One internal line quoting the hook slide verbatim and naming its two required parts: the number promised, and the audience — which for Saint Match names a struggle, not a demographic, and preferably in the saint's own vocabulary. §4.4.1. |
 | **Source notes** | Every factual claim in the pack, one line each, graded DOCUMENTED / TRADITIONAL / LEGEND, with the source. Plus an explicit list of what was **excluded and why** — the exclusions are the point. |
 
 **Order of work is fixed: caption → alignment decision → image prompt.** Never
@@ -892,7 +892,9 @@ numbered promise and the audience line, then one slide per numbered teaching,
 ending on the invocation. Everything above about the hinge still holds — what
 changes is only **which surface the two sides sit on**. In B-2 the saint side is
 in the numbered slides and the app side is the **audience line on the hook
-slide**, which is why that line must be a struggle topic: *the app matches a
+slide**, which is why that line must name a struggle — and preferably in the
+saint's own vocabulary, §4.4.1 route (i), which is what lets the same line be the
+app side and still fail the swap test: *the app matches a
 person to the saint who carried their thing*, and the audience line is where that
 match is performed rather than stated. Naming a demographic there swaps a
 performed hinge for a segment label and the post loses its only bridge.

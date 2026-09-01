@@ -1,4 +1,11 @@
-# 06 — St Gregory the Great — Format B, variant B-1 — PASS
+# 06 — St Gregory the Great — Format B, variant B-1 — PASS @ `c0cd3d4`, **STOP @ `70a0bb8`**
+
+> **Two grades, and the filename records the first.** This pack **PASSed** against
+> the rulebook as it stood at `c0cd3d4`, which is the grade below at §9. It was
+> **re-graded against `70a0bb8`** — the commit that fixed SF-1 to SF-18 — and it
+> now **STOPs at I4**, on a clause that was tightened in response to its own
+> finding. The re-grade is at **§10**, after the original. Neither grade was
+> edited to agree with the other; both stand with their `skill_version`.
 
 ```
 draft_id       2026-09-03-gregory-the-great-b1
@@ -449,3 +456,124 @@ limit), **SF-7** (§8.0's named-reference-artwork rule collides with I2), **SF-9
 (`draft_id` collides when two packs share a saint and a day), **SF-11** (T4's `N/A`
 justification is boilerplate the scorer says must be bespoke), **SF-13** (I4 asks for a
 *vertical* percentage range but §8.1's own worked example is horizontal).
+
+---
+
+## 10. Re-grade against the corrected rulebook
+
+```
+VERDICT: STOP  (was PASS at c0cd3d4)
+draft_id:       2026-09-03-gregory-the-great-b1
+skill_version:  best_skill.md @ 70a0bb89573a7299dac6a7a452c43d4aed998091
+post_format:    B-saint-of-the-day
+format_variant: B-1-caption-carried
+graded_by:      hand-graded against SCORER.md + method/ @ 70a0bb8
+graded_at:      2026-09-01
+supersedes:     the §9 grade against c0cd3d4, which stands as issued
+
+WHY THIS WAS RE-GRADED
+  The §9 grade was run against c0cd3d4 and its own SF section proposed eighteen
+  spec fixes. Fifteen landed in 70a0bb8. A grade is only meaningful against a
+  named rulebook, so the pack was re-read against the new one rather than having
+  the old verdict carried forward.
+
+CHANGED CHECKS ONLY — every check not listed here is unchanged from §9.
+
+  I4 type zone / frame     **STOP** (was PASS) — clause 3, the contrast provision.
+                           The corrected clause requires the prompt to name a hex
+                           value on BOTH sides of the type: the type colour, and
+                           the value the region behind it is held to. This prompt
+                           names one side (#F5E6C8) and states the other as an
+                           OUTCOME: "the wall behind the type is held light enough
+                           against #F5E6C8 to clear 3.5:1 contrast across the whole
+                           zone."
+                           That is exactly the formulation the corrected clause
+                           refuses. It delegates the actual value to the generator
+                           and leaves the grader nothing checkable — which is the
+                           defect this pack itself reported as SF-16, arriving back
+                           at its own door.
+                           **And the clause is probably backwards on its own
+                           terms.** The type is cream #F5E6C8; for cream type to
+                           clear 3.5:1 the region behind it must be DARK, not
+                           "light enough". The composition line says that region is
+                           "an even warm brown mid-shadow", so the intent was a
+                           dark wall and the word "light" is wrong. Under §1's
+                           fail-closed default an ambiguous contrast provision
+                           STOPs regardless of which reading was meant.
+                           Clauses 1, 2, 4 and 5 are unaffected and still PASS.
+                           Clause 2 is now *better* supported, not worse: the zone
+                           is given as "vertical 9–27% of frame height, full width,
+                           inset 8% left and right" — a defining axis plus the
+                           extent on the other, which is what the corrected clause
+                           asks for (SF-13).
+
+  T5 feast / rank / bio    PASS (unchanged verdict, newly-required evidence
+                           already present). T5 now requires the dossier to carry
+                           an explicit supersession row (SF-17). §0 already has
+                           one, and it is the model of what the clause now asks
+                           for: rank and calendar named; 3 September 2026 computed
+                           to a Thursday rather than recalled; "Superseded? No. No
+                           Sunday, solemnity or feast displaces it"; source given.
+                           This pack is the reason the row became mandatory.
+
+  W5 facts graded          PASS (unchanged verdict, ambiguity gone). The unit is
+                           now ONE DOSSIER LINE. The caption rests on D16 and only
+                           D16, so it is one fact. The three named pairs inside it
+                           — the chapter count, impatient/patient, silent/talkative
+                           — are that line's contents, not additional facts, and
+                           the corrected check says so in terms. The §9 NOTES
+                           recorded that a stricter grader could have counted three
+                           and STOPped; that grader no longer exists. SF-1 closed.
+
+  T3 quotation             PASS (unchanged verdict, and the pressure that damaged
+                           this pack is removed). Attribution lines no longer count
+                           toward the 5–15 word slide limit (§4.1), and T3 now
+                           states outright that the layout never edits the sourcing.
+                           See REQUIRED REWRITES.
+
+  I1/I2/I3                 PASS, unchanged. Note that §8.0's named-reference-artwork
+                           instruction now carries the exception this pack argued
+                           for (SF-7): where the canonical type carries an attribute
+                           I2 excludes, name none and record why. This pack's
+                           deliberate withholding of a Ribera reference is now
+                           on-spec rather than a recorded deviation.
+
+REQUIRED REWRITES
+  1. I4 — name the value behind the type. Replace "the wall behind the type is
+     held light enough against #F5E6C8 to clear 3.5:1 contrast across the whole
+     zone" with a named pair, and fix the light/dark inversion. The palette
+     already supplies one: hold the wall across 9–27% of frame height at warm
+     brown #3E2723 to sienna #8B4513, giving cream #F5E6C8 type well clear of
+     3.5:1. This is a one-line change to the prompt and nothing else in the pack
+     moves.
+  2. Overlay attribution — restore the honest citation. Line 2 currently reads
+     "Gregory, Pastoral Rule III". It was drafted as "St Gregory the Great,
+     Pastoral Rule III" and cut to four words purely to bring the block inside
+     the 5–15 limit, under a rule that did not say whether an attribution counted.
+     It does not count any more (§4.1), so restore the full form. The overlay is
+     then 9 words of quotation plus an excluded attribution line — comfortably
+     inside the limit.
+     This one is not verdict-bearing on its own: "Gregory, Pastoral Rule III"
+     names author, work and locus and passes T3. It is listed because the reason
+     it was shortened no longer exists, and leaving it would preserve the damage
+     after the cause was removed.
+
+NOTES
+  Verdict movement is PASS -> STOP, and that is the correct direction. The pack
+    did not get worse; a check that was being satisfied by assertion now has to be
+    satisfied by a value. This pack asserted "3.5:1" about an image nobody has
+    generated, said so itself in SF-16, and the fix caught it. A tightening that
+    fails to catch its own motivating case would not have been a tightening.
+  The rewrite is one line and the pack is otherwise intact. Nothing about the
+    caption, the dossier, the hinge or the iconography changed.
+  Measured contrast is no longer this grade's business at all. It is P1
+    (method/TRUTH-CHECKS.md §6.6), owned by whoever renders the image, run on the
+    rendered file before publication. See SPEC-DEBT.md D-2: P1 has an owner by
+    role and no pipeline step yet runs it.
+  draft_id already conforms to the corrected §3.1 format — date, saint slug,
+    variant token — because both 3 September packs had appended -b1/-b2 off-contract
+    to avoid the collision that became SF-9. The contract now matches the practice.
+  Filename still says "pass". See SPEC-DEBT.md D-5: it records the verdict this
+    draft was first published under, and renaming would break the drafts index to
+    restate something both grades already carry.
+```

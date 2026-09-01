@@ -1,4 +1,11 @@
-# 07 — St Gregory the Great — Format B, variant B-2 — STOP (W2, G1)
+# 07 — St Gregory the Great — Format B, variant B-2 — STOP (W2, G1) @ `c0cd3d4`, **still STOP @ `70a0bb8`**
+
+> **Re-graded, and the verdict holds — but the reason changed.** At `c0cd3d4`
+> this pack STOPped at W2/G1 **and could not be fixed**, because W2 and W7 were
+> close to mutually unsatisfiable on B-2 (SF-2). `70a0bb8` fixed that. The pack
+> **as filed** still STOPs at W2 and G1, on the same generic audience line — but
+> the §10 rewrite that clears W2 **now also clears W7**, so a passing version of
+> this post is constructible for the first time. Re-grade at **§11**.
 
 ```
 draft_id       2026-09-03-gregory-the-great-b2
@@ -819,3 +826,213 @@ required dossier row and a named clause in T5.
 their own caveats attached. Three places to update, three places to drift, and the
 caveats are already worded differently in each. Not a correctness bug today. It will be
 one. **Fix:** one canonical copy in the exemplars README; the other two cite it.
+
+---
+
+## 11. Re-grade against the corrected rulebook
+
+```
+VERDICT: STOP  (unchanged; the reason narrowed from "unsatisfiable" to "fixable")
+draft_id:       2026-09-03-gregory-the-great-b2
+skill_version:  best_skill.md @ 70a0bb89573a7299dac6a7a452c43d4aed998091
+post_format:    B-saint-of-the-day
+format_variant: B-2-carousel-carried
+graded_by:      hand-graded against SCORER.md + method/ @ 70a0bb8
+graded_at:      2026-09-01
+supersedes:     the §10 grade against c0cd3d4, which stands as issued
+
+THE HEADLINE
+  At c0cd3d4 this pack reported that it could not be written to pass. That is no
+  longer true, and the change is the point of the re-grade:
+
+    as filed  ("…anyone doing work they never chose")   W7 PASS   W2 STOP
+    §10 rewrite ("…anyone who cannot get back to the quiet")
+                                                        W7 PASS   W2 PASS
+
+  The pack is graded as filed (§1: grade what is declared, never the rewrite), so
+  the verdict is still STOP. But the second row did not exist at c0cd3d4 — it was
+  a W7 STOP then — and it exists now.
+
+CHANGED CHECKS ONLY — every check not listed is unchanged from §10.
+
+  W2 hinge                 **STOP** — unchanged verdict, changed status.
+                           The hinge as filed is "the work you did not choose",
+                           and it still survives substitution of St Ambrose and of
+                           St Augustine of Hippo. It is still generic and it is
+                           still a real failure.
+                           **What changed: this is now a fixable failure rather
+                           than a structural one.** At c0cd3d4 the only escape
+                           from W2 was a phrase that then STOPped at W7, so no
+                           version of the post was known to pass. W7 has since
+                           been corrected (below) and the escape is now legal.
+                           W2 itself was deliberately NOT weakened. The rejected
+                           alternative was to scope its swap test on B-2 to the
+                           saint side; that would have made this pack PASS, and it
+                           would have made W2 unfailable, since a sourced fact
+                           about this saint fails a swap by construction. This
+                           pack STOPping is the correct behaviour of a working
+                           check, not a defect in it.
+
+  W7 audience = struggle   PASS — unchanged verdict, and the check underneath it
+                           is a different check.
+                           As filed: "anyone doing work they never chose" is
+                           **route (ii)**, a plain paraphrase of `vocation`. It
+                           passes W7 — it names what someone is carrying, not what
+                           someone is — and the corrected check now says in terms
+                           that route (ii) is the route that usually fails W2.
+                           That is exactly what happened here, so the two verdicts
+                           are no longer in tension: W7 passing and W2 failing on
+                           one line is a documented pairing with a named remedy,
+                           where at c0cd3d4 it was an unanticipated collision.
+                           Evidence, in the form the corrected check requires:
+                             clause quoted:  "anyone doing work they never chose"
+                             route:          (ii) topic paraphrase
+                             paraphrases:    vocation
+                             topic field:    vocation
+                           SF-2 is closed.
+
+  G1 bridge                **STOP** — unchanged, and for the same reason as W2.
+                           "St Ambrose's life shows fidelity in an office he did
+                           not seek" is equally true. Same substitute, same
+                           collapse. The §10 rewrite's virtue — keeping a piece of
+                           the quiet inside work you did not choose — is specified
+                           by Gregory's own complaint and does not transfer.
+
+  W6 numbered promise      PASS — unchanged, and it now also clears the new floor.
+                           The corrected check stipulates **at least three**
+                           teaching slides (SF-5). This pack promises 4 and
+                           delivers 4, so it is clear of the floor. Recorded
+                           because the floor is new, not because it was close.
+
+  W8 caption minimal       PASS — unchanged verdict, and the band no longer does
+                           anything. The 8–25 word band is now **recorded, not
+                           gated** (SF-15). Caption is 20 words. The §10 NOTES
+                           observed that 9 or 24 would both have passed and that
+                           the band was doing no work; it is now labelled as such
+                           rather than presented as a measurement. The shape rule
+                           — exactly two elements and nothing else — still STOPs
+                           and still passes here.
+
+  B1 register              PASS — **and the reservation recorded at c0cd3d4 is
+                           withdrawn, because the check now reaches the slides.**
+                           B1-B was written about "a caption"; on B-2 the caption
+                           is 20 words and all the register risk is on the slides,
+                           so the format's primary anti-pattern was unchecked on
+                           the only surface that can commit it. B1-B now runs on
+                           every slide overlay on B-2, in the same words W4 uses,
+                           and says to read the teaching slides **as a block**
+                           because the anti-pattern is cumulative.
+                           Run properly, as a block: slides 2, 4 and 5 are the
+                           clipped biographical statements the reservation
+                           flagged. They **pass** — each carries a turn rather
+                           than an appositive, and the set moves (resigned it →
+                           recorded the loss → took a title of service → sent the
+                           mission) rather than accumulating labels. There is no
+                           patronage-as-label and no closing pleasantry.
+                           The difference from §10 is that this is now a graded
+                           result instead of a judgement the check could not
+                           reach. SF-12 closed.
+
+  T3 quotation             PASS — unchanged verdict, and the tension is gone.
+                           Slide 3's citation may now go **on the slide**:
+                           attributions are excluded from the 5–15 word count
+                           (§4.1), so "Made pope, he wrote: 'I have lost the deep
+                           joys of my quiet.'" is 13 words and the attribution
+                           rides free. §7.2's source-notes route also remains open
+                           and T3 now names it explicitly, so a grader reading the
+                           slide alone can no longer mistake it for an
+                           unattributed quotation. SF-6 closed. See REWRITES.
+
+  W4 no product pitch      PASS — unchanged verdict, and the omission is now
+                           positively correct rather than a fail-closed guess.
+                           §8.0's slide template put the @saintmatchapp handle at
+                           8% from top while §5.4 forbade the app in any on-image
+                           text; this pack omitted it and recorded the guess. The
+                           handle is now Format A furniture, **omitted on Format
+                           B**, and W4 states that its absence here is never a
+                           STOP. SF-8 closed; the pack was right.
+
+  I4 type zone / frame     PASS — unchanged verdict, and it now passes the
+                           *tightened* clause 3 rather than the rubber-stamped one.
+                           The prompt names a hex value on **both** sides: type at
+                           #3E2723, region behind it held at #FAF3E8 to #F0E0C8
+                           across the entire zone. That is a checkable property of
+                           the prompt. (Pack 06 does not, and STOPs there on
+                           re-grade — see `06-…-b1.md` §10.)
+                           Clause 2 also now fits: the zone is a side band given
+                           on both axes — horizontal 8–52%, vertical 24–64% — and
+                           the corrected clause asks for the defining axis plus the
+                           extent on the other, instead of demanding a vertical
+                           range no side band can supply. SF-13 closed.
+                           **Superseded phrasing, not a defect:** the prompt says
+                           "giving well above 3.5:1" and §10 asserted the same.
+                           Nothing was measured, and at gate time nothing could be.
+                           Do not write it that way again — specify the provision,
+                           and leave the measurement to P1
+                           (method/TRUTH-CHECKS.md §6.6). Not a STOP: the named
+                           pair is present and is what the clause tests.
+
+  T5 feast / rank / bio    PASS — unchanged. T5 now requires a supersession row in
+                           the dossier (SF-17); this pack cross-references pack
+                           06 §0, which carries one in the required form.
+
+  T4 scripture             N/A — and the bespoke justification is no longer
+                           demanded. "N/A — no scripture cited in the pack" is now
+                           listed in GATE.md §1 as sufficient as it stands. SF-11
+                           closed; the §10 note predicting this justification would
+                           be rewritten in fresh words on every Format B pack
+                           forever is resolved.
+
+REQUIRED REWRITES
+  1. W2 / G1 — unchanged from §10, and now known to be sufficient. Replace the
+     audience line on the hook slide and in the caption with the §10 rewrite:
+
+       hook slide:  "4 things St Gregory can teach anyone who cannot get back to
+                     the quiet."                                      (14 words)
+       caption:     "What can St Gregory the Great teach anyone who cannot get
+                     back to the quiet? / St Gregory the Great, pray for us."
+       slide 1 highlight: `chose` -> `quiet`;  slide 3 highlight: `quiet` -> `lost`
+
+     **The §10 caveat on this rewrite is withdrawn.** §10 recorded that the
+     rewrite "is not free" and "moves the risk from W2 to W7", because "the quiet"
+     is at best a loose paraphrase of `distraction` and W7 then required one of
+     twelve categories. W7 no longer requires that. The rewrite is **route (i)** —
+     the struggle named in the saint's own vocabulary, from D11, a DOCUMENTED line
+     of Gregory's own letter — which is the corrected check's preferred form and
+     its worked example. Evidence as W7 now requires it:
+       clause:      "anyone who cannot get back to the quiet"
+       route:       (i) saint's own vocabulary
+       dossier line: D11, DOCUMENTED, Registrum Epistolarum I.5 to Theoctista
+       topic field:  vocation
+     Swap test: "4 things St Ambrose can teach anyone who cannot get back to the
+     quiet" has nothing to attach to — remove Gregory and the carried word has no
+     source. W2 passes.
+
+  2. T3 / §4.1 — put the citation on slide 3, now that it costs nothing.
+     Slide 3 becomes 13 words of quotation plus an excluded attribution line
+     reading **"St Gregory the Great, Registrum Epistolarum I.5"** — full and
+     untrimmed, because the word limit no longer reaches it. Keep the source-notes
+     entry as well. This is the pack that reported the citation-budget defect;
+     it should not remain the pack that displays it.
+
+NOTES
+  Neither version of this post was known to pass both W2 and W7 at c0cd3d4. One
+    is now. That is the single substantive outcome of the re-grade.
+  The pack is still STOPped as filed and that is correct — §1 grades what is
+    declared, and the rewrite is a fragment, not a graded pack. Writing it out and
+    grading it end to end is the next real B-2 job, and it is recorded as
+    SPEC-DEBT.md D-3: the corrected W7 has not yet been exercised on a complete
+    pack, and no artifact of any origin — including the third-party specimen — has
+    yet satisfied W2 and W7 together.
+  Route (i) depends on a DOCUMENTED line of the saint's OWN words. Gregory left
+    a great deal; many saints left nothing. If route (i) turns out to be
+    unavailable for the silent saints, W7 needs a third route. Watch for it
+    (D-3).
+  Per-slide word counts unchanged: 12 / 11 / 13 / 9 / 11 / 7, all inside 5–15
+    before any attribution is added, and attributions no longer count.
+  Total slide count 6 (1 hook + 4 teaching + 1 invocation); teaching slides 4,
+    clear of the new floor of 3.
+  The most attractive fourth teaching — Gregory setting out for Britain himself —
+    is still excluded, still for the same reason, and none of these fixes make it
+    sourceable.
+```

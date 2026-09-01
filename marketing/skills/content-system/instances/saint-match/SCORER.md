@@ -305,10 +305,18 @@ those, not against general taste and not against the Raymond caption — which
   cliffhanger present but not at slide 3 or 4; a landing slide that does not
   stand alone. Also STOPS: the five fixed liturgical slide roles of the Raymond
   post used as though they were the default — they are a permitted *variant*
-  (§4.3), and taking the variant never relaxes 9:16, the 5–7 count, or the 5–15
-  word limit.
-- **Evidence:** slide count, per-slide word counts, the cliffhanger slide number
-  and its final characters, the landing slide quoted.
+  (§4.3), and taking the variant never relaxes 9:16 or the 5–7 count.
+- **The word limit has two exclusions, and V7 must honour both** (`best_skill.md`
+  §4.1): an **attribution line does not count**, and **verbatim liturgical text is
+  exempt** (§4.3). So a quotation slide is measured on its quoted text and
+  lead-in, not on its citation; and **a Collect slide does not STOP on word
+  count** — the Collect runs 40–70 words, may not be paraphrased
+  (`../../method/QUOTATION.md` §7.5), and was previously an element this check
+  made impossible to render. Do not count a citation into the limit and then STOP
+  the slide: the limit is a legibility rule and it does not edit sourcing.
+- **Evidence:** slide count, per-slide word counts **with any attribution or
+  liturgical text noted as excluded**, the cliffhanger slide number and its final
+  characters, the landing slide quoted.
 - **N/A:** for `reel` format, which is a single image — record `N/A` and check
   instead that there is exactly one overlay block with one highlight word.
 
@@ -694,7 +702,7 @@ provisional; widen it from evidence, not from a draft that missed it.
     would carry the teaching. The floor is the only thing that catches it.
   - Widen or narrow it from specimens, not from a draft that missed it.
 
-### W7 — An explicit audience is named, and it is a struggle topic
+### W7 — An explicit audience is named, and it names a struggle
 
 - **Tests:** the hook slide's overlay text, second required part.
 - **PASSES — both clauses:**
