@@ -85,8 +85,15 @@ export default function OnboardingScreen() {
     if (currentIndex < SLIDES.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1, animated: true });
     } else {
-      await requestNotificationPermission();
-      await scheduleDailyReminder();
+      // Notification setup is best-effort: local notification scheduling isn't
+      // supported on web (and permission requests can fail), so a failure here
+      // must never trap the user in onboarding.
+      try {
+        await requestNotificationPermission();
+        await scheduleDailyReminder();
+      } catch (e) {
+        if (__DEV__) console.warn('Onboarding notification setup skipped:', e);
+      }
       await setNotificationPreferences({
         dailyReminderEnabled: true,
         dailyReminderHour: 8,
