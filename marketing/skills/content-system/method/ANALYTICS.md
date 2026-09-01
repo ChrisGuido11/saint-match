@@ -72,6 +72,25 @@ The Saint Match instance names the last three identity fields `saint`,
   that should have been rejected.
 - **`draft_id` is the join key** back to the post pack, and it is never altered
   by the collecting system.
+- **`draft_id` must be unique across every pack the instance has ever produced,
+  and an instance's id format must make that structurally true.** A date plus a
+  subject slug is **not** sufficient: the moment two packs cover the same subject
+  on the same date — two variants of one post, an A/B pair, a rewrite kept
+  alongside its original — they collide, and a collision does not error. It
+  **silently merges the metrics of different posts into one row set**, which is
+  the worst available outcome for a system whose entire purpose is comparing
+  variants. Whatever axes an instance can produce more than one pack on must
+  appear in the id.
+  - **The disambiguator is derived from a declared header field, never assigned
+    on discovery of a collision.** If the suffix is added only when a second pack
+    appears, the first pack's id changes retroactively — and it may already have
+    been emitted to a platform and joined against. An id that can change is not a
+    join key.
+  - Where an instance can still collide after that (two packs, same subject, same
+    date, same declared axes), append an ordinal — `-2`, `-3` — in creation
+    order, the first pack keeping no ordinal.
+  - **Ids already emitted are never rewritten**, including to match a newer
+    format. Append-only applies to the key as well as to the rows.
 - **The same `draft_id` appears once per platform**, so one post produces up to
   four rows. Do not deduplicate on `draft_id` alone; the key is
   `(draft_id, platform, collected_at)`.

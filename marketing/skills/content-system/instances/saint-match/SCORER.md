@@ -246,9 +246,17 @@ those, not against general taste and not against the Raymond caption — which
   image prompt's rendered text.
 - **STOPS:** absent; only one line; a mixed pair drawn from two different rows;
   a reworded line; the pair placed above the hashtags but below them in order;
-  the app named anywhere above these two lines or in any on-image text.
+  the app named anywhere above these two lines or in any on-image **copy**.
+- **Carve-out: the `@saintmatchapp` handle in §8.0's brand-background slide
+  template is furniture, not an app mention, and does not fire V4.** V4 governs
+  the two app-mention **lines** and the app being *named in copy* — a handle set
+  at 8% from top in the slide template is a watermark, it says nothing, and it is
+  part of an attested shipped design. This carve-out is **Format A only**; on
+  Format B the handle is omitted entirely (§8.0, W4), so the question does not
+  arise there.
 - **Evidence:** both lines verbatim, the row they match, and the result of
-  searching the body and all overlays for the app name.
+  searching the body and all overlays for the app name **in copy**, noting the
+  handle separately if the slide template carries one.
 
 ### V5 — Hashtag block and tiering
 
@@ -319,17 +327,17 @@ B-2 only. W2–W5 run on both** — W3 and W4 identically, W2 and W5 with a
 per-variant part.
 
 **What the evidence actually separates.** The set holds engagement figures for
-six third-party posts. The five below are all from the EWTN organisation and so
-share a follower base; `05` is a much smaller account and is deliberately kept
-out of the table (see the README). The split in them is **not** the invocation:
+six third-party posts, and the split in them is **not** the invocation.
 
-| Specimen | Likes | Saves | Engine? |
-| --- | --- | --- | --- |
-| `03` EWTN Parents, St Monica (B-2) | 7,194 | 1,306 | **(b)** numbered promise + named audience |
-| `01` EWTN, St Clare (B-1) | 7,131 | 882 | **(a)** hinge word — *broadcast* — into the brand |
-| `07` EWTN, St Bernard | 5,324 | 552 | **(c)** a quotable image quote |
-| `06` EWTN, Queenship of Mary | 2,871 | 148 | **none** (ends devotionally) |
-| `04` EWTN, St Joseph Calasanz | 996 | 69 | **none**, and no invocation |
+> **The figures themselves are held in exactly one place:**
+> **`exemplars/format-b-saint-of-the-day/README.md`**, together with the caveats
+> that govern how they may be read — within-account validity, the uncontrolled
+> subject-salience confound, and the one row that carries no comparative weight
+> at all. **They are not restated here.** They used to be, in this file and in
+> `best_skill.md` §4.4.0 and in that README, and the three copies had already
+> drifted into three differently-worded sets of caveats. A grader who needs the
+> numbers reads the README; a grader who only needs the conclusion reads the next
+> paragraph.
 
 **Ending on the invocation is necessary but not sufficient — it is table
 stakes.** The Queenship post closes devotionally, on a Salve Regina acclamation,
@@ -351,8 +359,10 @@ the one that pulls hardest against T3: the quote that would perform best is the
 quote most likely to be misattributed, and `07` carries a genuine image quote
 next to a misattributed caption clause. See `ATTRIBUTION-CASES.md`.
 
-Read those five rows with §9.5's caveats attached: they are **not** five
-comparable data points. See `exemplars/format-b-saint-of-the-day/README.md`.
+Read the figures with §9.5's caveats attached: they are **not** a set of
+comparable data points. `exemplars/format-b-saint-of-the-day/README.md` is the
+**authoritative** copy of both the numbers and the caveats; cite it rather than
+reproducing either.
 
 Its exemplar set is `exemplars/format-b-saint-of-the-day/`. **That set holds
 seven items: three positive, two negative, one middling, one mixed, and only one
@@ -372,17 +382,23 @@ rule and is format-agnostic, so **9:16 still applies** and I4 still tests it. Th
 **do not apply on either variant** — a 40–70 word caption cannot carry seven
 distinct emotional beats, and demanding it would force padding, which is the
 failure this format exists to avoid. The 5–15 words per slide legibility limit
-still applies to any slide that exists.
+still applies to any slide that exists, **with the two exclusions `best_skill.md`
+§4.1 states**: an attribution line does not count toward it, and verbatim
+liturgical text is exempt (§4.3). **Do not STOP a slide for a word count that
+only exceeds the limit once a citation is counted into it** — the limit is a
+legibility rule and it is not entitled to edit the sourcing
+(`../../method/TRUTH-CHECKS.md` T3).
 
 - **Variant B-1's slide structure is unspecified by the user.** Do not invent one
   and do not STOP on slide count. Record the count in NOTES so the shape can be
   settled from evidence once more specimens exist.
-- **Variant B-2's slide count is constrained only by its own promise**, and only
-  through W6: the number on the hook slide must equal the number of slides
-  delivering a distinct teaching. **No total slide count is prescribed** — the one
-  specimen runs seven slides behind a promise of four and the remaining slides
-  are not recorded, so there is nothing to prescribe from. Record the total in
-  NOTES.
+- **Variant B-2's slide count is constrained by its own promise**, through W6:
+  the number on the hook slide must equal the number of slides delivering a
+  distinct teaching. **No total slide count is prescribed** — the one specimen
+  runs seven slides behind a promise of four and the remaining slides are not
+  recorded, so there is nothing to prescribe from. Record the total in NOTES.
+  **There is, however, a floor of three teaching slides** (W6), which is a
+  stipulation rather than a reading of the specimen and is marked as one.
 
 ### W1 — Caption length, 40–70 words
 
@@ -459,8 +475,8 @@ document. Read it twice.
 | Saint side | a sentence in the caption | one of the numbered teaching slides |
 | App side | a sentence in the caption | the **audience line on the hook slide** (W7) |
 
-On **B-2 the audience line is the app side**, which is why W7 requires it to be a
-**struggle topic**: Saint Match matches a person to the saint who carried their
+On **B-2 the audience line is the app side**, which is why W7 requires it to name
+a **struggle**: Saint Match matches a person to the saint who carried their
 thing, and the audience line is where that match is *performed*. A demographic
 there ("every Catholic parent") is a segment label, not a hinge — correct for an
 account whose identity is a demographic, wrong for a product that matches on
@@ -472,6 +488,30 @@ It must still be nameable in one word or one short phrase, still be exactly one,
 still be performed and never explained, and still survive the swap test. The
 three-line evidence form above is required identically, with the surface named:
 `saint side: slide 3 — "…"`, `app side: hook slide — "…"`.
+
+> **W2 and W7 used to be close to mutually unsatisfiable on B-2. Read this before
+> grading either.** W2 defines the app side of a B-2 hinge to be the audience
+> line; W7 formerly required that line to be one of twelve struggle categories
+> "or a plain paraphrase of one"; and a generic category **survives a saint swap
+> by construction**, because genericity is what makes a category one. So the app
+> side of every B-2 hinge was under pressure to be exactly the kind of phrase W2
+> calls not-a-hinge, and a real pack — draft `07` — could not be written to pass
+> both.
+>
+> **What changed is W7, not W2.** The twelve-topic list governs the `topic`
+> **header field**; the audience line may name the struggle in **the saint's own
+> vocabulary**, taken from a DOCUMENTED dossier line (`best_skill.md` §1, §4.4.1;
+> W7 below). That is what makes the swap test bite: "…anyone who cannot get back
+> to **the quiet**" is Gregory's own word out of his own letter, and once Gregory
+> is removed the word has no source.
+>
+> **W2 was deliberately not weakened, and the way it was not is worth stating.**
+> The alternative fix was to scope W2's swap test on B-2 to the **saint side**
+> only. That closes the contradiction and destroys the check: the saint side is a
+> sourced fact about this saint, so it fails a swap *by construction*, and W2 —
+> the defining check of this format — would pass automatically whenever T1
+> passed. **A check that cannot fail is not a check.** W2 still runs on both
+> sides, on both variants, unchanged.
 
 ### W3 — Ends on the invocation
 
@@ -520,6 +560,14 @@ final slide saying where to get the app.
   post is a STOP: those are Format A furniture.
 - **Evidence:** the offending line verbatim, or an explicit statement that the
   caption contains no pitch line.
+- **The `@saintmatchapp` handle on a Format B slide is a STOP; its absence is
+  correct and is never one.** `best_skill.md` §8.0's brand-background slide
+  template puts the handle at 8% from top, and §5.4 says the app is never named
+  in any on-image text — a direct contradiction that, under §1's fail-closed
+  default, a grader had to STOP either way it was read. **Resolved in §8.0: the
+  handle is Format A furniture and is omitted on Format B**, where the hinge is
+  the brand's only presence. Do not STOP a Format B pack for having no handle,
+  and do not read the template as requiring one here.
 - **Note on naming vs pitching:** W4 bans the **pitch**, not the noun. A hinge
   may make the app's function visible without naming it, and the specimens
   above do exactly that — neither names Saint Match. **When in doubt, not naming
@@ -543,11 +591,32 @@ requirement is variant B-1 only.**
   format an attributed legend is still load-bearing (`best_skill.md` §2); a
   TRADITIONAL fact asserted flatly.
 
-#### W5 — variant B-1: exactly one fact
+#### W5 — variant B-1: exactly one fact, and a fact is one dossier line
 
+- **The unit is one dossier line.** Detail internal to that line — a count, a
+  list, the named contents of the thing the line records — is **not** a second
+  fact. Count dossier lines, not sentences, not clauses, not independently
+  falsifiable propositions.
 - **PASSES:** **one** such fact, in the caption, doing all the anchoring work.
-- **STOPS:** more than one fact, so the hinge has to compete for the word budget.
-- **Evidence:** the fact quoted, its dossier line, and its grade.
+- **STOPS:** the caption rests on **two or more dossier lines**, so the hinge has
+  to compete for the word budget.
+- **Evidence:** the fact quoted, **its dossier line number**, and its grade.
+- **Why the unit is defined, and why it had to be.** This check formerly said
+  "exactly one fact" and never said what a fact was. That is not a harmless gap
+  in a **fail-closed** gate: §1 turns "grader cannot determine whether a check
+  passes" into a STOP, so an undefined unit **STOPs by itself** on any caption
+  whose fact has internal structure — which is nearly every fact worth building a
+  post on. A caption resting on one line recording that a book "spends thirty-four
+  chapters telling one kind of listener from another — the impatient from the
+  patient, the too silent from the ones who talk too much" is **one** fact. One
+  grader counted one; another would have counted three and STOPped a correct
+  pack. Now there is nothing to disagree about: one line, one fact.
+- **The gaming route, and where it is caught.** Writing one very broad dossier
+  line to make several facts count as one is a **dossier** defect and is a **T1**
+  STOP, not a W5 judgement: the dossier is built before the caption
+  (`best_skill.md` §3.2), and a line added, widened or merged after the caption
+  exists is caught there. **W5 itself stays mechanical** — do not import the
+  question into this check, or the ambiguity comes back in a new place.
 
 #### W5 — variant B-2: one per numbered slide, and no count limit
 
@@ -615,16 +684,52 @@ provisional; widen it from evidence, not from a draft that missed it.
 - **No total slide count is prescribed** (§3B.0). W6 constrains only the count of
   *teaching* slides against the promise. A hook slide, a prayer slide and an
   invocation slide are not teachings and are not counted.
+- **Floor: the promise must be at least three, and at least three slides must
+  deliver.** A promise of one or two **STOPs**.
+  - **This is a stipulation, not a reading of the evidence, and it is labelled as
+    one.** The single specimen promises four; there is nothing in the set from
+    which to derive a floor. It exists because W6 makes the *number* the
+    contract, and nothing else stopped a B-2 post promising **2** — which is a
+    B-1 with extra steps, and which **W9 would pass**, because two slides really
+    would carry the teaching. The floor is the only thing that catches it.
+  - Widen or narrow it from specimens, not from a draft that missed it.
 
 ### W7 — An explicit audience is named, and it is a struggle topic
 
 - **Tests:** the hook slide's overlay text, second required part.
-- **PASSES:** the hook slide **names an audience explicitly** — not "us", not
-  "everyone", not implied — **and**, for a Saint Match post, that audience is a
-  **struggle topic**: one of the twelve in `best_skill.md` §1 (anxiety, waiting,
-  grief, purity, patience, vocation, anger, loneliness, shame, fear, distraction,
-  money) or a plain paraphrase of one. "…anyone waiting on someone they love."
-  "…anyone carrying a shame they have not said out loud."
+- **PASSES — both clauses:**
+  1. The hook slide **names an audience explicitly** — not "us", not "everyone",
+     not implied.
+  2. That audience is a **struggle**: it names **what someone is carrying**, not
+     **what someone is**. It may be phrased either way below.
+
+  | Route | What the line carries | Worked line |
+  | --- | --- | --- |
+  | **(i) the saint's own vocabulary** — preferred | a struggle named in a word or image drawn from a **DOCUMENTED dossier line of this saint's own**, cited in the evidence | "…anyone who cannot get back to **the quiet**" (Gregory, *Reg.* I.5) |
+  | **(ii) topic paraphrase** | a plain paraphrase of one of the twelve in `best_skill.md` §1 | "…anyone waiting on someone they love" |
+
+  **In both cases the `topic` header field carries one of the twelve** (anxiety,
+  waiting, grief, purity, patience, vocation, anger, loneliness, shame, fear,
+  distraction, money). The twelve govern **that field**; they do not govern the
+  wording of this line.
+
+- **Route (ii) is permitted and is usually the one that fails W2.** A plain topic
+  paraphrase is generic, and generic phrases survive a saint swap — which is what
+  W2 STOPs on. Taking route (ii) does not excuse a W2 failure and does not soften
+  W2. **Route (i) is the default** precisely because it satisfies both.
+- **Route (i) does not license lifting any noun out of the dossier.** The line
+  must still name a struggle, the word must come from a line graded **DOCUMENTED**
+  (not TRADITIONAL, not LEGEND), and the evidence must cite that line. If the
+  grader cannot tell whether the phrase names a struggle or a category of person,
+  §1's fail-closed default applies and it STOPs.
+- **Why this clause was rewritten.** It formerly required the audience line
+  itself to be one of the twelve topics "or a plain paraphrase of one", while W2
+  defines that same line to be the hinge's app side and requires the hinge to
+  **fail** a saint swap. Those demands are close to mutually unsatisfiable: a
+  category is generic by construction, so satisfying W7 pushed the line toward
+  exactly what W2 calls not-a-hinge, and a real pack could not be written to pass
+  both. Separating the **index** (the `topic` field) from the **surface wording**
+  resolves it without weakening either check. See the note under W2.
 - **STOPS:** no audience named; the audience is a **demographic** — a role, an
   age, a state of life, a country: "every Catholic parent", "young men",
   "students", "priests", "converts". Also STOPS: an audience so wide it names
@@ -636,8 +741,10 @@ provisional; widen it from evidence, not from a draft that missed it.
   the struggle and passes; "…seminarians" or "…young men discerning the
   priesthood" is a category of person and STOPs. Apply the same reading to
   `grief` ("…anyone who has just buried someone" ✓ / "…widows" ✗).
-- **Evidence:** the audience clause quoted, and which struggle topic it is or
-  which demographic category it fell into.
+- **Evidence:** the audience clause quoted; **which route it took**; for route
+  (i) the dossier line the word comes from and its grade, for route (ii) which of
+  the twelve it paraphrases; the `topic` field's value; or, on a STOP, which
+  demographic category it fell into.
 - **This is a deliberate divergence from the specimen, and it is recorded rather
   than inherited.** EWTN Parents names a demographic — "every Catholic parent" —
   and is right to: a demographic **is** that account's identity, and its audience
@@ -645,19 +752,32 @@ provisional; widen it from evidence, not from a draft that missed it.
   carry a struggle for the post to perform its own product. Do not cite the
   specimen in defence of a demographic here; the specimen is evidence for the
   *slot*, not for what fills it.
+- **The specimen has never satisfied W7 and W2 together, and never could.** Its
+  audience line fails W7 as a demographic, and it has **never been swap-tested
+  against W2** — it does not survive one: "4 things St Rita can teach every
+  Catholic parent" reads perfectly well. So B-2's only worked example is evidence
+  that the **slot** exists and gets engagement, and is **not** an example of a
+  satisfied B-2 hinge. State this when citing it; it was previously easy to read
+  the specimen as though both checks had been demonstrated on it.
 - **W7 and W2 overlap on purpose.** The audience line is the hinge's app side on
   B-2. A demographic there usually fails both. Report both — the writer needs to
   know the line is wrong *and* that the post consequently has no bridge.
+- **And note the other pairing, which W7 formerly did not contemplate:** the line
+  can be a clean W7 pass **and** a W2 failure, when it names a real struggle in
+  perfectly generic words. That is not a contradiction in the grade; it is the
+  signal to move the line to route (i). Report both verdicts as they fall.
 
 ### W8 — The caption is minimal
 
 - **Tests:** the caption body, in full.
 - **PASSES:** exactly two elements and nothing else — **one line of framing,
-  phrased as a question**, then **the invocation** (W3). **8–25 words total.**
+  phrased as a question**, then **the invocation** (W3).
 - **STOPS:** the caption carries the teaching, the fact, or the hinge — that is a
-  **B-1** post and it should have been declared as one; under 8 or over 25 words;
-  no framing question; any third element — a second framing line, a summary, a
-  hashtag, an emoji, a sign-off.
+  **B-1** post and it should have been declared as one; no framing question; any
+  third element — a second framing line, a summary, a hashtag, an emoji, a
+  sign-off.
+- **The 8–25 word band is RECORDED, not gated — until n ≥ 4.** A count outside it
+  is a **NOTE and a flag for review**, never a STOP on its own.
 - **Evidence:** the caption verbatim, the word count, and the two elements named.
 - **A framing question is REQUIRED here and is not the banned opening question.**
   `best_skill.md` §5.5 bans opening on a rhetorical question; that is a **Format
@@ -665,10 +785,20 @@ provisional; widen it from evidence, not from a draft that missed it.
   caption, whose whole job is to frame and hand off to the carousel. Firing B1-B's
   question ban here would STOP every correct B-2 post. The carve-out is written
   into B1-B; do not drop it.
-- **The 8–25 band is n = 1 and is provisional.** The single specimen's caption is
-  fourteen words. The band is set wide around it deliberately. Record the count in
-  NOTES on every B-2 pack so the band can be re-set from evidence rather than from
-  the first draft that overshot it.
+- **Why the band is not a check.** It is **n = 1** — a band set wide around a
+  single fourteen-word specimen — and it is not doing any work: on the one real
+  pack graded against it, 9 words and 24 words would both have passed just as the
+  actual 20 did, so it constrained nothing while presenting itself as a
+  measurement. A fail-closed gate should not carry a threshold that is really a
+  guess; that is measurement theatre, and it produces arbitrary STOPs on the day a
+  correct caption lands at 26.
+  **What actually shapes a B-2 caption is the shape rule** — "exactly two
+  elements and nothing else" — and that stays a STOP, as does W9. A caption long
+  enough to be doing real work will be caught there, by carrying teaching, rather
+  than here, by a number nobody has evidence for.
+  This is the same treatment §9.5 gives the voice score on a thin set, and for the
+  same reason. **Keep recording the count in NOTES on every B-2 pack**; promote
+  the band back to a check once there are four or more specimens to set it from.
 
 ### W9 — The carousel carries the teaching
 
@@ -733,6 +863,24 @@ address requirements differ and are split explicitly.**
 
 #### B1-B — Format B address
 
+**Scope — read this first. On variant B-2, B1-B runs on every slide overlay as
+well as on the caption**, in the same words W4 uses: "every line" includes every
+slide overlay, not just the caption.
+
+> **Why this had to be said explicitly.** Every clause below is written about
+> "a caption", which is where the register lives on B-1. **On B-2 the caption is
+> a framing question and an invocation — twenty words with no register in it —
+> and all the teaching, and therefore all the register risk, is on the slides.**
+> W4 already extends to slide overlays on B-2; B1 did not say, so as written the
+> **primary anti-pattern of the format was unchecked on the only surface a B-2
+> post can commit it on**. A run of clipped biographical statements across four
+> teaching slides is encyclopedia register whether or not any one of them is a
+> caption. Grade the slides **as a set**: the anti-pattern is cumulative and no
+> single slide displays it.
+>
+> This scope note is the check's, not a variant carve-out: on B-1 there is
+> usually nothing on the slides to read, and reading it changes nothing.
+
 - **PASSES:** **third person.** The saint is the grammatical subject and the post
   reports rather than exhorts. Plain, unhurried, declarative. Where there is a
   turn toward the reader it is made through the hinge (W2) and may use a
@@ -760,6 +908,13 @@ address requirements differ and are split explicitly.**
   **This is the default an LLM drifts to** — it is what the training data holds
   most of about saints — so it will be produced confidently and will not look
   wrong. Worked negative: `exemplars/format-b-saint-of-the-day/04-REFERENCE-ewtnmedia-st-joseph-calasanz.md`.
+  **On B-2, read the teaching slides as a block for this.** Four slides of the
+  form "He was X. He did Y." are a reference-work entry broken across four
+  frames, and the fact that each slide is individually clipped and concrete is
+  not a defence — that is what an encyclopedia entry is made of. The distinction
+  that matters is whether the slides are **beats** that go somewhere or a
+  **list** that accumulates: a run of neutral appositives with no turn is the
+  anti-pattern, wherever it is printed.
 
 - **The calendar-announcement opening — a register marker.** "August 25 is the
   feast day of St Joseph Calasanz…", "August 22 is the feast day of the Queenship

@@ -87,7 +87,24 @@ Gated on the dossier. Every one of these is binary.
 - **STOPS:** any quotation attributed to a saint who left no writings; any
   quotation whose citation is absent, vague ("attributed to"), or unverifiable;
   any paraphrase presented inside quotation marks; any altered liturgical text.
-- **Evidence:** each quotation verbatim, its claimed source, its dossier line.
+- **Evidence:** each quotation verbatim, its claimed source, its dossier line,
+  and **where the citation sits** — on the overlay, or in the source notes.
+- **A citation may live in the source notes, and that is a PASS.** `QUOTATION.md`
+  §7.2 is explicit: "the citation goes in the source notes even when it does not
+  fit on the slide." A grader reading only the slide sees an unattributed
+  quotation and will STOP a correct pack; read the source notes, which §1 requires
+  be read first anyway. What T3 requires is that the citation **exists, is
+  complete, and is findable in the pack** — not that it is printed on the image.
+- **Sourcing is never shortened to fit a layout.** A citation is trimmed only for
+  an editorial reason recorded in the source notes — never because it did not fit
+  a word count, a line length or a type size. Where a layout has a word limit, the
+  attribution is **excluded from that count** (the instance states this for its own
+  formats; see `best_skill.md` §4.1). If an honest citation still cannot be made to
+  fit, the layout changes or the quotation is not used. **The layout never edits
+  the sourcing** — that inverts the whole order of this document.
+  *(This is a real observed failure, not a hypothetical: an attribution reading
+  "St Gregory the Great, Pastoral Rule III" was cut to "Gregory, Pastoral Rule
+  III" purely to bring a slide inside a word limit that had no budget for it.)*
 - **Note for the grader:** this is where an LLM writer fails most often and most
   fluently. A quotation that fits the theme perfectly and has no citation is the
   characteristic signature of invention, not a coincidence. Aptness raises
@@ -117,12 +134,36 @@ Gated on the dossier. Every one of these is binary.
 ### T5 — Feast, rank and biography
 
 - **Tests:** feast date, liturgical rank, order, offices held, dates of birth,
-  death, beatification and canonisation.
-- **PASSES:** each is present in the dossier and reproduced exactly.
+  death, beatification and canonisation — **and whether the observance is
+  actually celebrated on the date the pack pegs to, in the year the pack is for.**
+- **PASSES:** each is present in the dossier and reproduced exactly, **and the
+  dossier carries an explicit supersession row** (below) resolved for that year.
 - **STOPS:** any date, rank or office that differs from the dossier, or that
   appears in the pack but not in the dossier. Includes ranks the saint never
-  held — the Raymond Nonnatus cardinalate is the standing example.
-- **Evidence:** each datum as written, next to its dossier line.
+  held — the Raymond Nonnatus cardinalate is the standing example. **Also STOPS:
+  no supersession row in the dossier**, or a row that resolves the question for a
+  different year than the one the pack is for.
+- **Evidence:** each datum as written, next to its dossier line, **plus the
+  supersession row quoted with its answer and its source**.
+- **Note — the supersession check, and why it is a required row.** A feast's
+  *date* is stable and a model recalls it correctly. Whether the observance is
+  **kept that year** is not stable: an optional or obligatory memorial is
+  displaced by a Sunday, a solemnity or a feast, and which of those falls on a
+  given date changes annually. **It is the one calendar fact that moves, and
+  therefore the one a model will get wrong most confidently** — it will reproduce
+  a correct date and a correct rank and be silently wrong about whether anything
+  is celebrated. The dossier must carry, as its own row:
+  - the **rank** of the observance, and the calendar it is on;
+  - **what day of the week the date falls on in the pack's year**, computed and
+    not recalled;
+  - **whether anything displaces it** — a Sunday, a solemnity, a feast, a
+    privileged season — with the answer stated either way;
+  - the **source** for the resolution.
+
+  A pack whose observance *is* superseded is not automatically a STOP — it is a
+  scheduling decision, and the pack may still be correct if it does not claim the
+  day. What is a STOP is the question going unasked. Recording "checked, not
+  superseded" is a pass; recording nothing is not.
 - **Note — "known for" claims land here, not in T3.** A sentence like "known for
   his devotion to Mary and promotion of the Memorare" has **no quotation marks in
   it** and so is invisible to T3, and it is still a misattribution: the Memorare
@@ -190,18 +231,38 @@ and its numbered promise (W6) is the type this check is about.
 - **PASSES — all five:**
   1. **Aspect ratio declared.** 9:16, 1080 × 1920, stated in the prompt rather
      than left to the generator.
-  2. **A type zone is specified**, as a vertical percentage range chosen for
-     *this* composition — "figure in the upper 55%, lower 35–40% dark for type",
-     "figure in the left 40%, right 60% bright and empty" — **and the
-     composition is described so as to create it**. Per-composition is the whole
-     requirement: a zone that happens to be at the top or the bottom is fine; a
-     zone that is at the top or the bottom *because that is the default* is not,
-     and neither is a zone asserted in one clause that the rest of the prompt
-     does not build.
-  3. **Contrast where the type lands.** A mid-tone or otherwise clean region is
-     specified behind the type, sufficient for the type to clear **3.5:1**
-     against it, plus the drop shadow §8.1 specifies (2–3px, dark, 50–60%
-     opacity) wherever type sits on painted areas.
+  2. **A type zone is specified**, as a percentage range **on the axis that
+     defines the zone, with the extent on the other axis given** — chosen for
+     *this* composition, and **the composition is described so as to create
+     it**. A top or bottom band is defined vertically ("figure in the upper 55%,
+     lower 35–40% dark for type, full width inset 8%"); a side band is defined
+     horizontally ("figure in the right 42%, type in the left 8–52% of width,
+     24–64% of height"). Per-composition is the whole requirement: a zone that
+     happens to be at the top or the bottom is fine; a zone that is at the top or
+     the bottom *because that is the default* is not, and neither is a zone
+     asserted in one clause that the rest of the prompt does not build.
+     *(Corrected: this clause formerly demanded "a vertical percentage range",
+     which no side-band composition can supply — including the one §8.1 offers as
+     its own worked example. Both axes are now required and either may be the
+     defining one.)*
+  3. **A contrast provision is specified — as a property of the prompt, not of
+     the unmade image.** The prompt names a **hex value on both sides of the
+     type** — the type colour, and the value the region behind it is held to
+     across the whole zone — plus the drop shadow §8.1 specifies (2–3px, dark,
+     50–60% opacity) wherever type sits on painted areas. The named pair must be
+     one that clears **3.5:1**; that is a fact about two hex values and a grader
+     can check it at gate time with no image in front of them.
+     - **What this clause deliberately does not do is assert a measured ratio.**
+       Contrast is a property of a rendered file, and at gate time there is no
+       rendered file — only a prompt. A pack that writes "well above 3.5:1" about
+       an image nobody has generated is recording an unfalsifiable claim as
+       though it were a measurement. Specify the provision; do not assert the
+       outcome. The measurement is **P1** in §6.6 and it runs later, against the
+       actual file, with a named owner.
+     - A prompt that specifies only an *outcome* ("the wall is held light enough
+       to clear 3.5:1") and names no value for the region behind the type **fails
+       this clause**, because it delegates the choice to the generator and leaves
+       the grader nothing to check.
   4. **No collision with the subject.** The type zone does not overlap the
      subject's **face or hands**, nor any of the **iconographic attributes I1
      sourced** — the identifying garment of the habit, the emblem, the object the
@@ -212,14 +273,18 @@ and its numbered promise (W6) is the type this check is about.
      string, the font, the colour, the highlight word, the position range and the
      effects, and requires correct spelling.
 - **STOPS:** no aspect ratio declared, or any ratio other than 9:16; no type zone
-  named, or a zone named as a percentage but not created by the composition; no
-  contrast provision where the type lands; the type zone overlapping the face,
-  the hands, or an attribute I1 sourced; baked-in type whose string, position,
-  colour or treatment is left for the generator to choose; rendered text that
-  came back garbled or misspelled and was shipped rather than regenerated.
-- **Evidence:** the framing clause quoted; the type zone as a vertical
-  percentage range; the contrast provision quoted; and one line confirming the
-  zone clears the face and the attributes listed under I1.
+  named, or a zone named as a percentage but not created by the composition, or a
+  zone given on one axis with no extent on the other; **no contrast provision
+  where the type lands — including a provision stated only as an outcome, with no
+  named value for the region behind the type**; the type zone overlapping the
+  face, the hands, or an attribute I1 sourced; baked-in type whose string,
+  position, colour or treatment is left for the generator to choose; rendered
+  text that came back garbled or misspelled and was shipped rather than
+  regenerated.
+- **Evidence:** the framing clause quoted; the type zone as a percentage range on
+  its defining axis, with the extent on the other axis; **the contrast provision
+  quoted with the hex value on each side of the type**; and one line confirming
+  the zone clears the face and the attributes listed under I1.
 - **Text inside the image is required, not banned.** The style bible bakes the
   overlay into the generated image and treats a generated image without its
   caption text as a failure (`best_skill.md` §8.2). A prompt that asks the
@@ -246,8 +311,8 @@ image" and "upper third kept clear for overlay type". Both clauses were
 **withdrawn** by `best_skill.md` §8.2: the style bible bakes the overlay text
 into the generated image and treats a generated image without its caption text
 as a failure, and §8.1 requires the text zone to be declared as a
-per-composition vertical percentage range that must **not** default to a fixed
-band. As written, the old I4 would have STOPped every correctly produced post —
+per-composition percentage range — on whichever axis defines the zone, with the
+extent on the other axis given — that must **not** default to a fixed band. As written, the old I4 would have STOPped every correctly produced post —
 the same class of bug as the old Raymond-derived voice checks in §3, pointed at
 the image pipeline.
 
@@ -262,10 +327,52 @@ Consequences for graders:
 
 - **Do not record a "scorer/rulebook conflict" note against I4 any more.** An I4
   STOP is now attributable to the draft, and the required rewrite is concrete.
-- The **contrast requirement survives unchanged** — it was never in conflict.
-  §8.1 states the same 3.5:1 mid-tone requirement and adds the 2–3px, 50–60%
-  opacity drop shadow.
+- The **contrast requirement survives** — it was never in conflict. §8.1 states
+  the same 3.5:1 mid-tone requirement and adds the 2–3px, 50–60% opacity drop
+  shadow. **What changed is where it is enforced**, not how strict it is: the
+  gate checks the *provision* in the prompt (I4 clause 3) and the *measurement*
+  happens against the rendered file (§6.6, P1). Splitting it did not weaken it;
+  it made the half that was being rubber-stamped into a half that can actually be
+  run.
 - **Nothing here licenses relaxing I1–I3.** The resolution was to the layout
   clause of I4 only. If a rewrite of a layout constraint is ever read as
   precedent for softening a sourcing constraint, that reading is wrong on its
   face: §0 forbids trading the truth gate against anything.
+
+### 6.6 Post-generation checks — what the gate cannot run
+
+**The gate grades a pack. A pack contains prompts, not images.** Any requirement
+that is a property of a *rendered file* is therefore unrunnable at gate time, and
+writing one into the gate does not enforce it — it produces a line every grader
+asserts and nobody checks. This section holds the requirements that were moved
+out of the gate for that reason, each with an owner and a moment.
+
+**A gate PASS is not a publication clearance.** It says the pack is sound. The
+checks below run afterwards, on the artifacts the pack produced.
+
+#### P1 — Measured type contrast
+
+- **Owner:** whoever renders and publishes the image. Not the grader — the
+  grader has no file to measure.
+- **When:** after generation, before publication, on the rendered file.
+- **Tests:** the actual contrast ratio between the rendered type and the pixels
+  actually behind it, sampled across the type zone rather than at one point.
+- **PASSES:** the measured ratio is **≥ 3.5:1** everywhere the type sits.
+- **FAILS → do not publish.** Regenerate, or adjust the treatment (darken or
+  flatten the region behind the type, raise the drop-shadow opacity within §8.1's
+  2–3px / 50–60% range, or move the zone). A failure here is not a pack defect
+  and does not retroactively STOP the pack — I4 clause 3 already confirmed the
+  prompt asked for the right thing; the generator did not deliver it.
+- **Recorded:** the measured ratio is recorded with the rendered asset. If it is
+  not recorded, it was not measured.
+
+> **Why this is not in I4.** Contrast was previously asserted inside the pack and
+> graded as though asserted meant checked. Two real packs asserted "well above
+> 3.5:1" for images that did not exist. That is the failure mode this split
+> exists to end: a check nobody can run is worse than no check, because it
+> produces a documented PASS.
+
+**Adding to this section.** Any future requirement about a rendered file, a
+published post, or anything else the pack does not contain belongs here and not
+in the gate. The test is simple: *can a grader run this with only the pack in
+front of them?* If no, it is a P-check.

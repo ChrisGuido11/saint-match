@@ -19,7 +19,7 @@ style guidance — is per-brand and lives in `../instances/<brand>/`.
 | **`QUOTATION.md`** | Attribution rules, the fallback order when a subject left no writings, and the failure mode this exists to prevent | The highest-risk surface in any LLM-assisted pipeline, in any domain |
 | **`ATTRIBUTION-CASES.md`** | Three verified misattribution cases, each defeating a different rule | The abstract rule catches none of these. Read with `QUOTATION.md` |
 | **`GATE.md`** | The architecture (hard filter, never a blend), voice-floor vs voice-score separation, grading procedure, recording, output contract | The load-bearing structural decisions. Copy without changing a word |
-| **`TRUTH-CHECKS.md`** | T1–T6 (copy) and I1–I4 (image), plus the I4 scope note | The checks the architecture protects |
+| **`TRUTH-CHECKS.md`** | T1–T6 (copy) and I1–I4 (image), the I4 scope note, and §6.6's post-generation checks | The checks the architecture protects |
 | **`CHECK-DESIGN.md`** | How to write a check so it composes with `GATE.md` | Read before writing a brand's own voice floor |
 | **`VOICE-SCORE.md`** | Exemplar-anchored comparative ranking, the anti-pastiche guard, the judge-consistency bar, the thin-set rule | How to measure writing quality without the measurement leaking into the gate or teaching pastiche |
 | **`ANALYTICS.md`** | The engagement handoff schema and its rules | An interface, not a pipeline. Path-independent by construction |
@@ -37,7 +37,7 @@ the instance, and in any grade emitted so far — still resolves. Do not renumbe
 | §2, T1–T6 | `TRUTH-CHECKS.md` |
 | §3, §3A, §3B, §3B-ii, §3C — the voice floor and brand checks | **instance** — `../instances/saint-match/SCORER.md` |
 | §4 CTA checks, §5 bridge check | **instance** — same file |
-| §6, I1–I4, §6.5 | `TRUTH-CHECKS.md` |
+| §6, I1–I4, §6.5, **§6.6 post-generation checks (P1)** | `TRUTH-CHECKS.md` |
 | §7 recording the verdict | `GATE.md` |
 | §8 output format | `GATE.md` |
 | §9–§9.4 the voice score | `VOICE-SCORE.md` |
@@ -51,6 +51,15 @@ the instance, and in any grade emitted so far — still resolves. Do not renumbe
 Listed in full at the end of `GATE.md`. In short: a **voice floor**, the
 **declaration fields** that scope it, **exemplar sets**, and a **join key plus a
 version field** on every artifact.
+
+## A gate PASS is not a publication clearance
+
+Some requirements are properties of a **rendered file**, not of a pack, and the
+gate holds only the pack. Those live in `TRUTH-CHECKS.md` **§6.6** as **P-checks**,
+each with a named owner and a moment, and they run after generation. The test for
+where a requirement belongs: *can a grader run it with only the pack in front of
+them?* If not, it is a P-check — putting it in the gate does not enforce it, it
+just produces a line every grader asserts and nobody measures.
 
 ## Two things to check when adopting
 

@@ -57,6 +57,25 @@ and Monica on likes and ~6× below on saves.
   the gate is what `SCORER.md` §0.1 forbids. It is an observed engine type,
   reported qualitatively by the voice score.
 
+> ### This table is the authoritative copy
+>
+> **These figures live here and nowhere else.** `best_skill.md` §4.4.0 and
+> `SCORER.md` §3B previously each carried their own restatement of them, and the
+> three copies had already drifted into three differently-worded sets of caveats
+> — three places to update, three chances to cite a number without the condition
+> that makes it meaningful. Both now cite this section instead.
+>
+> **Do not copy this table into another document.** If a document needs the
+> conclusion, state the conclusion and link here. The caveats immediately below
+> are not optional decoration; a number from this table quoted without them is
+> being misused.
+>
+> **Two specimen files in this folder — `06` and `07` — carry their own
+> comparison tables.** Those are kept: each is making a different argument about
+> its own specimen and carries its own extra column for it. But **this table is
+> authoritative for the figures**; if a number ever disagrees between here and a
+> specimen file, this one is right and the specimen file is stale.
+
 | Post | Likes | Saves | Engine |
 | --- | --- | --- | --- |
 | `03` Monica (B-2) | 7,194 | 1,306 | **(b)** numbered promise + named audience |
@@ -138,9 +157,9 @@ each.
 | | **B-1 — caption-carried** | **B-2 — carousel-carried** |
 | --- | --- | --- |
 | Carries the teaching | The **caption** | The **carousel** |
-| Caption | 40–70 words: fact → hinge → invocation | 8–25 words: framing question → invocation |
-| Hook slide | Not specified | **Numbered promise + explicit audience** |
-| Facts | **Exactly one**, doing all the work | One per numbered slide |
+| Caption | 40–70 words: fact → hinge → invocation | framing question → invocation, and nothing else (~8–25 words, recorded not gated — `SCORER.md` W8) |
+| Hook slide | Not specified | **Numbered promise + explicit audience**, ≥ 3 teachings |
+| Facts | **Exactly one dossier line**, doing all the work | One per numbered slide |
 | Opening question in caption | **Banned** | **Required** |
 | Ends on the invocation | **Yes** | **Yes** |
 | Floor checks | W1–W5 | W2–W5 (variant parts) + **W6–W9** |
@@ -149,16 +168,40 @@ each.
 **B-2's audience line is where Saint Match must diverge from its specimen.** EWTN
 Parents names a **demographic** — "every Catholic parent" — and is right to: a
 demographic *is* that account's identity. **Saint Match matches on struggle**, so
-the same slot carries a **struggle topic**: "…anyone waiting on someone they
-love." On B-2 the audience line is the hinge's **app side**, which is why
-`SCORER.md` **W7** makes a demographic there a STOP. The specimen is evidence for
-the *slot*, not for what fills it.
+the same slot names **what someone is carrying**, never what someone is. On B-2
+the audience line is the hinge's **app side**, which is why `SCORER.md` **W7**
+makes a demographic there a STOP. The specimen is evidence for the *slot*, not
+for what fills it.
+
+> **State the specimen's status honestly — it has never satisfied W7 and W2
+> together, and it could not.** Its audience line fails W7 for Saint Match as a
+> demographic, and it has **never been swap-tested against W2 at all**. It does
+> not survive one: *"4 things St Rita can teach every Catholic parent"* reads
+> perfectly well, so the line is not anchored to Monica's life and is not a hinge
+> by W2's definition. **`03` is evidence that the slot exists and earns saves. It
+> is not a worked example of a B-2 hinge, and it must not be cited as one.**
+>
+> **How Saint Match fills the slot**, given that the specimen cannot show it —
+> two routes, set out in `SCORER.md` W7:
+>
+> - **(i) the saint's own vocabulary** *(preferred)* — the struggle named in a
+>   word from a DOCUMENTED dossier line of that saint's own: "…anyone who cannot
+>   get back to **the quiet**", from Gregory's own letter. This is the route that
+>   passes **both** W7 and W2, because once the saint is removed the carried word
+>   has no source.
+> - **(ii) a plain paraphrase of one of the twelve struggle topics** — "…anyone
+>   waiting on someone they love." Permitted, but generic, and **generic phrases
+>   survive the saint swap**, so this route usually fails W2.
+>
+> The twelve topics govern the pack's `topic` **header field**, not the wording
+> of this line. That separation is what makes W7 and W2 satisfiable at the same
+> time; before it, they were close to mutually exclusive on this variant.
 
 ## The format against Format A
 
 | | Format A (`exemplars/`) | **Format B (here)** |
 | --- | --- | --- |
-| Body | 200–500 words | **40–70 (B-1) / 8–25 (B-2)** |
+| Body | 200–500 words | **40–70 (B-1) / minimal, ~8–25 (B-2)** |
 | Person | Sustained second person | **Third person** |
 | Facts | Many, woven | **One (B-1) / one per numbered slide (B-2)** |
 | Bridge | Stated internally, felt in the body | **Performed — as a hinge, or as a promise to a named audience** |

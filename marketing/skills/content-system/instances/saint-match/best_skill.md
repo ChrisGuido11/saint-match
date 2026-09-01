@@ -156,6 +156,29 @@ including that the fact is probably true.
 What stays here is the Saint Match part: the writer is handed a **dossier** and a
 **struggle topic**, and the twelve topics are the list above.
 
+**What the twelve-topic list governs, and what it does not.** The list is the
+app's own matching taxonomy, so it is closed on purpose and the `topic` header
+field takes one of the twelve and nothing else. But it governs **that field**,
+not the wording of any surface:
+
+- The **`topic` field** carries the nearest of the twelve. It is an index, and it
+  is what lets a batch be read by struggle.
+- The **audience line on a B-2 hook slide** is not bound to the twelve words. It
+  is bound by §4.4.1 and `SCORER.md` **W7**, which require a struggle rather than
+  a demographic — and which permit that struggle to be phrased in **the saint's
+  own vocabulary**. See W7.
+- **Where the nearest topic is a stretch, say so in the theme-bridge block.**
+  Some documented struggles have no clean entry: a man who wanted a monastic cell
+  and was given the largest administrative office in the Latin West is filed under
+  `vocation` because that is the closest of the twelve, and the honest description
+  is narrower than the label. Name the real struggle in one line next to the
+  filed topic. A silent stretch reads later as evidence the list fits when it did
+  not.
+
+Whether the list itself should be opened is a **product** question — these are
+the app's emotions, not the content system's — and is recorded in `SPEC-DEBT.md`
+rather than decided here.
+
 ---
 
 ## 2. The dossier and the fact grade — MOVED TO THE METHOD LAYER
@@ -186,7 +209,7 @@ file with these blocks, in this order, all of them present.
 Every pack opens with this, verbatim field names, one per line:
 
 ```
-draft_id       <YYYY-MM-DD>-<saint-slug>
+draft_id       <YYYY-MM-DD>-<saint-slug>-<variant token>[-<ordinal>]
 skill_version  best_skill.md @ <git commit sha>
 post_format    A-themed | B-saint-of-the-day
 format_variant B-1-caption-carried | B-2-carousel-carried   (Format B only)
@@ -220,7 +243,32 @@ Why this block exists:
 - **`draft_id` is the join key.** Engagement analytics are collected by a
   separate external system, not by this pipeline. That system must return the
   `draft_id` unchanged for a metric to be attributable to a post. Format is
-  fixed: ISO date, hyphen, saint slug. `2026-08-31-raymond-nonnatus`.
+  fixed: **ISO date, hyphen, saint slug, hyphen, variant token** — and an
+  **ordinal** only where that still collides.
+
+  | Part | Value |
+  | --- | --- |
+  | variant token | `a` on Format A; `b1` or `b2` on Format B, matching `format_variant` |
+  | ordinal | omitted on the first pack; `-2`, `-3` … in creation order on any further pack sharing date, saint **and** variant |
+
+  `2026-09-03-gregory-the-great-b1`, `2026-09-03-gregory-the-great-b2`.
+
+  **Why the variant token is mandatory rather than added on collision.** Two
+  packs for one saint on one day is a normal thing to want — it is exactly how
+  the two Format B variants get compared, which is what the analytics exist for.
+  Under the old `<date>-<slug>` format those two packs had the same id, and a
+  collision here does not fail loudly: it **silently merges the metrics of two
+  different posts**, so the one comparison the loop most needs is the one it
+  cannot make. Deriving the token from a field that is already declared and
+  already mandatory (§3.1's `format_variant`) means the id is unique from the
+  moment it is written, and never has to change afterwards. **An id that can
+  change retroactively is not a join key** — it may already have been emitted and
+  joined against. See `../../method/ANALYTICS.md`.
+
+  **Ids already emitted are not rewritten to this format.** The seed drafts and
+  the shipped Raymond post keep the ids they were published under
+  (`2026-08-31-raymond-nonnatus`); append-only applies to the key as well as to
+  the rows. The format binds from the commit that introduced it forward.
 - **`skill_version` is what makes validation-gating possible.** It records the
   git sha of the commit that last changed `best_skill.md`. Without it there is
   no way to say a rulebook edit improved anything, and the whole SkillOpt loop
@@ -308,6 +356,27 @@ Two further rules the bible is explicit about:
 - **Strongest content sits at slides 1, 5–6 and the last.** Never put the best
   line at slide 3.
 
+**What the 5–15 word limit counts, and what it does not.** The limit is a
+**legibility** rule for copy written *for the slide*. It has two exclusions, and
+they exist because without them the limit silently edits the sourcing — which it
+is not entitled to do (`../../method/TRUTH-CHECKS.md` T3).
+
+1. **The attribution line does not count.** A quotation slide's 5–15 words are
+   the quoted text and its lead-in; the citation naming author, work and locus
+   sits outside the count. **A citation is never shortened to fit a word
+   limit** — not to a surname, not by dropping the locus, not at all. If the
+   honest attribution does not fit the design, the type gets smaller or the
+   citation moves to the source notes (`../../method/QUOTATION.md` §7.2); the
+   citation itself does not change. *(This is a recorded failure: "St Gregory the
+   Great, Pastoral Rule III" was cut to "Gregory, Pastoral Rule III" purely to
+   bring a slide inside the count, under an earlier version of this section that
+   left the question open.)*
+2. **Verbatim liturgical text does not count** — see §4.3.
+
+Everything else counts, including the saint's own quoted words. The exclusions
+are narrow on purpose: they cover text the pack is **forbidden to alter**, and
+nothing else. Copy the writer chose the words of is inside the limit, always.
+
 Typography: slides 2–N may run larger than slide 1, centred, 35–65% from top.
 Same font identity, highlight colour and effects across every slide of a post.
 Use the highlight word **sparingly** — if every slide has one, none of them
@@ -332,7 +401,35 @@ That said, Raymond's slide roles are a legitimate *variant* of the bible's
 arc (hook → journey → landing), and the Collect-then-invocation ending is a
 real liturgical asset the bible never considered because none of its six worked
 posts is a saint's feast-day post. Keep it available as an option, but it is not
-the default and it does not override the 9:16 frame or the 5–15 word limit.
+the default and it does not override the 9:16 frame.
+
+**The Collect slide is exempt from the 5–15 word limit.** It has to be, and the
+alternative was withdrawing a slide role that has actually shipped. Collects run
+40–70 words — the one for St Gregory the Great is 55 — and
+`../../method/QUOTATION.md` §7.5 forbids paraphrasing liturgical text at all. A
+55-word text that may not be shortened, on a slide capped at 15 words, is a
+**permitted element that can never be produced**: every use of it is a STOP, so
+the option was not really available. Rather than leave that standing, the limit
+yields, because between a legibility guideline and a rule against altering
+liturgical text, the legibility guideline is the one that may bend.
+
+The exemption is narrow:
+
+- **Verbatim liturgical text only** — the Collect or another text from the Missal
+  or the Liturgy of the Hours, as it stands. It does not extend to quotation
+  generally: a saint's own words are inside the limit like any other copy, and
+  only their *attribution* is excluded (§4.1).
+- **Only on a slide whose whole job is to carry it.** The liturgical text may not
+  share a slide with other overlay copy, and the exemption does not raise the
+  limit for the rest of the carousel.
+- **Legibility is met by type size and line breaks, not by cutting.** Line breaks
+  for legibility are explicitly fine (§7.5). Ellipsis, abridgement and "the first
+  sentence of the Collect" are not — a shortened Collect is an altered Collect.
+- **It is a text slide.** Do not bake 55 words over a generated painting; use the
+  brand-background treatment (§8.0), where the whole frame is the type zone.
+
+If the Collect will not fit legibly even so, the correct move is to drop the
+Collect slide from that post — not to trim the Collect.
 
 ### 4.4 Format B — the saint-of-the-day post
 
@@ -357,19 +454,18 @@ worked posts is a single-saint feast-day post.
 
 An earlier version of this section treated **ending on the invocation** as the
 format's key differentiator. **That was too simple and the evidence refutes it.**
-The engagement figures held in `exemplars/format-b-saint-of-the-day/`:
 
-| Specimen | Likes | Saves | Engine? |
-| --- | --- | --- | --- |
-| `03` St Monica (B-2) | 7,194 | 1,306 | **(b)** numbered promise + named audience |
-| `01` St Clare (B-1) | 7,131 | 882 | **(a)** hinge word — *broadcast* — into the brand |
-| `07` St Bernard | 5,324 | 552 | **(c)** a quotable image quote |
-| `06` Queenship of Mary | 2,871 | 148 | **none** |
-| `04` St Joseph Calasanz | 996 | 69 | **none**, and no invocation |
+> **The engagement figures live in exactly one place:**
+> **`exemplars/format-b-saint-of-the-day/README.md`**, with the caveats that
+> govern how they may be read. **Do not restate the table here or anywhere
+> else** — it was previously copied into three documents, which had already
+> drifted into three differently-worded sets of caveats, and a number cited
+> without its caveats is worse than no number. Cite the README.
 
-The `06` Queenship post **does** close devotionally — a Salve Regina acclamation
-in the invocation's slot — and still lands ~2.5× below Clare and Monica on likes
-and ~6× below on saves. So:
+What the figures establish, and all this section needs from them: the specimen
+that closes devotionally on a Salve Regina acclamation in the invocation's slot
+still lands far below the two strong specimens — ~2.5× on likes and ~6× on
+saves. So:
 
 > **Ending on the invocation is necessary but not sufficient. It is table
 > stakes. What separates a strong Format B post is that it gives the reader a
@@ -407,13 +503,13 @@ and places third on likes and second on saves in the set.
 A timeliness peg is still a reason to post *today*; it is not a reason for the
 reader to stop scrolling, and it does not substitute for an engine.
 
-**Read the table with its caveats attached.** The four `@ewtnmedia` rows are a
-valid within-account comparison; the Augustine Institute post in `05` is a
-different, much smaller account and its numbers are confounded by follower count.
-And even within EWTN, **subject salience is uncontrolled** — Mary is far better
-known than Joseph Calasanz, so part of the 2,871 vs 996 gap is popularity rather
-than craft. `exemplars/format-b-saint-of-the-day/README.md` states this in full;
-do not cite these numbers without it.
+**Read the table with its caveats attached, from the one place that holds
+both.** In short: the `@ewtnmedia` rows are a valid within-account comparison,
+`05` is a different and much smaller account whose numbers are confounded by
+follower count, and even within EWTN **subject salience is uncontrolled**.
+`exemplars/format-b-saint-of-the-day/README.md` states all of it in full and is
+**authoritative**; do not cite these numbers without it, and do not copy them
+back into this file.
 
 #### 4.4.1 Two variants: where the teaching lives
 
@@ -431,7 +527,7 @@ scorer runs a different subset of the W-series for each.
 | Carries the teaching | The **caption** | The **carousel** |
 | Caption | **~40–70 words**: fact → hinge → invocation | **Minimal**: one framing question + the invocation, ~8–25 words |
 | Hook slide | Not specified | **Numbered promise + explicit audience** |
-| Facts | **Exactly one**, doing all the work | One per numbered slide; the count is the promise |
+| Facts | **Exactly one dossier line**, doing all the work | One per numbered slide; the count is the promise |
 | Ends on the invocation | **Yes** | **Yes** |
 | Floor checks | W1–W5 | W2–W5 (variant parts) + **W6–W9** |
 | Specimens | `01-REFERENCE-…-st-clare`, `02-st-raymond-nonnatus` | `03-REFERENCE-…-st-monica` |
@@ -439,9 +535,33 @@ scorer runs a different subset of the W-series for each.
 **B-1 — caption-carried.** The original spec, as the user gave it:
 
 - **~40–70 words.**
-- **One concrete, verifiable fact** about the saint, graded per §2 as usual.
+- **One concrete, verifiable fact** about the saint, graded per §2 as usual —
+  and **the unit of "one fact" is one dossier line**, see below.
 - Shape: fact → hinge → invocation, three to five sentences (§5.7).
 - The carousel, where there is one, illustrates. It does not teach.
+
+> **What counts as one fact — the unit is one dossier line.** Earlier wording
+> said "exactly one fact" and never said what a fact was, leaving open whether
+> the unit was a sentence, a claim, a source, or an independently falsifiable
+> proposition. That ambiguity was not harmless: because the gate is fail-closed
+> (`../../method/GATE.md` §1, "grader cannot determine whether a check passes →
+> STOP"), an undefined unit **STOPs by itself** on any caption whose fact has
+> internal structure — which is nearly every fact worth building a post on.
+>
+> So: **one dossier line is one fact, and detail internal to that line is not a
+> second fact.** A line recording that a book "spends thirty-four chapters
+> telling one kind of listener from another — the impatient from the patient, the
+> too silent from the ones who talk too much" is **one** fact, not three, because
+> it is one line, from one source, checked once. Naming its contents in the
+> caption is reporting that line, not adding claims to it.
+>
+> **The anti-gaming clause, and where it is enforced.** The obvious abuse is to
+> write one enormous dossier line covering everything the caption wants to say
+> and call it one fact. That is a **dossier** defect, not a W5 one, and it is
+> caught by the order of work (§3.2: the dossier is built before the caption) and
+> by T1. A dossier line added, widened or merged *after* the caption exists, so
+> that two facts count as one, is a T1 STOP. W5 itself stays mechanical: count
+> the lines.
 
 **B-2 — carousel-carried.** The same account's second shape. The carousel does
 the work and the caption does almost nothing:
@@ -460,10 +580,50 @@ the work and the caption does almost nothing:
 - **The audience line is where Saint Match diverges from the specimen.** EWTN
   Parents names a **demographic** ("every Catholic parent") because a demographic
   *is* that account's identity. Saint Match matches on **struggle**, so the same
-  slot carries a **struggle topic**: "…anyone waiting on someone they love",
-  "…anyone carrying a shame they have not said out loud". Use the day's struggle
-  topic from §1. A demographic in that slot is a STOP (`SCORER.md` W7) — not
-  because the specimen is wrong, but because it is a different product.
+  slot names **what someone is carrying**, never what someone is: "…anyone
+  waiting on someone they love", "…anyone carrying a shame they have not said out
+  loud". A demographic in that slot is a STOP (`SCORER.md` W7) — not because the
+  specimen is wrong, but because it is a different product.
+
+- **The audience line is also the hinge's app side (§5.7), and that constrains
+  how it may be phrased.** Two routes are open, and they are not equally safe:
+
+  | Route | The audience line is… | Risk |
+  | --- | --- | --- |
+  | **(i) Saint's own vocabulary** — preferred | a struggle named in a word or image taken from a **DOCUMENTED dossier line** of this saint's own — "…anyone who cannot get back to **the quiet**", from Gregory's own letter | Passes W2, because the word has no source once the saint is removed |
+  | **(ii) Bare topic paraphrase** | a plain paraphrase of one of §1's twelve — "…anyone waiting on someone they love" | **Usually fails W2**: a generic category survives a saint swap, which is what makes it a category |
+
+  **Route (i) is the one that satisfies both checks, and it is the default.**
+  Route (ii) remains permitted but it must still pass W2's swap test on its own
+  merits, and most of the time it will not.
+
+  > **Why this is written out rather than left implicit.** An earlier version
+  > required the audience line to be *one of the twelve topics or a plain
+  > paraphrase of one*, while §5.7 defined that same line to be the hinge's app
+  > side and W2 required the hinge to **fail** a saint-swap. Those two demands are
+  > close to mutually unsatisfiable: genericity is exactly what makes a category
+  > a category, so a line that satisfied the topic rule was under pressure to be
+  > the kind of phrase W2 calls not-a-hinge. A real pack hit it head-on and could
+  > not be written to pass both. The resolution is that **the twelve-topic list
+  > governs the `topic` header field, not the surface wording of the audience
+  > line** (§1) — which frees the line to carry the saint's own word, and the
+  > saint's own word is what makes the swap test bite.
+  >
+  > The alternative considered and rejected was to scope W2's swap test on B-2 to
+  > the **saint side** only. That would have closed the contradiction too, but by
+  > gutting the check: the saint side of a B-2 hinge is a sourced fact about this
+  > saint, so it fails a swap **by construction**, and W2 — the defining check of
+  > Format B — would have become a line that passes whenever T1 passes. Fixing an
+  > unsatisfiable check by making it unfailable is not a fix.
+
+- **The specimen's own audience line has never satisfied both checks, and that is
+  stated rather than implied.** "Every Catholic parent" fails W7 for Saint Match
+  as a demographic, and it has **never been swap-tested against W2** — it does not
+  survive one ("4 things St Rita can teach every Catholic parent" reads
+  perfectly). So the single B-2 specimen is evidence for the **slot** — that a
+  hook slide carries a numbered promise plus an explicit audience — and is **not**
+  an example of a satisfied B-2 hinge. Do not read it as one, and do not cite it
+  in defence of an audience line that fails W2.
 
 **Choosing between them.** B-1 is the default. Reach for B-2 when the saint's
 life yields several genuinely distinct, separately sourceable teachings and
@@ -476,17 +636,25 @@ format-agnostic. The 5–7 slide count and the mandatory cliffhanger of §4.1 do
 **not** apply to either variant: a 40–70 word caption cannot carry seven distinct
 emotional beats, and forcing it would produce padding, which is the failure this
 format avoids. The 5–15 words per slide limit still applies to any slide that
-exists.
+exists, **with §4.1's two exclusions** — the attribution line, and verbatim
+liturgical text (§4.3).
 
 - **B-1's slide structure remains deliberately unspecified.** It is not yet
   attested, so it is not invented here, and the scorer does not STOP on slide
   count (`SCORER.md` §3B.0). Record the count so the shape can be settled from
   evidence.
-- **B-2's slide structure is constrained only by its own promise.** The number on
-  the hook slide must equal the number of slides that deliver a distinct
-  teaching. That is an internal-consistency rule, not an invented count: the one
-  specimen runs seven slides behind a promise of four, and the remaining slides
-  are not recorded, so **no total slide count is prescribed**.
+- **B-2's slide structure is constrained by its own promise, and by a floor.**
+  The number on the hook slide must equal the number of slides that deliver a
+  distinct teaching. That is an internal-consistency rule, not an invented count:
+  the one specimen runs seven slides behind a promise of four, and the remaining
+  slides are not recorded, so **no total slide count is prescribed**.
+  - **Floor: at least three teaching slides.** This is a **stipulation, not
+    evidence** — the specimen promises four and there is nothing in the set to
+    derive a floor from. It exists because W6 makes the *number* the contract and
+    nothing else stops a B-2 post promising **2**: a promise of two is a B-1 with
+    extra steps, and W9 would still pass it, because two slides really would
+    carry the teaching. The floor closes that without pretending to be measured.
+    Revisit it when more specimens exist.
 
 Everything in §§1, 2, 3, 6, 7, 8 and 10 applies unchanged. **Shorter is not
 looser**: the dossier is still the entire permitted factual universe, quotation
@@ -596,7 +764,16 @@ SCRIPTURE:
 - The engagement line and the two app-mention lines are used **verbatim** from
   §9. Do not invent variants.
 - **The app is never named in the body or in any on-image text** — only in the
-  two app-mention lines at the very end.
+  two app-mention lines at the very end. **"On-image text" here means overlay
+  copy** — the words the post says. The `@saintmatchapp` handle in §8.0's
+  brand-background slide template is **furniture, not copy**, and is permitted on
+  **Format A** slides, where the app is named outright in the app-mention pair
+  anyway. It does **not** fire V4, which governs the two caption lines and not a
+  watermark.
+- **On Format B the handle is omitted from every slide.** See §5.7 and §8.0: the
+  app appears on no Format B surface at all, because the hinge is the only
+  presence the brand gets and a handle in the corner is still the app arriving
+  uninvited. Its absence there is correct and is never a defect.
 
 ### 5.5 Banned register
 
@@ -869,7 +1046,20 @@ Adopt it as written.
   Bloch, Heinrich Hofmann, Guido Reni, Sassoferrato, Murillo, Frederic Leighton,
   and Victorian devotional-print watercolour for the softer variant. Include a
   named reference artwork where one exists — "Reference: Frederic Leighton's
-  *Elijah in the Wilderness*."
+  *Elijah in the Wilderness*." — **unless the canonical type for that subject
+  carries an attribute I2 excludes, in which case name none and record the
+  reason in the iconography notes.**
+  > **Why the exception.** Naming a reference artwork imports its content, so
+  > where the standard type is *wrong* this instruction and I2 pull in opposite
+  > directions. Gregory the Great is the worked case: the canonical type — Ribera
+  > and effectively the whole tradition — puts him in **tiara and pontificals**,
+  > which he did not wear, which D25 records as "despite his actual habit of
+  > dress", and which I2 forbids outright. Naming a reference there would import
+  > the exact error I2 exists to prevent, and "later art repeating an error is the
+  > error in paint" (§8.2). The art-historical **anchor** — a school or a
+  > painter's *manner* — carries the palette and the light without carrying the
+  > vestments, and is what to use instead. Withholding the reference is then a
+  > deliberate, recorded choice rather than an omission.
 - **Declare the surface**, explicitly: layered oil glazes, canvas weave,
   craquelure in the darks, "photographed museum painting", and an explicit
   "NOT digital, NOT illustrative, NOT smoothed".
@@ -881,10 +1071,19 @@ Adopt it as written.
   post and hold it across every slide.
 - **Text-only journey slides are normal.** Slides 2–N are frequently a solid
   brand background — #14111A deep purple-black or #1A1A1A charcoal — with the
-  @saintmatchapp handle at 8% from top, a serif headline at 25–40%, body in warm
-  grey #B8B0A0 at 48–68%, a dotted rule at ~82% and a "✳ NEXT" marker at ~90%.
-  Highlight words use the brand accent: amber-gold #C17B3A / #E8B83D, or sage
-  green #7C9A72.
+  @saintmatchapp handle at 8% from top **(Format A only — see below)**, a serif
+  headline at 25–40%, body in warm grey #B8B0A0 at 48–68%, a dotted rule at ~82%
+  and a "✳ NEXT" marker at ~90%. Highlight words use the brand accent: amber-gold
+  #C17B3A / #E8B83D, or sage green #7C9A72.
+  > **The handle is Format A furniture and is omitted on Format B.** This
+  > template said "handle at 8% from top" while §5.4 said the app is never named
+  > in any on-image text — a direct contradiction, and under the fail-closed
+  > default (`../../method/GATE.md` §1) a grader had to STOP either way it was
+  > read. Resolved: **permitted on Format A**, where the app is named in the
+  > caption anyway and the handle adds nothing that is not already there;
+  > **omitted on Format B**, where §5.7's whole mechanic is that the brand appears
+  > only as the hinge. On Format B its absence is correct and its presence is a
+  > `SCORER.md` W4 STOP.
 - **A modular negative prompt is mandatory on every image prompt**: a permanent
   base block (cartoon, anime, CGI, 3D render, plastic skin, artstation,
   hyperrealistic CGI, stock photo, neon, watermark, extra fingers, deformed
@@ -906,13 +1105,21 @@ Adopt it as written.
 - **Emblems the dossier supports**, and only those.
 - **Composition and framing** for 9:16, built so the subject occupies one side or
   band and the overlay text has a clean zone of its own. The style bible measures
-  this rather than defaulting: state the text zone as a vertical percentage range
-  and make the composition create it — Elijah in the upper 55% with the lower
-  35–40% dark for text; the hook figure in the left 40% with the right 60% bright
-  and empty. **Do not default text to the bottom.** Whatever the zone, the type
-  must stay legible against it — keep a mid-tone or clean region behind it, and
-  add the drop shadow the bible specifies (2–3px, dark, 50–60% opacity) when the
-  type sits on painted areas.
+  this rather than defaulting: **state the text zone as a percentage range on the
+  axis that defines it, and give the extent on the other axis too**, then make the
+  composition create it — Elijah in the upper 55% with the lower 35–40% dark for
+  text, full width inset 8% (a **vertical** band); the hook figure in the left 40%
+  with the right 60% bright and empty (a **side** band, defined horizontally).
+  Both axes, always. *(Earlier wording asked for "a vertical percentage range",
+  which cannot describe the second of its own two examples.)*
+  **Do not default text to the bottom.** Whatever the zone, the type must stay
+  legible against it — **name the hex value the region behind the type is held
+  to, as well as the type's own**, so the contrast is a checkable property of the
+  prompt rather than an assertion about an image that does not exist yet, and add
+  the drop shadow the bible specifies (2–3px, dark, 50–60% opacity) when the type
+  sits on painted areas. The pair named must clear 3.5:1. Measuring the rendered
+  file is a separate, later check with its own owner —
+  `../../method/TRUTH-CHECKS.md` §6.6, P1.
 
 ### 8.2 Prohibited, absolutely
 
@@ -1045,17 +1252,26 @@ Run this list. It is not a substitute for `SCORER.md` — it is what stops obvio
 failures reaching it.
 
 1. Every factual sentence traces to a dossier line, and the source notes list it
-   with a grade.
+   with a grade. **The dossier carries a supersession row** — rank, the day of the
+   week the date falls on this year (computed, not recalled), whether anything
+   displaces the observance, and the source. Answer it either way; leaving it
+   unasked is a T5 STOP.
 2. No LEGEND is asserted. No LEGEND is in an overlay.
 3. No quotation is attributed to a saint who left no writings.
-4. Every quotation has a source and, for scripture, a checked context.
+4. Every quotation has a source and, for scripture, a checked context. **No
+   citation was shortened to fit a word count** — attributions do not count
+   toward the 5–15 word slide limit (§4.1), so there is never a reason to.
 5. Every attribute in the image prompt appears in the iconography list, and
-   nothing the dossier contradicts is in the prompt.
+   nothing the dossier contradicts is in the prompt. The type zone is given **on
+   both axes**, and the contrast provision **names a hex value on each side of
+   the type** — not an assertion about a ratio in an image that does not exist
+   yet (§8.1; `../../method/TRUTH-CHECKS.md` I4).
 6. The bridge survives the swap test and yields a one-sentence micro-action, and
    promises nothing the app does not do (§6.1).
 7. The caption was written before the image prompt, and the subject–caption
    alignment line is present and honoured by the prompt (§8.0).
-8. The header block is complete, `draft_id` matches the filename,
+8. The header block is complete, `draft_id` carries its **variant token**
+   (`-a` / `-b1` / `-b2`, plus an ordinal if that still collides — §3.1),
    **`post_format` is declared**, and on Format B **`format_variant` is declared**
    too. Checks 9–11 below apply to Format A; **12–15** apply to both Format B
    variants; **16** is variant B-1 only; **17** is variant B-2 only. Run only the
@@ -1078,6 +1294,8 @@ failures reaching it.
 
 12. Third person throughout. No emoji, no hashtags, no scripture block, no ✝️, no
     engagement line, no app-mention pair, and the app is not pitched anywhere.
+    **No `@saintmatchapp` handle on any slide** — that is Format A furniture and
+    is omitted here (§8.0).
 13. There is exactly one hinge, it is named in the internal hinge line, it is
     performed rather than explained, and it survives the swap test. On B-1 both
     sides are in the caption; on B-2 the saint side is in the numbered slides and
@@ -1085,7 +1303,10 @@ failures reaching it.
 14. **The last line is the invocation and nothing follows it.** True on both
     variants — this is the shared Format B rule.
 15. No encyclopedia register: no run of neutral biographical appositives, no
-    patronage-as-label, no bland closing pleasantry. **The post does not open by
+    patronage-as-label, no bland closing pleasantry. **On B-2 read the teaching
+    slides as a block for this** — that is where the register lives when the
+    caption is twenty words, and four slides of "He was X. He did Y." are a
+    reference-work entry broken across four frames. **The post does not open by
     announcing the date or the feast** — that is the tell the two weakest
     specimens share. No stated bridge; the saint is not the brand's mascot. And
     the post gives the reader a reason to stop — a hinge (B-1) or a numbered
@@ -1094,19 +1315,26 @@ failures reaching it.
 
 **Variant B-1 only:**
 
-16. Caption is 40–70 words, resting on exactly one fact — and that fact is
-    DOCUMENTED and asserted plainly, or TRADITIONAL and attributed. It is never a
-    LEGEND. Shape is fact → hinge → invocation, with no explaining sentence
-    before the invocation.
+16. Caption is 40–70 words, resting on **exactly one dossier line** — detail
+    internal to that line is not a second fact — and that fact is DOCUMENTED and
+    asserted plainly, or TRADITIONAL and attributed. It is never a LEGEND. Shape
+    is fact → hinge → invocation, with no explaining sentence before the
+    invocation.
 
 **Variant B-2 only:**
 
 17. The hook slide carries **both** a numbered promise and an explicit audience,
-    and that audience is a **struggle topic, not a demographic**. The number
-    promised equals the number of slides that deliver a distinct teaching. The
-    caption is a one-line framing question plus the invocation, ~8–25 words, and
-    nothing else — and the teaching genuinely lives in the slides, such that
-    deleting the caption leaves the post intact.
+    and that audience names **a struggle — what someone is carrying — not a
+    demographic**. Prefer to name it in **the saint's own vocabulary**, from a
+    DOCUMENTED dossier line (§4.4.1 route (i)): that is what lets the same line
+    be the hinge's app side and still fail the swap test. A bare paraphrase of one
+    of the twelve topics is permitted but usually fails W2. The `topic` header
+    field carries one of the twelve either way. The number promised is **at least
+    three** and equals the number of slides that deliver a distinct teaching. The
+    caption is a one-line framing question plus the invocation and nothing else
+    (count it and record it; the ~8–25 band is recorded, not gated) — and the
+    teaching genuinely lives in the slides, such that deleting the caption leaves
+    the post intact.
 
 If any of 1–5 fails, the correct output is not a fix attempt dressed as a
 draft. Output **`STOP — <check>`** and say what the dossier would need to

@@ -162,6 +162,21 @@ W-series scoped by variant — and which column of B1 and B2 applies. See §3.0.
 - Check not applicable → mark `N/A` with a reason. `N/A` is not `PASS` and must
   be justified in one line.
 
+**Justifications that are sufficient as they stand**, and do not need rewriting
+in fresh words on every pack. A bespoke justification is required where the
+grader made a *judgement*; where the check simply cannot bite, boilerplate is the
+honest answer and demanding novelty just produces novelty:
+
+- `N/A — <format>` and `N/A — variant <v>`: the check belongs to a format or
+  variant this pack is not.
+- `N/A — no <surface> in the pack`: the check tests a surface this pack does not
+  have. **"N/A — no scripture cited in the pack"** is the standing example: a
+  format with no scripture block yields the same `N/A` for the same reason on
+  every pack it ever produces, and a grader made to invent a fresh sentence each
+  time is being asked to decorate, not to check.
+- Anything else → one bespoke line saying why the check cannot bite **on this
+  pack specifically**.
+
 ---
 
 ## 7. Recording the verdict
@@ -254,6 +269,15 @@ Rules for the emitted grade:
   that was N/A by format or variant from one that was silently skipped — and on
   Format B, where the W-series is split across two variants, that distinction is
   the only thing standing between a correct grade and a silent misgrade.
+- **The `— (Format A)` in the `format_variant:` line is a placeholder, not a
+  value.** On Format A the grade prints `format_variant: — (Format A)`; the em
+  dash means "this axis does not apply here". **Do not copy an em dash into a
+  pack's own header block** — §3.1 of the instance rulebook says a Format A pack
+  **omits** the field entirely, and a Format A pack carrying any
+  `format_variant` value is a STOP. The verdict block and the pack header are two
+  different artifacts with two different rules: the verdict prints every line so
+  that a skipped check is distinguishable from an inapplicable one, and the
+  header carries only the fields that apply.
 - **Any single STOP makes the verdict STOP.** There is no count, no threshold, no
   majority. One is enough. This is identical on both formats.
 - Every check gets a line, including passing ones, and every line carries
